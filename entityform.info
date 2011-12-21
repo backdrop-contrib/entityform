@@ -1,0 +1,16 @@
+name = Entityform
+description = Provides entity functionality as an example to use in your own development projects
+package = Blenderbox Custom
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+
+files[] = entityform.admin.inc
+files[] = entityform_type.admin.inc
+files[] = views/entityform.views.inc
+files[] = views/entityform_handler_link_field.inc
+files[] = views/entityform_handler_delete_link_field.inc
+files[] = views/entityform_handler_edit_link_field.inc
+files[] = views/entityform_handler_entityform_operations_field.inc
+

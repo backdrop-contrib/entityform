@@ -1,0 +1,485 @@
+<?php
+
+/**
+ * @file
+ * Entityform editing UI.
+ *
+ * We make very little use of the EntityAPI interface for this - preferring instead to use
+ * views. That offers more flexibility to change a UI that will, more often than not,
+ * be end-user facing.
+ */
+
+/**
+ * UI controller.
+ */
+class EntityformUIController extends EntityDefaultUIController {
+
+  /**
+   * Overrides hook_menu() defaults. Main reason for doing this is that
+   * parent class hook_menu() is optimized for entity type administration.
+   */
+  public function hook_menu() {
+    //$entityform_base_path = variable_get('entityform_base_path', $)
+    $items = array();
+    $id_count = count(explode('/', $this->path));
+    $front_id_count = count(explode('/', $this->entityInfo['admin ui']["front path"]));
+    $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
+
+    $items[$this->path] = array(
+      'title' => 'Entityforms',
+      'description' => 'Add edit and update entityforms.',
+      'page callback' => 'system_admin_menu_block_page',
+      'access arguments' => array('access administration pages'),
+      'file path' => drupal_get_path('module', 'system'),
+      'file' => 'system.admin.inc',
+    );
+
+    // Change the overview menu type for the list of entityforms.
+    $items[$this->path]['type'] = MENU_LOCAL_TASK;
+    $items['eform/submit/%entityform_empty'] = array(
+      'title callback' => 'entityform_page_title',
+      'title arguments' => array(2),
+      'page callback' => 'entityform_form_wrapper',
+      'page arguments' => array(2),
+      'access callback' => 'entityform_access',
+      'access arguments' => array('submit', 2),
+      'file' => 'entityform.admin.inc',
+      'file path' => drupal_get_path('module', $this->entityInfo['module']),
+      'type' => MENU_CALLBACK,
+    );
+    $items['eform/%entityform_type/confirm/%entityform'] = array(
+        'title' => 'Thank You',
+        'description' => '',
+        'page callback' => 'entityform_confirm_page',
+        'page arguments' => array(1,3),
+        'access callback' => 'entityform_access',
+      'access arguments' => array('confirm', 1),
+
+    );
+
+    $items['eform/%entityform_type/draft'] = array(
+          'title' => 'Form Saved',
+          'description' => '',
+          'page callback' => 'entityform_draft_page',
+          'page arguments' => array(1),
+          'access callback' => TRUE,
+          'access arguments' => array('draft_save', 1),
+
+    );
+    $types = array_keys(entityform_get_types());
+    $controller = entity_ui_controller('entityform');
+    foreach ($types as $type) {
+      $prefix = $controller->path_prefix($type);
+      watchdog('tttt',"pre $type = $prefix");
+      if($prefix != 'eform') {
+        $items["$prefix/submit/%entityform_empty"] = $items['eform/submit/%entityform_empty'];
+        $items["$prefix/%entityform_type/confirm/%entityform"] = $items['eform/%entityform_type/confirm/%entityform'];
+        $items["$prefix/%entityform_type/draft"] = $items['eform/%entityform_type/draft'];
+      }
+    }
+
+    // Loading and editing entityform entities
+    $items['entityform/' . $wildcard] = array(
+      'page callback' => 'entityform_form_wrapper',
+      'page arguments' => array($id_count + 1),
+      'access callback' => 'entityform_access',
+      'access arguments' => array('edit', $id_count + 1),
+      'weight' => 0,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+      'file' => 'entityform.admin.inc',
+      'file path' => drupal_get_path('module', $this->entityInfo['module'])
+    );
+    $items['entityform/' . $wildcard . '/edit'] = array(
+    //       'title' => 'Edit',
+    //       'type' => MENU_DEFAULT_LOCAL_TASK,
+    //       'weight' => -10,
+    //       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    'page callback' => 'entityform_form_wrapper',
+          'page arguments' => array(1),
+          'access callback' => 'entityform_access',
+          'access arguments' => array('edit', 1),
+          'weight' => 0,
+          'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+          'file' => 'entityform.admin.inc',
+          'file path' => drupal_get_path('module', $this->entityInfo['module'])
+    );
+
+    $items['entityform/' . $wildcard . '/delete'] = array(
+      'title' => 'Delete',
+      'page callback' => 'entityform_delete_form_wrapper',
+      'page arguments' => array( 1),
+      'access callback' => 'entityform_access',
+      'access arguments' => array('edit',  1),
+      'type' => MENU_LOCAL_TASK,
+      'context' => MENU_CONTEXT_INLINE,
+      'weight' => 10,
+      'file' => 'entityform.admin.inc',
+      'file path' => drupal_get_path('module', $this->entityInfo['module'])
+    );
+
+    // Menu item for viewing entityforms
+    $items['entityform/' . $wildcard] = array(
+    //'title' => 'Title',
+      'title callback' => 'entityform_page_title',
+      'title arguments' => array(1),
+      'page callback' => 'entityform_page_view',
+      'page arguments' => array(1),
+      'access callback' => 'entityform_access',
+      'access arguments' => array('view', 1),
+      'type' => MENU_CALLBACK,
+    );
+    return $items;
+  }
+
+
+  /**
+   * Create the markup for the add Entityform Entities page within the class
+   * so it can easily be extended/overriden.
+   */
+  public function addPage() {
+    $item = menu_get_item();
+    $content = system_admin_menu_block($item);
+
+    if (count($content) == 1) {
+      $item = array_shift($content);
+      drupal_goto($item['href']);
+    }
+
+    return theme('entityform_add_list', array('content' => $content));
+  }
+  public function path_prefix($bundle = NULL) {
+    $prefixes = drupal_static(__FUNCTION__);
+    if(empty($prefixes)) {
+      $prefixes = array('*' => 'eform');
+      drupal_alter('entityform_path_prefixes', $prefixes);
+    }
+    if($bundle == NULL) {
+      return $prefixes;
+    }
+    if(array_key_exists($bundle, $prefixes)) {
+      return $prefixes[$bundle];
+    }
+    return $prefixes['*'];
+  }
+  public function confirm_path($bundle, $entityform_id = NULL) {
+    $prefix = $this->path_prefix($bundle);
+    $bundle = str_replace('_', '-', $bundle);
+    $path = "$prefix/$bundle/confirm";
+    if($entityform_id) {
+      $path .= "/$entityform_id";
+    }
+    return $path; 
+  }
+  public function draft_path($bundle) {
+    $prefix = $this->path_prefix($bundle);
+    $bundle = str_replace('_', '-', $bundle);
+    return "$prefix/$bundle/draft";
+  }
+  public function submit_path($bundle) {
+    $prefix = $this->path_prefix($bundle);
+    $bundle = str_replace('_', '-', $bundle);
+    return "$prefix/submit/$bundle";
+  }
+
+
+}
+
+
+/**
+ * Form callback wrapper: create or edit a entityform.
+ *
+ * @param $entityform
+ *   The entityform object being edited by this form.
+ *
+ * @see entityform_edit_form()
+ */
+function entityform_form_wrapper($entityform) {
+  // Add the breadcrumb for the form's location.
+  //entityform_set_breadcrumb();
+  if(!empty($entityform->is_new)){
+    $entityform_type = entityform_type_load($entityform->type);
+    $draft = FALSE;
+    if($entityform_type->data['draftable']) {
+      $draft = entityform_user_draft($entityform->type);
+      if(!empty($draft)) {
+        $entityform = $draft;
+      }
+    }
+    if (!$draft) {
+      // @todo add logic or other resubmit action
+      switch($entityform_type->data['resubmit_action']){
+        case 'old':
+          $old_submission = entityform_user_previous_submission($entityform->type);
+          if($old_submission){
+            $entityform = $old_submission;
+          }
+      }
+    }
+  }
+  return drupal_get_form('entityform_edit_form', $entityform);
+}
+
+
+/**
+ * Form callback wrapper: delete a entityform.
+ *
+ * @param $entityform
+ *   The entityform object being edited by this form.
+ *
+ * @see entityform_edit_form()
+ */
+function entityform_delete_form_wrapper($entityform) {
+  // Add the breadcrumb for the form's location.
+  //entityform_set_breadcrumb();
+  return drupal_get_form('entityform_delete_form', $entityform);
+}
+
+
+/**
+ * Form callback: create or edit a entityform.
+ *
+ * @param $entityform
+ *   The entityform object to edit or for a create form an empty entityform object
+ *     with only a entityform type defined.
+ */
+function entityform_edit_form($form, &$form_state, $entityform) {
+
+  $form['data']['#tree'] = TRUE;
+  $entityform_type = entityform_type_load($entityform->type);
+  // Add the field related form elements.
+  $form_state['entityform'] = $entityform;
+  field_attach_form('entityform', $entityform, $form, $form_state);
+  if(!empty($entityform_type->data['instruction_pre'])) {
+    $form['intro'] = array(
+    '#type' => 'markup',
+    '#markup' => "<div class='pre-intructions' >" .$entityform_type->data['instruction_pre'] . "</div>",
+    '#weight' => -100,
+    );
+  }
+  $form['actions'] = array(
+    '#type' => 'container',
+    '#attributes' => array('class' => array('form-actions')),
+    '#weight' => 400,
+  );
+
+  // We add the form's #submit array to this button along with the actual submit
+  // handler to preserve any submit handlers added by a form callback_wrapper.
+  $submit = array();
+
+  if (!empty($form['#submit'])) {
+    $submit += $form['#submit'];
+  }
+  if ($entityform_type->data['draftable']) {
+    $form['actions']['save'] = array(
+      '#type' => 'submit',
+      '#value' => t('Save Draft'),
+    //'#limit_validation_errors' => array(), //cause erros
+      '#entityform_draft' => '1',
+      '#submit' => $submit + array('entityform_edit_form_submit'),
+    );
+  }
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit Form'),
+  	'#entityform_draft' => '0',
+    '#submit' => $submit + array('entityform_edit_form_submit'),
+  );
+
+  if (!empty($entityform->name)) {
+    $form['actions']['delete'] = array(
+      '#type' => 'submit',
+      '#value' => t('Delete entityform'),
+      '#suffix' => l(t('Cancel'), 'admin/content/entityforms'),
+      '#submit' => $submit + array('entityform_form_submit_delete'),
+      '#weight' => 45,
+    );
+  }
+
+  // We append the validate handler to #validate in case a form callback_wrapper
+  // is used to add validate handlers earlier.
+  $form['#validate'][] = 'entityform_edit_form_validate';
+  $form['#after_build'][] = 'entityform_clear_required';
+  $form['#validate'][] = 'entityform_set_required';
+  return $form;
+}
+function entityform_clear_required($form, &$form_state) {
+  if(!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&  $form_state['values']['save'] == $form_state['input']['op']  ) {
+    _entityform_set_all_nested_props($form,array('#required' => FALSE));
+  }
+  
+  return $form;
+}
+function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
+  $matched = TRUE;
+  if($must_match) {
+    $matched = isset($form['#entityform_required']);
+  }
+  if($matched) {
+    foreach ($props as $key => $value) {
+      if(isset($form[$key]) && $form[$key] != $value) {
+        $form[$key] = $value;
+        if(!$must_match) {
+          $form['#entityform_required'] = TRUE;
+        }
+        else 
+        {
+          unset($form['#entityform_required']);
+        }
+      }
+    }
+  }
+
+  foreach (element_children($form) as $key) {
+    if(is_array($form[$key])) {
+      _entityform_set_all_nested_props($form[$key], $props, $must_match);
+    }
+  }
+}
+function entityform_set_required(&$form, &$form_state) {
+  _entityform_set_all_nested_props($form,array('#required' => TRUE), TRUE);
+}
+/**
+ * Form API validate callback for the entityform form
+ */
+function entityform_edit_form_validate(&$form, &$form_state) {
+  $entityform = $form_state['entityform'];
+
+  // Notify field widgets to validate their data.
+  field_attach_form_validate('entityform', $entityform, $form, $form_state);
+}
+
+
+/**
+ * Form API submit callback for the entityform form.
+ *
+ * @todo remove hard-coded link
+ */
+function entityform_edit_form_submit(&$form, &$form_state) {
+
+  $entityform = entity_ui_controller('entityform')->entityFormSubmitBuildEntity($form, $form_state);
+  $entityform->draft = $form_state['clicked_button']['#entityform_draft'];
+  // Save the entityform and go back to the list of entityforms
+  $entityform_type = entityform_type_load($entityform->type);
+  // Add in created and changed times.
+  if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0){
+    global $user;
+    $entityform->created = time();
+
+    $entityform->uid = !empty($user->uid)?$user->uid:0;
+  }
+
+  $entityform->changed = time();
+
+  $entityform->save();
+  if(empty($entityform->draft)) {
+    $form_state['redirect'] = !empty($entityform_type->data['redirect_path'])?$entityform_type->data['redirect_path']:entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
+  }
+  else
+  {
+    $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
+  }
+}
+
+/**
+ * Form API submit callback for the delete button.
+ *
+ * @todo Remove hard-coded path
+ */
+function entityform_form_submit_delete(&$form, &$form_state) {
+  $form_state['redirect'] = 'admin/content/entityforms/entityform/' . $form_state['entityform']->entityform_id . '/delete';
+}
+
+
+/**
+ * Form callback: confirmation form for deleting a entityform.
+ *
+ * @param $entityform
+ *   The entityform to delete
+ *
+ * @see confirm_form()
+ */
+function entityform_delete_form($form, &$form_state, $entityform) {
+  $form_state['entityform'] = $entityform;
+
+  $form['#submit'][] = 'entityform_delete_form_submit';
+
+  $form = confirm_form($form,
+  t('Are you sure you want to delete this Submission for %type?', array('%type' => $entityform->getTypeName())),
+    'admin/content/entityforms/entityform',
+    '<p>' . t('This action cannot be undone.') . '</p>',
+  t('Delete'),
+  t('Cancel'),
+    'confirm'
+  );
+
+  return $form;
+}
+
+/**
+ * Submit callback for entityform_delete_form
+ */
+function entityform_delete_form_submit($form, &$form_state) {
+  $entityform = $form_state['entityform'];
+
+  entityform_delete($entityform);
+
+  drupal_set_message(t('The Submission for %name has been deleted.', array('%name' => $entityform->getTypeName())));
+  watchdog('entityform', 'Deleted Submission for %name.', array('%name' => $entityform->getTypeName()));
+
+  $form_state['redirect'] = 'admin/content/entityforms/list/' . $entityform->type;
+}
+
+
+
+/**
+ * Page to add Entityform Entities.
+ *
+ * @todo Pass this through a proper theme function
+ */
+function entityform_add_page() {
+  $controller = entity_ui_controller('entityform');
+  return $controller->addPage();
+}
+
+
+/**
+ * Displays the list of available entityform types for entityform creation.
+ *
+ * @ingroup themeable
+ */
+function theme_entityform_add_list($variables) {
+  $content = $variables['content'];
+  $output = '';
+  if ($content) {
+    $output = '<dl class="entityform-type-list">';
+    foreach ($content as $item) {
+      $output .= '<dt>' . l($item['title'], $item['href']) . '</dt>';
+      $output .= '<dd>' . filter_xss_admin($item['description']) . '</dd>';
+    }
+    $output .= '</dl>';
+  }
+  else {
+    if (user_access('administer entityform types')) {
+      $output = '<p>' . t('Entityform Entities cannot be added because you have not created any entityform types yet. Go to the <a href="@create-entityform-type">entityform type creation page</a> to add a new entityform type.', array('@create-entityform-type' => url('admin/content/entityform_types/add'))) . '</p>';
+    }
+    else {
+      $output = '<p>' . t('No entityform types have been created yet for you to use.') . '</p>';
+    }
+  }
+
+  return $output;
+}
+
+/**
+ * Sets the breadcrumb for administrative entityform pages.
+ */
+function entityform_set_breadcrumb() {
+  $breadcrumb = array(
+  l(t('Home'), '<front>'),
+  l(t('Administration'), 'admin'),
+  l(t('Content'), 'admin/content'),
+  l(t('Entityforms'), 'admin/content/entityforms/list'),
+  );
+
+  drupal_set_breadcrumb($breadcrumb);
+}
