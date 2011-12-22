@@ -1,6 +1,5 @@
 name = Entityform
-description = Provides entity functionality as an example to use in your own development projects
-package = Blenderbox Custom
+description = Provides fieldable entity forms
 core = 7.x
 
 dependencies[] = entity

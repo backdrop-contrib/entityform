@@ -48,30 +48,28 @@ class EntityformUIController extends EntityDefaultUIController {
       'type' => MENU_CALLBACK,
     );
     $items['eform/%entityform_type/confirm/%entityform'] = array(
-        'title' => 'Thank You',
-        'description' => '',
-        'page callback' => 'entityform_confirm_page',
-        'page arguments' => array(1,3),
-        'access callback' => 'entityform_access',
+      'title' => 'Thank You',
+      'description' => '',
+      'page callback' => 'entityform_confirm_page',
+      'page arguments' => array(1, 3),
+      'access callback' => 'entityform_access',
       'access arguments' => array('confirm', 1),
-
     );
 
     $items['eform/%entityform_type/draft'] = array(
-          'title' => 'Form Saved',
-          'description' => '',
-          'page callback' => 'entityform_draft_page',
-          'page arguments' => array(1),
-          'access callback' => TRUE,
-          'access arguments' => array('draft_save', 1),
-
+      'title' => 'Form Saved',
+      'description' => '',
+      'page callback' => 'entityform_draft_page',
+      'page arguments' => array(1),
+      'access callback' => TRUE,
+      'access arguments' => array('draft_save', 1),
     );
     $types = array_keys(entityform_get_types());
     $controller = entity_ui_controller('entityform');
     foreach ($types as $type) {
       $prefix = $controller->path_prefix($type);
-      watchdog('tttt',"pre $type = $prefix");
-      if($prefix != 'eform') {
+      watchdog('tttt', "pre $type = $prefix");
+      if ($prefix != 'eform') {
         $items["$prefix/submit/%entityform_empty"] = $items['eform/submit/%entityform_empty'];
         $items["$prefix/%entityform_type/confirm/%entityform"] = $items['eform/%entityform_type/confirm/%entityform'];
         $items["$prefix/%entityform_type/draft"] = $items['eform/%entityform_type/draft'];
@@ -87,39 +85,39 @@ class EntityformUIController extends EntityDefaultUIController {
       'weight' => 0,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
       'file' => 'entityform.admin.inc',
-      'file path' => drupal_get_path('module', $this->entityInfo['module'])
+      'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
     $items['entityform/' . $wildcard . '/edit'] = array(
-    //       'title' => 'Edit',
-    //       'type' => MENU_DEFAULT_LOCAL_TASK,
-    //       'weight' => -10,
-    //       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-    'page callback' => 'entityform_form_wrapper',
-          'page arguments' => array(1),
-          'access callback' => 'entityform_access',
-          'access arguments' => array('edit', 1),
-          'weight' => 0,
-          'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
-          'file' => 'entityform.admin.inc',
-          'file path' => drupal_get_path('module', $this->entityInfo['module'])
+      //       'title' => 'Edit',
+      //       'type' => MENU_DEFAULT_LOCAL_TASK,
+      //       'weight' => -10,
+      //       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+      'page callback' => 'entityform_form_wrapper',
+      'page arguments' => array(1),
+      'access callback' => 'entityform_access',
+      'access arguments' => array('edit', 1),
+      'weight' => 0,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+      'file' => 'entityform.admin.inc',
+      'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
 
     $items['entityform/' . $wildcard . '/delete'] = array(
       'title' => 'Delete',
       'page callback' => 'entityform_delete_form_wrapper',
-      'page arguments' => array( 1),
+      'page arguments' => array(1),
       'access callback' => 'entityform_access',
-      'access arguments' => array('edit',  1),
+      'access arguments' => array('edit', 1),
       'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_INLINE,
       'weight' => 10,
       'file' => 'entityform.admin.inc',
-      'file path' => drupal_get_path('module', $this->entityInfo['module'])
+      'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
 
     // Menu item for viewing entityforms
     $items['entityform/' . $wildcard] = array(
-    //'title' => 'Title',
+      //'title' => 'Title',
       'title callback' => 'entityform_page_title',
       'title arguments' => array(1),
       'page callback' => 'entityform_page_view',
@@ -149,26 +147,30 @@ class EntityformUIController extends EntityDefaultUIController {
   }
   public function path_prefix($bundle = NULL) {
     $prefixes = drupal_static(__FUNCTION__);
-    if(empty($prefixes)) {
+    if (empty($prefixes)) {
       $prefixes = array('*' => 'eform');
       drupal_alter('entityform_path_prefixes', $prefixes);
     }
-    if($bundle == NULL) {
+    if ($bundle == NULL) {
       return $prefixes;
     }
-    if(array_key_exists($bundle, $prefixes)) {
+    if (array_key_exists($bundle, $prefixes)) {
       return $prefixes[$bundle];
     }
     return $prefixes['*'];
   }
   public function confirm_path($bundle, $entityform_id = NULL) {
+    $entityform_type = entityform_type_load($bundle);
+    if (!empty($entityform_type->data['redirect_path'])) {
+      return $entityform_type->data['redirect_path'];
+    }
     $prefix = $this->path_prefix($bundle);
     $bundle = str_replace('_', '-', $bundle);
     $path = "$prefix/$bundle/confirm";
-    if($entityform_id) {
+    if ($entityform_id) {
       $path .= "/$entityform_id";
     }
-    return $path; 
+    return $path;
   }
   public function draft_path($bundle) {
     $prefix = $this->path_prefix($bundle);
@@ -196,23 +198,27 @@ class EntityformUIController extends EntityDefaultUIController {
 function entityform_form_wrapper($entityform) {
   // Add the breadcrumb for the form's location.
   //entityform_set_breadcrumb();
-  if(!empty($entityform->is_new)){
+  if (!empty($entityform->is_new)) {
     $entityform_type = entityform_type_load($entityform->type);
     $draft = FALSE;
-    if($entityform_type->data['draftable']) {
+    if ($entityform_type->data['draftable']) {
       $draft = entityform_user_draft($entityform->type);
-      if(!empty($draft)) {
+      if (!empty($draft)) {
         $entityform = $draft;
       }
     }
     if (!$draft) {
       // @todo add logic or other resubmit action
-      switch($entityform_type->data['resubmit_action']){
+      $old_submission = entityform_user_previous_submission($entityform->type);
+      switch ($entityform_type->data['resubmit_action']) {
         case 'old':
-          $old_submission = entityform_user_previous_submission($entityform->type);
-          if($old_submission){
+          if ($old_submission) {
             $entityform = $old_submission;
           }
+          break;
+        case 'confirm':
+          drupal_goto(entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id));
+          break;
       }
     }
   }
@@ -249,11 +255,11 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   // Add the field related form elements.
   $form_state['entityform'] = $entityform;
   field_attach_form('entityform', $entityform, $form, $form_state);
-  if(!empty($entityform_type->data['instruction_pre'])) {
+  if (!empty($entityform_type->data['instruction_pre'])) {
     $form['intro'] = array(
-    '#type' => 'markup',
-    '#markup' => "<div class='pre-intructions' >" .$entityform_type->data['instruction_pre'] . "</div>",
-    '#weight' => -100,
+      '#type' => 'markup',
+      '#markup' => "<div class='pre-intructions' >" . $entityform_type->data['instruction_pre'] . "</div>",
+      '#weight' => -100,
     );
   }
   $form['actions'] = array(
@@ -273,7 +279,7 @@ function entityform_edit_form($form, &$form_state, $entityform) {
     $form['actions']['save'] = array(
       '#type' => 'submit',
       '#value' => t('Save Draft'),
-    //'#limit_validation_errors' => array(), //cause erros
+      //'#limit_validation_errors' => array(), //cause erros
       '#entityform_draft' => '1',
       '#submit' => $submit + array('entityform_edit_form_submit'),
     );
@@ -281,7 +287,7 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit Form'),
-  	'#entityform_draft' => '0',
+    '#entityform_draft' => '0',
     '#submit' => $submit + array('entityform_edit_form_submit'),
   );
 
@@ -303,26 +309,25 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   return $form;
 }
 function entityform_clear_required($form, &$form_state) {
-  if(!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&  $form_state['values']['save'] == $form_state['input']['op']  ) {
-    _entityform_set_all_nested_props($form,array('#required' => FALSE));
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&   $form_state['values']['save'] == $form_state['input']['op']  ) {
+    _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
-  
+
   return $form;
 }
 function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
   $matched = TRUE;
-  if($must_match) {
+  if ($must_match) {
     $matched = isset($form['#entityform_required']);
   }
-  if($matched) {
+  if ($matched) {
     foreach ($props as $key => $value) {
-      if(isset($form[$key]) && $form[$key] != $value) {
+      if (isset($form[$key]) && $form[$key] != $value) {
         $form[$key] = $value;
-        if(!$must_match) {
+        if (!$must_match) {
           $form['#entityform_required'] = TRUE;
         }
-        else 
-        {
+        else {
           unset($form['#entityform_required']);
         }
       }
@@ -330,13 +335,13 @@ function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
   }
 
   foreach (element_children($form) as $key) {
-    if(is_array($form[$key])) {
+    if (is_array($form[$key])) {
       _entityform_set_all_nested_props($form[$key], $props, $must_match);
     }
   }
 }
 function entityform_set_required(&$form, &$form_state) {
-  _entityform_set_all_nested_props($form,array('#required' => TRUE), TRUE);
+  _entityform_set_all_nested_props($form, array('#required' => TRUE), TRUE);
 }
 /**
  * Form API validate callback for the entityform form
@@ -361,21 +366,20 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   // Save the entityform and go back to the list of entityforms
   $entityform_type = entityform_type_load($entityform->type);
   // Add in created and changed times.
-  if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0){
+  if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0) {
     global $user;
     $entityform->created = time();
 
-    $entityform->uid = !empty($user->uid)?$user->uid:0;
+    $entityform->uid = !empty($user->uid) ? $user->uid : 0;
   }
 
   $entityform->changed = time();
 
   $entityform->save();
-  if(empty($entityform->draft)) {
-    $form_state['redirect'] = !empty($entityform_type->data['redirect_path'])?$entityform_type->data['redirect_path']:entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
+  if (empty($entityform->draft)) {
+    $form_state['redirect'] = !empty($entityform_type->data['redirect_path']) ? $entityform_type->data['redirect_path'] : entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
   }
-  else
-  {
+  else {
     $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
   }
 }
@@ -475,10 +479,10 @@ function theme_entityform_add_list($variables) {
  */
 function entityform_set_breadcrumb() {
   $breadcrumb = array(
-  l(t('Home'), '<front>'),
-  l(t('Administration'), 'admin'),
-  l(t('Content'), 'admin/content'),
-  l(t('Entityforms'), 'admin/content/entityforms/list'),
+    l(t('Home'), '<front>'),
+    l(t('Administration'), 'admin'),
+    l(t('Content'), 'admin/content'),
+    l(t('Entityforms'), 'admin/content/entityforms/list'),
   );
 
   drupal_set_breadcrumb($breadcrumb);

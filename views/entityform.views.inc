@@ -7,7 +7,7 @@
 
 
 /**
- * Implements hook_views_data()
+ * Implements hook_views_data().
  */
 function entityform_views_data_alter(&$data) {
   $data['entityform']['link_entityform'] = array(
@@ -15,22 +15,21 @@ function entityform_views_data_alter(&$data) {
       'title' => t('Link'),
       'help' => t('Provide a link to the entityform.'),
       'handler' => 'entityform_handler_link_field',
-  ),
+    ),
   );
   $data['entityform']['edit_entityform'] = array(
     'field' => array(
       'title' => t('Edit Link'),
       'help' => t('Provide a link to the edit form for the entityform.'),
       'handler' => 'entityform_handler_edit_link_field',
-  ),
+    ),
   );
   $data['entityform']['delete_entityform'] = array(
     'field' => array(
       'title' => t('Delete Link'),
       'help' => t('Provide a link to delete the entityform.'),
       'handler' => 'entityform_handler_delete_link_field',
-  ),
-
+    ),
   );
   // This content of this field are decided based on the menu structure that
   // follows entityforms/entityform/%entityform_id/op
@@ -39,33 +38,25 @@ function entityform_views_data_alter(&$data) {
       'title' => t('Operations links'),
       'help' => t('Display all operations available for this entityform.'),
       'handler' => 'entityform_handler_entityform_operations_field',
-  ),
+    ),
   );
   $data['entityform_type']['table']['join'] = array(
     'entityform' => array(
       'left_field' => 'type',
       'field' => 'type',
-  //'type' => 'INNER', // all nodes have an author.
-  ),
+      //'type' => 'INNER', // all nodes have an author.
+    ),
   );
   $data['entityform']['uid']['relationship'] = array(
-      'base' => 'users',
-      'field' => 'uid',
-      'handler' => 'views_handler_relationship',
-      'label' => t('User Submitting')
+    'base' => 'users',
+    'field' => 'uid',
+    'handler' => 'views_handler_relationship',
+    'label' => t('User Submitting'),
   );
   $data['entityform']['table']['join']['user'] = array(
-  'left_field' => 'uid',
-          'field' => 'uid',
+    'left_field' => 'uid',
+    'field' => 'uid',
   );
-  
-  /*$data['entityform']['type']['relationship'] = array(
-   'base' => 'entityform_type',
-   'field' => 'type',
-   'handler' => 'views_handler_relationship',
-   'label' => t('Type of Form')
-   );*/
-
 }
 
 /**
@@ -80,7 +71,7 @@ function entityform_views_default_views() {
   $view->human_name = 'Entityforms';
   $view->core = 7;
   $view->api_version = '3.0-alpha1';
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+  $view->disabled = FALSE; /* Edit this to TRUE to make a default view disabled initially */
 
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
@@ -94,23 +85,23 @@ function entityform_views_default_views() {
   $handler->display->display_options['pager']['options']['items_per_page'] = '10';
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
-  'name' => 'name',
-  'entityform_id' => 'entityform_id',
+    'name' => 'name',
+    'entityform_id' => 'entityform_id',
   );
   $handler->display->display_options['style_options']['default'] = '-1';
   $handler->display->display_options['style_options']['info'] = array(
-  'name' => array(
-    'sortable' => 0,
-    'default_sort_order' => 'asc',
-    'align' => '',
-    'separator' => '',
-  ),
-  'entityform_id' => array(
-    'sortable' => 0,
-    'default_sort_order' => 'asc',
-    'align' => '',
-    'separator' => '',
-  ),
+    'name' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'entityform_id' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
   );
   $handler->display->display_options['style_options']['override'] = 1;
   $handler->display->display_options['style_options']['sticky'] = 0;
@@ -264,24 +255,24 @@ function entityform_views_default_views() {
 
 
   $translatables['entityforms'] = array(
-  t('Master'),
-  t('Form Submissions'),
-  t('more'),
-  t('Apply'),
-  t('Reset'),
-  t('Sort by'),
-  t('Asc'),
-  t('Desc'),
-  t('Items per page'),
-  t('- All -'),
-  t('Offset'),
-  t('Empty '),
-  t('No entityforms have been created yet'),
-  t('User Submitting'),
-  t('Submitter'),
-  t('View'),
-  t('Form Type'),
-  t('Page'),
+    t('Master'),
+    t('Form Submissions'),
+    t('more'),
+    t('Apply'),
+    t('Reset'),
+    t('Sort by'),
+    t('Asc'),
+    t('Desc'),
+    t('Items per page'),
+    t('- All -'),
+    t('Offset'),
+    t('Empty'),
+    t('No entityforms have been created yet'),
+    t('User Submitting'),
+    t('Submitter'),
+    t('View'),
+    t('Form Type'),
+    t('Page'),
   );
   $views[$view->name] = $view;
 
@@ -293,196 +284,196 @@ function entityform_views_default_views() {
 function entityform_views_default_viewsx() {
   $views = array();
 
-$view = new view;
-$view->name = 'entityforms';
-$view->description = 'A list of all entityforms submissions';
-$view->tag = 'entityforms';
-$view->base_table = 'entityform';
-$view->human_name = 'Entityforms';
-$view->core = 7;
-$view->api_version = '3.0-alpha1';
-$view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+  $view = new view;
+  $view->name = 'entityforms';
+  $view->description = 'A list of all entityforms submissions';
+  $view->tag = 'entityforms';
+  $view->base_table = 'entityform';
+  $view->human_name = 'Entityforms';
+  $view->core = 7;
+  $view->api_version = '3.0-alpha1';
+  $view->disabled = FALSE; /* Edit this to TRUE to make a default view disabled initially */
 
-/* Display: Master */
-$handler = $view->new_display('default', 'Master', 'default');
-$handler->display->display_options['title'] = 'Form Submissions';
-$handler->display->display_options['access']['type'] = 'perm';
-$handler->display->display_options['cache']['type'] = 'none';
-$handler->display->display_options['query']['type'] = 'views_query';
-$handler->display->display_options['query']['options']['query_comment'] = FALSE;
-$handler->display->display_options['exposed_form']['type'] = 'basic';
-$handler->display->display_options['pager']['type'] = 'full';
-$handler->display->display_options['pager']['options']['items_per_page'] = '10';
-$handler->display->display_options['style_plugin'] = 'table';
-$handler->display->display_options['style_options']['columns'] = array(
-  'name' => 'name',
-  'entityform_id' => 'entityform_id',
-);
-$handler->display->display_options['style_options']['default'] = '-1';
-$handler->display->display_options['style_options']['info'] = array(
-  'name' => array(
-    'sortable' => 0,
-    'default_sort_order' => 'asc',
-    'align' => '',
-    'separator' => '',
-  ),
-  'entityform_id' => array(
-    'sortable' => 0,
-    'default_sort_order' => 'asc',
-    'align' => '',
-    'separator' => '',
-  ),
-);
-$handler->display->display_options['style_options']['override'] = 1;
-$handler->display->display_options['style_options']['sticky'] = 0;
-$handler->display->display_options['style_options']['empty_table'] = 0;
-/* No results behavior: Global: Text area */
-$handler->display->display_options['empty']['area']['id'] = 'area';
-$handler->display->display_options['empty']['area']['table'] = 'views';
-$handler->display->display_options['empty']['area']['field'] = 'area';
-$handler->display->display_options['empty']['area']['label'] = 'Empty ';
-$handler->display->display_options['empty']['area']['empty'] = FALSE;
-$handler->display->display_options['empty']['area']['content'] = 'No entityforms have been created yet';
-/* Relationship: Entityform: Uid */
-$handler->display->display_options['relationships']['uid']['id'] = 'uid';
-$handler->display->display_options['relationships']['uid']['table'] = 'entityform';
-$handler->display->display_options['relationships']['uid']['field'] = 'uid';
-$handler->display->display_options['relationships']['uid']['required'] = 0;
-/* Field: User: Name */
-$handler->display->display_options['fields']['name']['id'] = 'name';
-$handler->display->display_options['fields']['name']['table'] = 'users';
-$handler->display->display_options['fields']['name']['field'] = 'name';
-$handler->display->display_options['fields']['name']['relationship'] = 'uid';
-$handler->display->display_options['fields']['name']['label'] = 'Submitter';
-$handler->display->display_options['fields']['name']['alter']['alter_text'] = 0;
-$handler->display->display_options['fields']['name']['alter']['make_link'] = 0;
-$handler->display->display_options['fields']['name']['alter']['absolute'] = 0;
-$handler->display->display_options['fields']['name']['alter']['external'] = 0;
-$handler->display->display_options['fields']['name']['alter']['replace_spaces'] = 0;
-$handler->display->display_options['fields']['name']['alter']['nl2br'] = 0;
-$handler->display->display_options['fields']['name']['alter']['word_boundary'] = 1;
-$handler->display->display_options['fields']['name']['alter']['ellipsis'] = 1;
-$handler->display->display_options['fields']['name']['alter']['strip_tags'] = 0;
-$handler->display->display_options['fields']['name']['alter']['trim'] = 0;
-$handler->display->display_options['fields']['name']['alter']['html'] = 0;
-$handler->display->display_options['fields']['name']['element_label_colon'] = 1;
-$handler->display->display_options['fields']['name']['element_default_classes'] = 1;
-$handler->display->display_options['fields']['name']['hide_empty'] = 0;
-$handler->display->display_options['fields']['name']['empty_zero'] = 0;
-$handler->display->display_options['fields']['name']['link_to_user'] = 1;
-$handler->display->display_options['fields']['name']['overwrite_anonymous'] = 0;
-/* Field: Entityform: Link */
-$handler->display->display_options['fields']['link_entityform']['id'] = 'link_entityform';
-$handler->display->display_options['fields']['link_entityform']['table'] = 'entityform';
-$handler->display->display_options['fields']['link_entityform']['field'] = 'link_entityform';
-$handler->display->display_options['fields']['link_entityform']['label'] = 'View';
-$handler->display->display_options['fields']['link_entityform']['alter']['alter_text'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['make_link'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['absolute'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['external'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['replace_spaces'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['nl2br'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['word_boundary'] = 1;
-$handler->display->display_options['fields']['link_entityform']['alter']['ellipsis'] = 1;
-$handler->display->display_options['fields']['link_entityform']['alter']['strip_tags'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['trim'] = 0;
-$handler->display->display_options['fields']['link_entityform']['alter']['html'] = 0;
-$handler->display->display_options['fields']['link_entityform']['element_label_colon'] = 1;
-$handler->display->display_options['fields']['link_entityform']['element_default_classes'] = 1;
-$handler->display->display_options['fields']['link_entityform']['hide_empty'] = 0;
-$handler->display->display_options['fields']['link_entityform']['empty_zero'] = 0;
-/* Field: Entityform: Delete Link */
-$handler->display->display_options['fields']['delete_entityform']['id'] = 'delete_entityform';
-$handler->display->display_options['fields']['delete_entityform']['table'] = 'entityform';
-$handler->display->display_options['fields']['delete_entityform']['field'] = 'delete_entityform';
-$handler->display->display_options['fields']['delete_entityform']['label'] = 'Delete';
-$handler->display->display_options['fields']['delete_entityform']['alter']['alter_text'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['make_link'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['absolute'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['external'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['replace_spaces'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['trim_whitespace'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['nl2br'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['word_boundary'] = 1;
-$handler->display->display_options['fields']['delete_entityform']['alter']['ellipsis'] = 1;
-$handler->display->display_options['fields']['delete_entityform']['alter']['strip_tags'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['trim'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['alter']['html'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['element_label_colon'] = 1;
-$handler->display->display_options['fields']['delete_entityform']['element_default_classes'] = 1;
-$handler->display->display_options['fields']['delete_entityform']['hide_empty'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['empty_zero'] = 0;
-$handler->display->display_options['fields']['delete_entityform']['hide_alter_empty'] = 0;
-/* Field: Entityform Type: Label */
-$handler->display->display_options['fields']['label_1']['id'] = 'label_1';
-$handler->display->display_options['fields']['label_1']['table'] = 'entityform_type';
-$handler->display->display_options['fields']['label_1']['field'] = 'label';
-$handler->display->display_options['fields']['label_1']['label'] = 'Form Type';
-$handler->display->display_options['fields']['label_1']['alter']['alter_text'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['make_link'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['absolute'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['external'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['replace_spaces'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['nl2br'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['word_boundary'] = 1;
-$handler->display->display_options['fields']['label_1']['alter']['ellipsis'] = 1;
-$handler->display->display_options['fields']['label_1']['alter']['strip_tags'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['trim'] = 0;
-$handler->display->display_options['fields']['label_1']['alter']['html'] = 0;
-$handler->display->display_options['fields']['label_1']['element_label_colon'] = 1;
-$handler->display->display_options['fields']['label_1']['element_default_classes'] = 1;
-$handler->display->display_options['fields']['label_1']['hide_empty'] = 0;
-$handler->display->display_options['fields']['label_1']['empty_zero'] = 0;
-/* Field: Entityform: Changed */
-$handler->display->display_options['fields']['changed']['id'] = 'changed';
-$handler->display->display_options['fields']['changed']['table'] = 'entityform';
-$handler->display->display_options['fields']['changed']['field'] = 'changed';
-$handler->display->display_options['fields']['changed']['alter']['alter_text'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['make_link'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['absolute'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['external'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['replace_spaces'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['trim_whitespace'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['nl2br'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['word_boundary'] = 1;
-$handler->display->display_options['fields']['changed']['alter']['ellipsis'] = 1;
-$handler->display->display_options['fields']['changed']['alter']['strip_tags'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['trim'] = 0;
-$handler->display->display_options['fields']['changed']['alter']['html'] = 0;
-$handler->display->display_options['fields']['changed']['element_label_colon'] = 1;
-$handler->display->display_options['fields']['changed']['element_default_classes'] = 1;
-$handler->display->display_options['fields']['changed']['hide_empty'] = 0;
-$handler->display->display_options['fields']['changed']['empty_zero'] = 0;
-$handler->display->display_options['fields']['changed']['hide_alter_empty'] = 0;
-$handler->display->display_options['fields']['changed']['separator'] = '';
-$handler->display->display_options['fields']['changed']['format_plural'] = 0;
-/* Contextual filter: Entityform: Type */
-$handler->display->display_options['arguments']['type']['id'] = 'type';
-$handler->display->display_options['arguments']['type']['table'] = 'entityform';
-$handler->display->display_options['arguments']['type']['field'] = 'type';
-$handler->display->display_options['arguments']['type']['default_argument_type'] = 'fixed';
-$handler->display->display_options['arguments']['type']['default_argument_skip_url'] = 0;
-$handler->display->display_options['arguments']['type']['summary']['number_of_records'] = '0';
-$handler->display->display_options['arguments']['type']['summary']['format'] = 'default_summary';
-$handler->display->display_options['arguments']['type']['summary_options']['items_per_page'] = '25';
-$handler->display->display_options['arguments']['type']['glossary'] = 0;
-$handler->display->display_options['arguments']['type']['limit'] = '0';
-$handler->display->display_options['arguments']['type']['transform_dash'] = 0;
-$handler->display->display_options['arguments']['type']['break_phrase'] = 0;
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Form Submissions';
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['query']['options']['query_comment'] = FALSE;
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+    'name' => 'name',
+    'entityform_id' => 'entityform_id',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'name' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+    'entityform_id' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+    ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 0;
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['label'] = 'Empty ';
+  $handler->display->display_options['empty']['area']['empty'] = FALSE;
+  $handler->display->display_options['empty']['area']['content'] = 'No entityforms have been created yet';
+  /* Relationship: Entityform: Uid */
+  $handler->display->display_options['relationships']['uid']['id'] = 'uid';
+  $handler->display->display_options['relationships']['uid']['table'] = 'entityform';
+  $handler->display->display_options['relationships']['uid']['field'] = 'uid';
+  $handler->display->display_options['relationships']['uid']['required'] = 0;
+  /* Field: User: Name */
+  $handler->display->display_options['fields']['name']['id'] = 'name';
+  $handler->display->display_options['fields']['name']['table'] = 'users';
+  $handler->display->display_options['fields']['name']['field'] = 'name';
+  $handler->display->display_options['fields']['name']['relationship'] = 'uid';
+  $handler->display->display_options['fields']['name']['label'] = 'Submitter';
+  $handler->display->display_options['fields']['name']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['name']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['name']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['name']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['name']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['name']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['name']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['name']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['name']['link_to_user'] = 1;
+  $handler->display->display_options['fields']['name']['overwrite_anonymous'] = 0;
+  /* Field: Entityform: Link */
+  $handler->display->display_options['fields']['link_entityform']['id'] = 'link_entityform';
+  $handler->display->display_options['fields']['link_entityform']['table'] = 'entityform';
+  $handler->display->display_options['fields']['link_entityform']['field'] = 'link_entityform';
+  $handler->display->display_options['fields']['link_entityform']['label'] = 'View';
+  $handler->display->display_options['fields']['link_entityform']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['link_entityform']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['link_entityform']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['link_entityform']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['link_entityform']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['link_entityform']['empty_zero'] = 0;
+  /* Field: Entityform: Delete Link */
+  $handler->display->display_options['fields']['delete_entityform']['id'] = 'delete_entityform';
+  $handler->display->display_options['fields']['delete_entityform']['table'] = 'entityform';
+  $handler->display->display_options['fields']['delete_entityform']['field'] = 'delete_entityform';
+  $handler->display->display_options['fields']['delete_entityform']['label'] = 'Delete';
+  $handler->display->display_options['fields']['delete_entityform']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['delete_entityform']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['delete_entityform']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['delete_entityform']['hide_alter_empty'] = 0;
+  /* Field: Entityform Type: Label */
+  $handler->display->display_options['fields']['label_1']['id'] = 'label_1';
+  $handler->display->display_options['fields']['label_1']['table'] = 'entityform_type';
+  $handler->display->display_options['fields']['label_1']['field'] = 'label';
+  $handler->display->display_options['fields']['label_1']['label'] = 'Form Type';
+  $handler->display->display_options['fields']['label_1']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['label_1']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['label_1']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['label_1']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['label_1']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['label_1']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['label_1']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['label_1']['empty_zero'] = 0;
+  /* Field: Entityform: Changed */
+  $handler->display->display_options['fields']['changed']['id'] = 'changed';
+  $handler->display->display_options['fields']['changed']['table'] = 'entityform';
+  $handler->display->display_options['fields']['changed']['field'] = 'changed';
+  $handler->display->display_options['fields']['changed']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['changed']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['changed']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['changed']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['changed']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['changed']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['changed']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['changed']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['changed']['hide_alter_empty'] = 0;
+  $handler->display->display_options['fields']['changed']['separator'] = '';
+  $handler->display->display_options['fields']['changed']['format_plural'] = 0;
+  /* Contextual filter: Entityform: Type */
+  $handler->display->display_options['arguments']['type']['id'] = 'type';
+  $handler->display->display_options['arguments']['type']['table'] = 'entityform';
+  $handler->display->display_options['arguments']['type']['field'] = 'type';
+  $handler->display->display_options['arguments']['type']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['type']['default_argument_skip_url'] = 0;
+  $handler->display->display_options['arguments']['type']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['type']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['type']['summary_options']['items_per_page'] = '25';
+  $handler->display->display_options['arguments']['type']['glossary'] = 0;
+  $handler->display->display_options['arguments']['type']['limit'] = '0';
+  $handler->display->display_options['arguments']['type']['transform_dash'] = 0;
+  $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
 
-/* Display: Page */
-$handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
-$handler->display->display_options['path'] = 'admin/content/entityforms/list';
-$handler->display->display_options['menu']['type'] = 'normal';
-$handler->display->display_options['menu']['title'] = 'List';
-$handler->display->display_options['menu']['weight'] = '-10';
-$handler->display->display_options['tab_options']['type'] = 'tab';
-$handler->display->display_options['tab_options']['title'] = 'Entityforms';
-$handler->display->display_options['tab_options']['description'] = 'Manage entityforms';
-$handler->display->display_options['tab_options']['weight'] = '0';
-$handler->display->display_options['tab_options']['name'] = 'management';
-  
-  
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
+  $handler->display->display_options['path'] = 'admin/content/entityforms/list';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'List';
+  $handler->display->display_options['menu']['weight'] = '-10';
+  $handler->display->display_options['tab_options']['type'] = 'tab';
+  $handler->display->display_options['tab_options']['title'] = 'Entityforms';
+  $handler->display->display_options['tab_options']['description'] = 'Manage entityforms';
+  $handler->display->display_options['tab_options']['weight'] = '0';
+  $handler->display->display_options['tab_options']['name'] = 'management';
+
+
   $views[] = $view;
   return $views;
 
