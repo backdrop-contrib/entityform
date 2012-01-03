@@ -437,10 +437,6 @@ function entityform_theme() {
       'render element' => 'elements',
       'template' => 'entityform',
     ),
-    'entityform_sample_data' => array(
-      'variables' => array('entityform_sample_data', 'entityform' => NULL),
-      'template' => 'entityform-sample-data',
-    ),
   );
 }
 
