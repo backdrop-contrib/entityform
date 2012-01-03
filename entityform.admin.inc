@@ -218,6 +218,10 @@ function entityform_form_wrapper($entityform) {
         case 'confirm':
           drupal_goto(entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id));
           break;
+        case 'disallow':
+          // @todo how should this be handled
+          return t('You have already submitted this form.');
+          break;
       }
     }
   }
