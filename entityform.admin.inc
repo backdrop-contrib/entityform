@@ -68,7 +68,6 @@ class EntityformUIController extends EntityDefaultUIController {
     $controller = entity_ui_controller('entityform');
     foreach ($types as $type) {
       $prefix = $controller->path_prefix($type);
-      watchdog('tttt', "pre $type = $prefix");
       if ($prefix != 'eform') {
         $items["$prefix/submit/%entityform_empty"] = $items['eform/submit/%entityform_empty'];
         $items["$prefix/%entityform_type/confirm/%entityform"] = $items['eform/%entityform_type/confirm/%entityform'];
