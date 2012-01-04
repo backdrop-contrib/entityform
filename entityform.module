@@ -475,9 +475,8 @@ function entityform_draft_page($entityform_type) {
 /**
  * Page callback
  */
-function entityform_confirm_page($entityform_type, $entityform) {
-  $args = func_get_args();
-  array_shift($args);
+function entityform_confirm_page($entityform_type) {
+  $entityform_id = $_GET['entityform_id'];
   $render_array = array(
     'submit_text' => array(
       '#type' => 'markup',
@@ -488,6 +487,7 @@ function entityform_confirm_page($entityform_type, $entityform) {
   );
   if ($entityform_type->data['submission_show_submitted']) {
     $controller = entity_get_controller('entityform');
+    $entityform = entityform_load($entityform_id);
     $content = $controller->view(array($entityform->entityform_id => $entityform), 'confirmation', NULL, TRUE);
     $render_array['submission_data'] = $content;
   }
@@ -499,7 +499,7 @@ function entityform_confirm_page($entityform_type, $entityform) {
   ),
   $render_array,
   $entityform_type,
-  $args
+  $entityform_id
   );
 
   return $render_array;
@@ -556,6 +556,29 @@ function entityform_entity_insert($entity, $type) {
   if ($type == 'entityform' && empty($entity->draft)) {
     entityform_confirm_email($entity);
   }
+  elseif ($type == 'entityform_type') {
+    if (isset($entity->paths)) {
+      foreach ($entity->paths as $key => $path) {
+        $path = $entity->paths[$key];
+        $path['alias'] = trim($path['alias']);
+        // Only save a non-empty alias.
+        if (!empty($path['alias'])) {
+          // Ensure fields for programmatic executions.
+          switch ($key) {
+            case 'submit':
+              $path['source'] = 'eform/submit/' . $entity->type;
+              break;
+            case 'confirm':
+              $path['source'] = 'eform/' . $entity->type . '/confirm';
+              break;
+          }
+
+          $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
+          path_save($path);
+        }
+      }
+    }
+  }
 }
 /**
  * Implements hook_entity_update().
@@ -563,6 +586,32 @@ function entityform_entity_insert($entity, $type) {
 function entityform_entity_update($entity, $type) {
   if ($type == 'entityform' && empty($entity->draft)) {
     entityform_confirm_email($entity);
+  }
+  elseif ($type == 'entityform_type') {
+    if (isset($entity->paths)) {
+      foreach ($entity->paths as $key => $path) {
+        $path = $entity->paths[$key];
+        $path['alias'] = trim($path['alias']);
+        // Delete old alias if user erased it.
+        if (!empty($path['pid']) && empty($path['alias'])) {
+          path_delete($path['pid']);
+        }
+        // Only save a non-empty alias.
+        if (!empty($path['alias'])) {
+          // Ensure fields for programmatic executions.
+          switch ($key) {
+            case 'submit':
+              $path['source'] = 'eform/submit/' . $entity->type;
+              break;
+            case 'confirm':
+              $path['source'] = 'eform/' . $entity->type . '/confirm';
+              break;
+          }
+          $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
+          path_save($path);
+        }
+      }
+    }
   }
 }
 

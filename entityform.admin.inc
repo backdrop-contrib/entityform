@@ -47,7 +47,7 @@ class EntityformUIController extends EntityDefaultUIController {
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
       'type' => MENU_CALLBACK,
     );
-    $items['eform/%entityform_type/confirm/%entityform'] = array(
+    $items['eform/%entityform_type/confirm'] = array(
       'title' => 'Thank You',
       'description' => '',
       'page callback' => 'entityform_confirm_page',
@@ -66,14 +66,6 @@ class EntityformUIController extends EntityDefaultUIController {
     );
     $types = array_keys(entityform_get_types());
     $controller = entity_ui_controller('entityform');
-    foreach ($types as $type) {
-      $prefix = $controller->path_prefix($type);
-      if ($prefix != 'eform') {
-        $items["$prefix/submit/%entityform_empty"] = $items['eform/submit/%entityform_empty'];
-        $items["$prefix/%entityform_type/confirm/%entityform"] = $items['eform/%entityform_type/confirm/%entityform'];
-        $items["$prefix/%entityform_type/draft"] = $items['eform/%entityform_type/draft'];
-      }
-    }
 
     // Loading and editing entityform entities
     $items['entityform/' . $wildcard] = array(
@@ -144,42 +136,35 @@ class EntityformUIController extends EntityDefaultUIController {
 
     return theme('entityform_add_list', array('content' => $content));
   }
-  public function path_prefix($bundle = NULL) {
-    $prefixes = drupal_static(__FUNCTION__);
-    if (empty($prefixes)) {
-      $prefixes = array('*' => 'eform');
-      drupal_alter('entityform_path_prefixes', $prefixes);
-    }
-    if ($bundle == NULL) {
-      return $prefixes;
-    }
-    if (array_key_exists($bundle, $prefixes)) {
-      return $prefixes[$bundle];
-    }
-    return $prefixes['*'];
-  }
   public function confirm_path($bundle, $entityform_id = NULL) {
+    module_load_include('inc', 'entityform', 'entityform_type.admin');
     $entityform_type = entityform_type_load($bundle);
     if (!empty($entityform_type->data['redirect_path'])) {
       return $entityform_type->data['redirect_path'];
     }
-    $prefix = $this->path_prefix($bundle);
-    $bundle = str_replace('_', '-', $bundle);
-    $path = "$prefix/$bundle/confirm";
+    $path = _entityform_type_get_confirm_url($bundle);
+    $path = drupal_get_path_alias($path);
     if ($entityform_id) {
-      $path .= "/$entityform_id";
+      return array(
+        $path,
+        array(
+          'query' => array(
+            'entityform_id' => $entityform_id,
+          ),
+        ),
+      );
     }
     return $path;
   }
   public function draft_path($bundle) {
-    $prefix = $this->path_prefix($bundle);
     $bundle = str_replace('_', '-', $bundle);
-    return "$prefix/$bundle/draft";
+    return "eform/$bundle/draft";
   }
   public function submit_path($bundle) {
-    $prefix = $this->path_prefix($bundle);
-    $bundle = str_replace('_', '-', $bundle);
-    return "$prefix/submit/$bundle";
+    module_load_include('inc', 'entityform', 'entityform_type.admin');
+    $path = _entityform_type_get_submit_url($bundle);
+    $path = drupal_get_path_alias($path);
+    return $path;
   }
 
 
@@ -219,7 +204,7 @@ function entityform_form_wrapper($entityform) {
           drupal_goto(entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id));
           break;
         case 'disallow':
-          // @todo how should this be handled
+          // @TODO how should this be handled
           return t('You have already submitted this form.');
           break;
       }
@@ -312,7 +297,7 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   return $form;
 }
 function entityform_clear_required($form, &$form_state) {
-  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&   $form_state['values']['save'] == $form_state['input']['op']  ) {
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&    $form_state['values']['save'] == $form_state['input']['op']  ) {
     _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
 

@@ -105,32 +105,46 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#default_value' => !empty($entityform_type->data['submission_show_submitted']),
     '#description' => t('Show submitted data on submission page?'),
   );
-  $form['data']['confirm_email'] = array(
+  $form['data']['email_set'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Email settings'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+    '#weight' => 20,
+  );
+  $form['data']['email_set']['confirm_email'] = array(
     '#type' => 'checkbox',
     '#title' => t('Send Confirmation Email'),
     '#default_value' => !empty($entityform_type->data['confirm_email']),
     '#description' => t('Should users recieve a conformation email when submitting this form?'),
   );
-  $form['data']['email_body'] = array(
+  $form['data']['email_set']['email_body'] = array(
     '#type' => 'textarea',
     '#title' => t('Email Text'),
     '#default_value' => empty($entityform_type->data['email_body']) ? '' : $entityform_type->data['email_body'],
     '#description' => t('Text for Confirmation Email. DO NOT put HTML in this field'),
   );
-  $form['data']['confirm_email_show_submitted'] = array(
+  $form['data']['email_set']['confirm_email_show_submitted'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show Submission information in confirm email'),
     '#default_value' => !empty($entityform_type->data['confirm_email_show_submitted']),
     '#description' => t('Show submitted data in conformation email?'),
   );
-  $form['data']['notify_emails'] = array(
+  $form['data']['email_set']['notify_emails'] = array(
     '#type' => 'textfield',
     '#title' => t('Notification Emails'),
     '#default_value' => empty($entityform_type->data['notify_emails']) ? '' : $entityform_type->data['notify_emails'],
     '#description' => t('Enter emails that should be notified for each form submissions.'),
     '#element_validate' => array('_entityform_form_email_list_validate'),
   );
-  $form['data']['roles'] = array(
+  $form['data']['access_set'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Access settings'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+    '#weight' => 40,
+  );
+  $form['data']['access_set']['roles'] = array(
     '#type' => 'select',
     '#title' => t('Roles'),
     '#options' => user_roles(),
@@ -138,7 +152,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#description' => t('Roles who can submit this form.'),
     '#multiple' => TRUE,
   );
-  $form['data']['resubmit_action'] = array(
+  $form['data']['access_set']['resubmit_action'] = array(
     '#type' => 'select',
     '#title' => t('Resubmit Action'),
     '#options' => array(
@@ -150,13 +164,129 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#default_value' => empty($entityform_type->data['resubmit_action']) ? 'new' : $entityform_type->data['resubmit_action'],
     '#description' => t('Action to take if logged in user has already submitted form.'),
   );
+  //set #parents to skip sets in form values
+  foreach (element_children($form['data']) as $key) {
+    if (strrpos($key, '_set') === drupal_strlen($key) - drupal_strlen('_set')) {
+      foreach (element_children($form['data'][$key]) as $sub_key ) {
+        $form['data'][$key][$sub_key]['#parents'] = array('data', $sub_key);
+      }
+    }
+  }
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save entityform type'),
     '#weight' => 40,
   );
+  if (module_exists('path')) {
+    $form['paths'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('URL path settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => empty($path['alias']),
+      '#group' => 'additional_settings',
+      '#attributes' => array(
+        'class' => array('path-form'),
+      ),
+      '#attached' => array(
+        'js' => array(drupal_get_path('module', 'path') . '/path.js'),
+      ),
+      '#access' => user_access('create url aliases') || user_access('administer url aliases'),
+      '#weight' => 30,
+      '#tree' => TRUE,
+      '#element_validate' => array('_entityform_paths_form_element_validate'),
+    );
+    $existing_paths = array(
+      'submit' => array(
+        'default_path' => _entityform_type_get_submit_url( $entityform_type->type),
+        'title' => 'Submit URL alias',
+      ),
+      'confirm' => array(
+        'default_path' => _entityform_type_get_confirm_url( $entityform_type->type),
+        'title' => 'Confirm URL alias',
+      ),
+    );
+    foreach ($existing_paths as $key => $existing_path) {
+      if ($op == 'edit') {
+        //check for existing alias
+        $conditions = array('source' => $existing_path['default_path']);
+        $path = path_load($conditions);
+        if ($path === FALSE) {
+          $path = array();
+        }
+      }
+      else {
+        $path = array();
+      }
+      $path += array(
+        'pid' => NULL,
+        'source' => isset($entityform_type) ? $existing_path['default_path'] : NULL,
+        'alias' => '',
+        'language' => LANGUAGE_NONE,
+      );
+      $form['paths'][$key]['alias'] = array(
+        '#type' => 'textfield',
+        '#title' => t($existing_path['title']),
+        '#default_value' => $path['alias'],
+        '#maxlength' => 255,
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+        '#description' => t('Optionally specify an alternative URL by which this content can be accessed. For example, type "about" when writing an about page. Use a relative path and don\'t add a trailing slash or the URL alias won\'t work.'),
+      );
+      $form['paths'][$key]['pid'] = array(
+        '#type' => 'value',
+        '#value' => $path['pid'],
+      );
+      $form['paths'][$key]['source'] = array(
+        '#type' => 'value',
+        '#value' => $path['source'],
+      );
+      $form['paths'][$key]['language'] = array(
+        '#type' => 'value',
+        '#value' => $path['language'],
+      );
+    }
+    $form['additional_settings'] = array(
+      '#type' => 'vertical_tabs',
+      '#weight' => 99,
+    );
+  }
   return $form;
+}
+/**
+ * Form element validation handler for URL alias form element.
+ */
+function _entityform_paths_form_element_validate($element, &$form_state, $complete_form) {
+  $previous_pathes = array();
+  foreach ($form_state['values']['paths'] as $path_type => $path) {
+    // Trim the submitted value.
+    $alias = trim($path['alias']);
+    if (!empty($alias)) {
+      form_set_value($element[$path_type]['alias'], $alias, $form_state);
+
+      $path = $form_state['values']['paths'][$path_type];
+      if (in_array($path['alias'], $previous_pathes)) {
+        form_error($element[$path_type]['alias'], "Aliases must be unique.");
+        return;
+      }
+      $previous_pathes[] = $path['alias'];
+
+      // Ensure that the submitted alias does not exist yet.
+      $query = db_select('url_alias')
+      ->condition('alias', $path['alias'])
+      ->condition('language', $path['language']);
+      if (!empty($path['source'])) {
+        $query->condition('source', $path['source'], '<>');
+      }
+      $query->addExpression('1');
+      $query->range(0, 1);
+      if ($query->execute()->fetchField()) {
+        form_error($element[$path_type]['alias'], t('The alias is already in use.'));
+        return;
+      }
+    }
+  }
+
 }
 function _entityform_form_email_list_validate($element, &$form_state, $form) {
   $emails = explode(', ', $element['#value']);
@@ -185,4 +315,10 @@ function entityform_type_form_submit(&$form, &$form_state) {
  */
 function entityform_type_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/content/entityform_types/manage/' . $form_state['entityform_type']->type . '/delete';
+}
+function _entityform_type_get_submit_url($type) {
+  return 'eform/submit/' . str_replace('_', '-', $type);
+}
+function _entityform_type_get_confirm_url($type) {
+  return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
