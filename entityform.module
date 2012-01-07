@@ -61,6 +61,7 @@ function entityform_entity_info() {
       'controller class' => 'EntityformUIController',
       'menu wildcard' => '%entityform',
     ),
+  'metadata controller class' => 'EntityformMetadataController'
   );
   // The entity that holds information about the entity types
   $return['entityform_type'] = array(
