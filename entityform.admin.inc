@@ -154,7 +154,7 @@ class EntityformUIController extends EntityDefaultUIController {
         ),
       );
     }
-    return $path;
+    return array($path);
   }
   public function draft_path($bundle) {
     $bundle = str_replace('_', '-', $bundle);
@@ -201,11 +201,14 @@ function entityform_form_wrapper($entityform) {
           }
           break;
         case 'confirm':
-          drupal_goto(entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id));
+          $confirm_path = entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id);
+          drupal_goto($confirm_path[0], $confirm_path[1]);
           break;
         case 'disallow':
           // @TODO how should this be handled
-          return t('You have already submitted this form.');
+          if ($old_submission) {
+            return t('You have already submitted this form.');
+          }
           break;
       }
     }
@@ -297,7 +300,7 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   return $form;
 }
 function entityform_clear_required($form, &$form_state) {
-  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&    $form_state['values']['save'] == $form_state['input']['op']  ) {
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&     $form_state['values']['save'] == $form_state['input']['op']  ) {
     _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
 
@@ -365,7 +368,14 @@ function entityform_edit_form_submit(&$form, &$form_state) {
 
   $entityform->save();
   if (empty($entityform->draft)) {
-    $form_state['redirect'] = !empty($entityform_type->data['redirect_path']) ? $entityform_type->data['redirect_path'] : entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
+    if (!empty($entityform_type->data['redirect_path']) ) {
+      $entityform_type->data['redirect_path'];
+    }
+    else {
+      $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
+      $form_state['redirect'] = array($confirm_path[0], $confirm_path[1]);
+    }
+
   }
   else {
     $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);

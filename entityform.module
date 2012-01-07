@@ -128,8 +128,14 @@ function entityform_permission() {
       'title' => t('Administer entityforms'),
       'description' => t('Edit and delete all entityforms'),
     ),
+    "edit any entityform" => array(
+      'title' => t('Edit any entityform submission'),
+    ),
+    "view any entityform" => array(
+      'title' => t('View any entityform submission'),
+    ),
   );
-
+  return $permissions;
   //Generate permissions per entityform
   foreach (entityform_get_types() as $type) {
     $type_name = check_plain($type->type);
@@ -197,7 +203,7 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
       //for now user can always view their own submissions
       return TRUE;
     }
-    if (user_access("$op any $type_name entityform", $account)) {
+    if (user_access("$op any entityform", $account)) {
       return TRUE;
     }
   }
@@ -508,6 +514,10 @@ function entityform_confirm_page($entityform_type) {
 
 function entityform_confirm_email($entityform) {
   global $user;
+  if ($user->uid != $entityform->uid &&   !user_is_anonymous()) {
+    //don't send email if user editing another user's submission
+    return;
+  }
   if ($user->mail) {
     $entityform_type = entityform_type_load($entityform->type);
     if (!empty($entityform_type->data['confirm_email'])) {
@@ -553,7 +563,7 @@ function entityform_confirm_email($entityform) {
  * Implements hook_entity_insert().
  */
 function entityform_entity_insert($entity, $type) {
-  if ($type == 'entityform' && empty($entity->draft)) {
+  if ($type == 'entityform' && empty($entity->draft) ) {
     entityform_confirm_email($entity);
   }
   elseif ($type == 'entityform_type') {
@@ -566,10 +576,10 @@ function entityform_entity_insert($entity, $type) {
           // Ensure fields for programmatic executions.
           switch ($key) {
             case 'submit':
-              $path['source'] = 'eform/submit/' . $entity->type;
+              $path['source'] = _entityform_type_get_submit_url($entity->type);
               break;
             case 'confirm':
-              $path['source'] = 'eform/' . $entity->type . '/confirm';
+              $path['source'] = _entityform_type_get_confirm_url($entity->type);
               break;
           }
 
@@ -601,10 +611,10 @@ function entityform_entity_update($entity, $type) {
           // Ensure fields for programmatic executions.
           switch ($key) {
             case 'submit':
-              $path['source'] = 'eform/submit/' . $entity->type;
+              $path['source'] = _entityform_type_get_submit_url($entity->type);
               break;
             case 'confirm':
-              $path['source'] = 'eform/' . $entity->type . '/confirm';
+              $path['source'] = _entityform_type_get_confirm_url($entity->type);
               break;
           }
           $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
