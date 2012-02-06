@@ -8,6 +8,7 @@ dependencies[] = views
 files[] = entityform.admin.inc
 files[] = entityform.info.inc
 files[] = entityform_type.admin.inc
+files[] = entityform.pages.admin.inc
 files[] = views/entityform.views.inc
 files[] = views/entityform_handler_link_field.inc
 files[] = views/entityform_handler_delete_link_field.inc

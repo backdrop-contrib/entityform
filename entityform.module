@@ -6,7 +6,29 @@
  * and associated administration interface
  */
 
+/**
+ * Implements hook_menu().
+ */
+function entityform_menu() {
+  $items = array();
 
+  $items['admin/config/content/entityform'] = array(
+    'title' => 'Entityform Settings',
+    'description' => '',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('entityform_settings'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'entityform.pages.admin.inc',
+  );
+  $items['entityform/submissions/%entityform_type'] = array(
+    'title' => 'Form Submissions',
+    'page callback' => 'entityform_submission_page',
+    'page arguments' => array(2),
+    'access arguments' => array('view any entityform'),
+  );
+
+  return $items;
+}
 /**
  * Implement hook_entity_info().
  *
@@ -61,7 +83,7 @@ function entityform_entity_info() {
       'controller class' => 'EntityformUIController',
       'menu wildcard' => '%entityform',
     ),
-  'metadata controller class' => 'EntityformMetadataController'
+    'metadata controller class' => 'EntityformMetadataController',
   );
   // The entity that holds information about the entity types
   $return['entityform_type'] = array(
@@ -218,6 +240,19 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
  */
 function entityform_type_access($op, $type = NULL, $account = NULL) {
   return user_access('administer entityform types', $account);
+}
+function _entityform_get_entityform_views_options() {
+  $views = views_get_enabled_views();
+  foreach ($views as $view) {
+    if ($view->base_table == 'entityform') {
+      foreach ($view->display as $display) {
+        if ($display->display_plugin == 'page') {
+          $options[$view->name . ':' . $display->id] = $view->human_name . '->' . $display->display_title;
+        }
+      }
+    }
+  }
+  return $options;
 }
 
 
@@ -404,7 +439,7 @@ function entityform_uri(Entityform $entityform) {
  */
 function entityform_page_title(Entityform $entityform) {
   $entityform_type = entityform_get_types($entityform->type);
-  return $entityform_type->label;
+  return t('Form Submission') . ': ' . $entityform_type->label;
 }
 
 
@@ -515,7 +550,7 @@ function entityform_confirm_page($entityform_type) {
 
 function entityform_confirm_email($entityform) {
   global $user;
-  if ($user->uid != $entityform->uid &&   !user_is_anonymous()) {
+  if ($user->uid != $entityform->uid &&    !user_is_anonymous()) {
     //don't send email if user editing another user's submission
     return;
   }
@@ -646,7 +681,22 @@ function entityform_mail($key, &$message, $params) {
       break;
   }
 }
-
+/**
+ * Page for view submission
+ * @param object $entityform_type
+ * @return string
+ * 	Rendered view
+ */
+function entityform_submission_page($entityform_type) {
+  if (!empty($entityform_type->data['submissions_view']) && $entityform_type->data['submissions_view'] != 'default_view') {
+    $submission_view = $entityform_type->data['submissions_view'];
+  }
+  else {
+    $submission_view = variable_get('entityform_default_submissions_view', 'entityforms:entityforms_admin_page');
+  }
+  $parts = explode(':', $submission_view);
+  return views_embed_view($parts[0], $parts[1]);
+}
 
 /**
  * Implements hook_menu_local_tasks_alter().

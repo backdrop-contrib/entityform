@@ -22,7 +22,7 @@ class EntityformTypeUIController extends EntityDefaultUIController {
 
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = array()) {
     $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
-    $row[] = l(t('Submissions'), "admin/content/entityforms/list/" . $id);
+    $row[] = l(t('Submissions'), "entityform/submissions/" . $id);
     $row[] = l(t('Submit Link'), entity_ui_controller('entityform')->submit_path($id));
     return $row;
   }
@@ -137,6 +137,23 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#description' => t('Enter emails that should be notified for each form submissions.'),
     '#element_validate' => array('_entityform_form_email_list_validate'),
   );
+  // Let Each entityform use a different View for viewing Submission
+  $form['data']['submissions_set'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Submissions View'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+    '#weight' => 30,
+  );
+  $view_options = _entityform_get_entityform_views_options();
+  $view_options['default_view'] = t('Use Default');
+  $form['data']['submissions_set']['submissions_view'] = array(
+    '#type' => 'select',
+    '#title' => t('View for Submissions'),
+    '#default_value' => empty($entityform_type->data['submissions_view']) ? 'default_view' : $entityform_type->data['submissions_view'],
+    '#options' => $view_options,
+  );
+  $form['entityform_default_submission_view']['#options'] = _entityform_get_entityform_views_options();
   $form['data']['access_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Access settings'),
@@ -188,9 +205,6 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#attributes' => array(
         'class' => array('path-form'),
       ),
-      '#attached' => array(
-        'js' => array(drupal_get_path('module', 'path') . '/path.js'),
-      ),
       '#access' => user_access('create url aliases') || user_access('administer url aliases'),
       '#weight' => 30,
       '#tree' => TRUE,
@@ -226,7 +240,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       );
       $form['paths'][$key]['alias'] = array(
         '#type' => 'textfield',
-        '#title' => t($existing_path['title']),
+        '#title' => t(check_plain($existing_path['title'])),
         '#default_value' => $path['alias'],
         '#maxlength' => 255,
         '#collapsible' => TRUE,

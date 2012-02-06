@@ -300,7 +300,7 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   return $form;
 }
 function entityform_clear_required($form, &$form_state) {
-  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&     $form_state['values']['save'] == $form_state['input']['op']  ) {
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&      $form_state['values']['save'] == $form_state['input']['op']  ) {
     _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
 
@@ -480,7 +480,6 @@ function entityform_set_breadcrumb() {
     l(t('Home'), '<front>'),
     l(t('Administration'), 'admin'),
     l(t('Content'), 'admin/content'),
-    l(t('Entityforms'), 'admin/content/entityforms/list'),
   );
 
   drupal_set_breadcrumb($breadcrumb);

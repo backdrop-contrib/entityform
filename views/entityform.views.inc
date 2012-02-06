@@ -83,7 +83,7 @@ $handler->display->display_options['query']['type'] = 'views_query';
 $handler->display->display_options['query']['options']['query_comment'] = FALSE;
 $handler->display->display_options['exposed_form']['type'] = 'basic';
 $handler->display->display_options['pager']['type'] = 'full';
-$handler->display->display_options['pager']['options']['items_per_page'] = '10';
+$handler->display->display_options['pager']['options']['items_per_page'] = '40';
 $handler->display->display_options['style_plugin'] = 'table';
 $handler->display->display_options['style_options']['columns'] = array(
   'name' => 'name',
@@ -264,14 +264,6 @@ $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
 $handler->display->display_options['path'] = 'admin/content/entityforms/list/%';
-$handler->display->display_options['menu']['type'] = 'normal';
-$handler->display->display_options['menu']['title'] = 'List';
-$handler->display->display_options['menu']['weight'] = '-10';
-$handler->display->display_options['tab_options']['type'] = 'tab';
-$handler->display->display_options['tab_options']['title'] = 'Entityforms';
-$handler->display->display_options['tab_options']['description'] = 'Manage entityforms';
-$handler->display->display_options['tab_options']['weight'] = '0';
-$handler->display->display_options['tab_options']['name'] = 'management';
 
 if(module_exists('views_data_export')) {
   /* Display: Data export */
@@ -380,6 +372,6 @@ if(module_exists('views_data_export')) {
     'default' => 0,
   );
 }
-   $views[$view->name] = $view;
+  $views[$view->name] = $view;
   return $views;
 }
