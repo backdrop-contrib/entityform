@@ -6,11 +6,16 @@
  * and associated administration interface
  */
 
+define('ENTITYFORM_STATUS_CLOSED', 'ENTITYFORM_CLOSED');
+define('ENTITYFORM_STATUS_OPEN', 'ENTITYFORM_OPEN');
 /**
  * Implements hook_menu().
  */
 function entityform_menu() {
   $items = array();
+  $entity_info = entity_get_info('entityform_type');
+  $submissions_path = $entity_info['admin ui']['path'] . "/manage/%entityform_type/submissions";
+  $path_count = count(explode('/', $submissions_path));
 
   $items['admin/config/content/entityform'] = array(
     'title' => 'Entityform Settings',
@@ -20,11 +25,12 @@ function entityform_menu() {
     'access arguments' => array('administer site configuration'),
     'file' => 'entityform.pages.admin.inc',
   );
-  $items['entityform/submissions/%entityform_type'] = array(
+  $items[$submissions_path] = array(
     'title' => 'Form Submissions',
     'page callback' => 'entityform_submission_page',
-    'page arguments' => array(2),
+    'page arguments' => array($path_count - 2),
     'access arguments' => array('view any entityform'),
+    'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
@@ -40,8 +46,8 @@ function entityform_menu() {
 function entityform_entity_info() {
   $return['entityform'] = array(
     'label' => t('Entityform'),
-  // The entity class and controller class extend the classes provided by the
-  // Entity API
+    // The entity class and controller class extend the classes provided by the
+    // Entity API
     'entity class' => 'Entityform',
     'controller class' => 'EntityformController',
     'base table' => 'entityform',
@@ -49,40 +55,40 @@ function entityform_entity_info() {
     'entity keys' => array(
       'id' => 'entityform_id',
       'bundle' => 'type',
-  ),
-  // Bundles are defined by the entityform types below
+    ),
+    // Bundles are defined by the entityform types below
     'bundles' => array(),
-  // Bundle keys tell the FieldAPI how to extract information from the bundle objects
+    // Bundle keys tell the FieldAPI how to extract information from the bundle objects
     'bundle keys' => array(
       'bundle' => 'type',
-  ),
+    ),
     'view modes' => array(
       'full' => array(
         'label' => t('Full content'),
         'custom settings' => FALSE,
-  ),
+      ),
       'email' => array(
         'label' => t('Email'),
         'custom settings' => FALSE,
-  ),
+      ),
       'confirmation' => array(
         'label' => t('Confirmation'),
         'custom settings' => FALSE,
-  ),
-  ),
+      ),
+    ),
     'label callback' => 'entity_class_label',
     'uri callback' => 'entity_class_uri',
     'creation callback' => 'entityform_create',
     'access callback' => 'entityform_access',
     'module' => 'entityform',
-  // The information below is used by the EntityformUIController (which extends the EntityDefaultUIController)
+    // The information below is used by the EntityformUIController (which extends the EntityDefaultUIController)
     'admin ui' => array(
       'path' => 'admin/content/entityforms/list',
       'front path' => 'entityform',
       'file' => 'entityform.admin.inc',
       'controller class' => 'EntityformUIController',
       'menu wildcard' => '%entityform',
-  ),
+    ),
     'metadata controller class' => 'EntityformMetadataController',
   );
   // The entity that holds information about the entity types
@@ -95,24 +101,24 @@ function entityform_entity_info() {
     'bundle of' => 'entityform',
     'exportable' => TRUE,
     'entity keys' => array(
-        'id' => 'id',
-        'name' => 'type',
-        'label' => 'label',
+      'id' => 'id',
+      'name' => 'type',
+      'label' => 'label',
     ),
     'view modes' => array(
-          'full' => array(
-            'label' => t('Full content'),
-            'custom settings' => FALSE,
-    ),
+      'full' => array(
+        'label' => t('Full content'),
+        'custom settings' => FALSE,
+      ),
     ),
     'access callback' => 'entityform_type_access',
     'module' => 'entityform',
-  // Enable the entity API's admin UI.
+    // Enable the entity API's admin UI.
     'admin ui' => array(
       'path' => 'admin/content/entityform_types',
       'file' => 'entityform_type.admin.inc',
       'controller class' => 'EntityformTypeUIController',
-  ),
+    ),
   );
 
   return $return;
@@ -136,7 +142,7 @@ function entityform_entity_info_alter(&$entity_info) {
         'real path' => 'admin/content/entityform_types/manage/' . $type,
         'bundle argument' => 4,
         'access arguments' => array('administer entityform types'),
-    ),
+      ),
     );
   }
 }
@@ -152,17 +158,17 @@ function entityform_permission() {
     'administer entityform types' => array(
       'title' => t('Administer entityform types'),
       'description' => t('Create and delete fields for entityform types, and set their permissions.'),
-  ),
+    ),
     'administer entityforms' => array(
       'title' => t('Administer entityforms'),
       'description' => t('Edit and delete all entityforms'),
-  ),
+    ),
     "edit any entityform" => array(
       'title' => t('Edit any entityform submission'),
-  ),
+    ),
     "view any entityform" => array(
       'title' => t('View any entityform submission'),
-  ),
+    ),
   );
   return $permissions;
   //Generate permissions per entityform
@@ -171,13 +177,13 @@ function entityform_permission() {
     $permissions += array(
       "edit any $type_name entityform" => array(
         'title' => t('%type_name: Edit any entityform', array('%type_name' => $type->label)),
-    ),
+      ),
       "view any $type_name entityform" => array(
         'title' => t('%type_name: View any entityform', array('%type_name' => $type->label)),
-    ),
+      ),
       "submit $type_name entityform" => array(
         'title' => t('%type_name: Submit', array('%type_name' => $type->label)),
-    ),
+      ),
     );
   }
   return $permissions;
@@ -218,7 +224,10 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
       $can_submit = FALSE;
     }
     if ($op == 'submit') {
-      return $can_submit;
+      if (!isset($entityform_type->data['form_status']) || $entityform_type->data['form_status'] != ENTITYFORM_STATUS_CLOSED) {
+        return $can_submit;
+      }
+      return FALSE;
     }
     return entityform_user_submitted($type_name);
     // return user_access("submit $type_name entityform");
@@ -443,8 +452,11 @@ function entityform_uri(Entityform $entityform) {
 /**
  * Menu title callback for showing individual entities
  */
-function entityform_page_title(Entityform $entityform) {
+function entityform_page_title(Entityform $entityform, $op = 'view') {
   $entityform_type = entityform_get_types($entityform->type);
+  if ($op == 'submit') {
+    return $entityform_type->label;
+  }
   return t('Form Submission') . ': ' . $entityform_type->label;
 }
 
@@ -480,11 +492,11 @@ function entityform_theme() {
     'entityform_add_list' => array(
       'variables' => array('content' => array()),
       'file' => 'entityform.admin.inc',
-  ),
+    ),
     'entityform' => array(
       'render element' => 'elements',
       'template' => 'entityform',
-  ),
+    ),
   );
 }
 
@@ -504,7 +516,7 @@ function entityform_draft_page($entityform_type) {
       '#prefix' => '<div class="draft-text">',
       '#markup' => $draft_text,
       '#suffix' => '</div>',
-  ),
+    ),
   );
 
   drupal_alter(
@@ -531,7 +543,7 @@ function entityform_confirm_page($entityform_type) {
       '#prefix' => '<div class="submission-text">',
       '#markup' => $entityform_type->data['submission_text'],
       '#suffix' => '</div>',
-  ),
+    ),
   );
   if ($entityform_type->data['submission_show_submitted']) {
     $controller = entity_get_controller('entityform');
@@ -556,7 +568,7 @@ function entityform_confirm_page($entityform_type) {
 
 function entityform_confirm_email($entityform) {
   global $user;
-  if ($user->uid != $entityform->uid &&    !user_is_anonymous()) {
+  if ($user->uid != $entityform->uid &&     !user_is_anonymous()) {
     //don't send email if user editing another user's submission
     return;
   }
@@ -570,7 +582,7 @@ function entityform_confirm_email($entityform) {
       $email_alter = array(
         'subject' => $email_subject,
         'body' => array($entityform_type->data['email_body']),
-      // let modules switch which module this email should call
+        // let modules switch which module this email should call
         'email_module' => 'entityform',
       );
       if ($entityform_type->data['confirm_email_show_submitted']) {
@@ -694,6 +706,7 @@ function entityform_mail($key, &$message, $params) {
  * 	Rendered view
  */
 function entityform_submission_page($entityform_type) {
+  drupal_set_title($entityform_type->label);
   if (!empty($entityform_type->data['submissions_view']) && $entityform_type->data['submissions_view'] != 'default_view') {
     $submission_view = $entityform_type->data['submissions_view'];
   }
@@ -701,7 +714,7 @@ function entityform_submission_page($entityform_type) {
     $submission_view = variable_get('entityform_default_submissions_view', 'entityforms:entityforms_admin_page');
   }
   $parts = explode(':', $submission_view);
-  return views_embed_view($parts[0], $parts[1]);
+  return views_embed_view($parts[0], $parts[1], $entityform_type->type);
 }
 
 /**
@@ -850,7 +863,7 @@ class EntityformController extends EntityAPIController {
     array(
         '!name' => theme('username', array('account' => $account)),
         '!date' => format_date($entity->created),
-    )),
+      )),
       '#weight' => -100,
     );
 

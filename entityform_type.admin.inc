@@ -22,7 +22,7 @@ class EntityformTypeUIController extends EntityDefaultUIController {
 
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = array()) {
     $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
-    $row[] = l(t('Submissions'), "entityform/submissions/" . $id);
+    $row[] = l(t('Submissions'), $this->path . '/manage/' . $id . '/submissions');
     $row[] = l(t('Submit Link'), entity_ui_controller('entityform')->submit_path($id));
     return $row;
   }
@@ -45,7 +45,6 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     $entityform_type->label .= ' (cloned)';
     $entityform_type->type = '';
   }
-
   $form['label'] = array(
     '#title' => t('Label'),
     '#type' => 'textfield',
@@ -67,43 +66,43 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     ),
     '#description' => t('A unique machine-readable name for this entityform type. It must only contain lowercase letters, numbers, and underscores.'),
   );
-
   $form['data']['#tree'] = TRUE;
-  $form['data']['instruction_pre'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Intro Form instructions'),
-    '#default_value' => empty($entityform_type->data['instruction_pre']) ? '' : $entityform_type->data['instruction_pre'],
-  );
-  $form['data']['draftable'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Draftable'),
-    '#default_value' => !empty($entityform_type->data['draftable']),
-    '#description' => t('Should users be able to save a draft of this form?'),
-  );
-  $form['data']['draft_save_text'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Draft save text'),
-    '#default_value' => empty($entityform_type->data['draft_save_text']) ? '' : $entityform_type->data['draft_save_text'],
-    '#description' => t('Text to dispaly to the user when the form is saved as a draft'),
-  );
+
   $form['data']['redirect_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Redirect Path'),
     '#default_value' => empty($entityform_type->data['redirect_path']) ? '' : $entityform_type->data['redirect_path'],
     '#description' => t('What path should the user be redirected to on correct submission?  Leave blank for default action'),
   );
-  $form['data']['submission_text'] = array(
+  $form['data']['instruction_pre'] = array(
     '#type' => 'textarea',
-    '#title' => t('Submission Reply'),
-    '#default_value' => empty($entityform_type->data['submission_text']) ? '' : $entityform_type->data['submission_text'],
-    '#description' => t('Text for correct submission'),
+    '#title' => t('Intro Form instructions'),
+    '#default_value' => empty($entityform_type->data['instruction_pre']) ? '' : $entityform_type->data['instruction_pre'],
   );
-  $form['data']['submission_show_submitted'] = array(
+
+
+
+  //****************DRAFT FIELDSET SETTINGS *********************//
+  $form['data']['draft_set'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Draft settings'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+    '#weight' => 20,
+  );
+  $form['data']['draft_set']['draftable'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Show Submission information'),
-    '#default_value' => !empty($entityform_type->data['submission_show_submitted']),
-    '#description' => t('Show submitted data on submission page?'),
+    '#title' => t('Draftable'),
+    '#default_value' => !empty($entityform_type->data['draftable']),
+    '#description' => t('Should users be able to save a draft of this form?'),
   );
+  $form['data']['draft_set']['draft_save_text'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Draft save text'),
+    '#default_value' => empty($entityform_type->data['draft_save_text']) ? '' : $entityform_type->data['draft_save_text'],
+    '#description' => t('Text to dispaly to the user when the form is saved as a draft'),
+  );
+  //****************EMAIL FIELDSET SETTINGS *********************//
   $form['data']['email_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Email settings'),
@@ -136,6 +135,27 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#description' => t('Enter emails that should be notified for each form submissions.'),
     '#element_validate' => array('_entityform_form_email_list_validate'),
   );
+  //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
+  $form['data']['submission_page_set'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Submission Page settings'),
+    '#collapsible' => TRUE,
+    '#group' => 'additional_settings',
+    '#weight' => 20,
+  );
+  $form['data']['submission_page_set']['submission_text'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Submission Reply'),
+    '#default_value' => empty($entityform_type->data['submission_text']) ? '' : $entityform_type->data['submission_text'],
+    '#description' => t('Text for correct submission'),
+  );
+  $form['data']['submission_page_set']['submission_show_submitted'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show Submission information'),
+    '#default_value' => !empty($entityform_type->data['submission_show_submitted']),
+    '#description' => t('Show submitted data on submission page?'),
+  );
+  //****************SUBMISSION VIEWS FIELDSET SETTINGS *********************//
   // Let Each entityform use a different View for viewing Submission
   $form['data']['submissions_set'] = array(
     '#type' => 'fieldset',
@@ -153,12 +173,23 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#options' => $view_options,
   );
   $form['entityform_default_submission_view']['#options'] = _entityform_get_entityform_views_options();
+  //****************ACCESS FIELDSET SETTINGS *********************//
   $form['data']['access_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Access settings'),
     '#collapsible' => TRUE,
     '#group' => 'additional_settings',
     '#weight' => 40,
+  );
+  $form['data']['access_set']['form_status'] = array(
+    '#type' => 'select',
+    '#title' => t('Form Status'),
+    '#options' => array(
+      ENTITYFORM_STATUS_OPEN => t('Open for new submissions'),
+      ENTITYFORM_STATUS_CLOSED => t('Closed form new form submissions'),
+    ),
+    '#default_value' => empty($entityform_type->data['form_status']) ? 'open' : $entityform_type->data['form_status'],
+    '#description' => t('Can users submit this form?'),
   );
   $form['data']['access_set']['roles'] = array(
     '#type' => 'select',

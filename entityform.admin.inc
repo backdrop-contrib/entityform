@@ -38,7 +38,7 @@ class EntityformUIController extends EntityDefaultUIController {
     $items[$this->path]['type'] = MENU_LOCAL_TASK;
     $items['eform/submit/%entityform_empty'] = array(
       'title callback' => 'entityform_page_title',
-      'title arguments' => array(2),
+      'title arguments' => array(2, 1),
       'page callback' => 'entityform_form_wrapper',
       'page arguments' => array(2),
       'access callback' => 'entityform_access',
@@ -300,7 +300,7 @@ function entityform_edit_form($form, &$form_state, $entityform) {
   return $form;
 }
 function entityform_clear_required($form, &$form_state) {
-  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&      $form_state['values']['save'] == $form_state['input']['op']  ) {
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&       $form_state['values']['save'] == $form_state['input']['op']  ) {
     _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
 
