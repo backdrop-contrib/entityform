@@ -33,7 +33,6 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     $render['#header'][] = t('Submit Link');
     return $render;
   }
-
 }
 
 
@@ -240,7 +239,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       );
       $form['paths'][$key]['alias'] = array(
         '#type' => 'textfield',
-        '#title' => t(check_plain($existing_path['title'])),
+        '#title' => check_plain($existing_path['title']),
         '#default_value' => $path['alias'],
         '#maxlength' => 255,
         '#collapsible' => TRUE,
