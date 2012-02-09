@@ -1,3 +1,4 @@
+For latest documentation visit: http://drupal.org/node/1432894
 Introduction
 ------------
 This module allows creating the front-end forms using Drupal's Field systems.
