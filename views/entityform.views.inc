@@ -162,6 +162,28 @@ $handler->display->display_options['fields']['link_entityform']['element_label_c
 $handler->display->display_options['fields']['link_entityform']['element_default_classes'] = 1;
 $handler->display->display_options['fields']['link_entityform']['hide_empty'] = 0;
 $handler->display->display_options['fields']['link_entityform']['empty_zero'] = 0;
+/* Field: Entityform: Edit Link */
+$handler->display->display_options['fields']['edit_entityform']['id'] = 'edit_entityform';
+$handler->display->display_options['fields']['edit_entityform']['table'] = 'entityform';
+$handler->display->display_options['fields']['edit_entityform']['field'] = 'edit_entityform';
+$handler->display->display_options['fields']['edit_entityform']['label'] = 'Edit';
+$handler->display->display_options['fields']['edit_entityform']['alter']['alter_text'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['make_link'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['absolute'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['external'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['replace_spaces'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['trim_whitespace'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['nl2br'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['word_boundary'] = 1;
+$handler->display->display_options['fields']['edit_entityform']['alter']['ellipsis'] = 1;
+$handler->display->display_options['fields']['edit_entityform']['alter']['strip_tags'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['trim'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['alter']['html'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['element_label_colon'] = 1;
+$handler->display->display_options['fields']['edit_entityform']['element_default_classes'] = 1;
+$handler->display->display_options['fields']['edit_entityform']['hide_empty'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['empty_zero'] = 0;
+$handler->display->display_options['fields']['edit_entityform']['hide_alter_empty'] = 1;
 /* Field: Entityform: Delete Link */
 $handler->display->display_options['fields']['delete_entityform']['id'] = 'delete_entityform';
 $handler->display->display_options['fields']['delete_entityform']['table'] = 'entityform';
