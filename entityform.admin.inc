@@ -40,7 +40,7 @@ class EntityformUIController extends EntityDefaultUIController {
       'title callback' => 'entityform_page_title',
       'title arguments' => array(2, 1),
       'page callback' => 'entityform_form_wrapper',
-      'page arguments' => array(2),
+      'page arguments' => array(2,'submit'),
       'access callback' => 'entityform_access',
       'access arguments' => array('submit', 2),
       'file' => 'entityform.admin.inc',
@@ -84,7 +84,7 @@ class EntityformUIController extends EntityDefaultUIController {
       //       'weight' => -10,
       //       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
       'page callback' => 'entityform_form_wrapper',
-      'page arguments' => array(1),
+      'page arguments' => array(1,'edit'),
       'access callback' => 'entityform_access',
       'access arguments' => array('edit', 1),
       'weight' => 0,
@@ -176,10 +176,13 @@ class EntityformUIController extends EntityDefaultUIController {
  *
  * @param $entityform
  *   The entityform object being edited by this form.
- *
+ * @param $mode
+ * 	 Current mode for this form
+ * 	 Submit - user is submitting the form
+ * 	 Edit - user with permission is editingfomr
  * @see entityform_edit_form()
  */
-function entityform_form_wrapper($entityform) {
+function entityform_form_wrapper($entityform, $mode = 'submit') {
   // Add the breadcrumb for the form's location.
   //entityform_set_breadcrumb();
   if (!empty($entityform->is_new)) {
@@ -213,7 +216,7 @@ function entityform_form_wrapper($entityform) {
       }
     }
   }
-  return drupal_get_form('entityform_edit_form', $entityform);
+  return drupal_get_form('entityform_edit_form', $entityform, $mode);
 }
 
 
@@ -239,12 +242,11 @@ function entityform_delete_form_wrapper($entityform) {
  *   The entityform object to edit or for a create form an empty entityform object
  *     with only a entityform type defined.
  */
-function entityform_edit_form($form, &$form_state, $entityform) {
-
-  $form['data']['#tree'] = TRUE;
+function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit') {
   $entityform_type = entityform_type_load($entityform->type);
   // Add the field related form elements.
   $form_state['entityform'] = $entityform;
+  $form_state['entityform_form_mode'] = $mode;
   field_attach_form('entityform', $entityform, $form, $form_state);
   if (!empty($entityform_type->data['instruction_pre'])) {
     $form['intro'] = array(
@@ -367,18 +369,26 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   $entityform->changed = time();
 
   $entityform->save();
-  if (empty($entityform->draft)) {
-    if (!empty($entityform_type->data['redirect_path']) ) {
-      $entityform_type->data['redirect_path'];
+  if($form_state['entityform_form_mode'] == 'submit') {
+    if (empty($entityform->draft)) {
+      if (!empty($entityform_type->data['redirect_path']) ) {
+        $entityform_type->data['redirect_path'];
+      }
+      else {
+        $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
+        $form_state['redirect'] = array($confirm_path[0], $confirm_path[1]);
+      }
+  
     }
     else {
-      $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
-      $form_state['redirect'] = array($confirm_path[0], $confirm_path[1]);
+      $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
     }
-
   }
-  else {
-    $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
+  else
+  {
+    $info = entity_get_info('entityform_type');
+    $form_state['redirect'] = $info['admin ui']['path'] . "/manage/{$entityform_type->type}/submissions";
+    drupal_set_message(t('The submission has been saved.'));
   }
 }
 

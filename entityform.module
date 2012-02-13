@@ -907,7 +907,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     $view = parent::view($entities, $view_mode, $langcode, $page);
     foreach ($entities as $entity_id => $entity) {
       module_load_include('inc', 'entityform', 'entityform.admin');
-      $view['form'][$entity_id] = entityform_form_wrapper(entityform_empty_load($entity->type));
+      $view['form'][$entity_id] = entityform_form_wrapper(entityform_empty_load($entity->type),'submit');
     }
     return $view;
   }
