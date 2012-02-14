@@ -19,7 +19,7 @@ class entityform_handler_entityform_operations_field extends views_handler_field
 
   function render($values) {
 
-    $links = menu_contextual_links('entityform', 'admin/content/entityforms/entityform', array($this->get_value($values, 'entityform_id')));
+    $links = menu_contextual_links('entityform', 'admin/structure/entityforms/entityform', array($this->get_value($values, 'entityform_id')));
 
     if (!empty($links)) {
       return theme('links', array('links' => $links, 'attributes' => array('class' => array('links', 'inline', 'operations'))));

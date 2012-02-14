@@ -17,12 +17,12 @@ Administration > Content > Entityform Types
 Usage
 ---------------
 1. Enable the module
-2. Goto admin/content/entityform_types
+2. Goto admin/structure/entityform_types
 3. Click "Add an Entityform Type"
 4. Fill out basic form information. Under Access Settings make sure at least 1 role can submit the form
 5. Click "Save Entityform Type"
 6. Click manage fields and add fields the same way you would for a node content type.
-7. Once you have added fields you can view the form by clicking the Submit Link on admin/content/entityform_types
+7. Once you have added fields you can view the form by clicking the Submit Link on admin/structure/entityform_types
 
 
 Module Intergration

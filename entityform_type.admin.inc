@@ -16,7 +16,7 @@ class EntityformTypeUIController extends EntityDefaultUIController {
   public function hook_menu() {
     $items = parent::hook_menu();
     $items[$this->path]['description'] = 'Manage entityform entity types, including adding and removing fields and the display of fields.';
-    $items[$this->path]['type'] = MENU_LOCAL_TASK;
+    $items[$this->path]['type'] = MENU_NORMAL_ITEM;
     return $items;
   }
 
@@ -350,7 +350,7 @@ function _entityform_form_email_list_validate($element, &$form_state, $form) {
 function entityform_type_form_submit(&$form, &$form_state) {
   $entityform_type = entity_ui_form_submit_build_entity($form, $form_state);
   $entityform_type->save();
-  $form_state['redirect'] = 'admin/content/entityform_types';
+  $form_state['redirect'] = 'admin/structure/entityform_types';
 }
 
 
@@ -358,7 +358,7 @@ function entityform_type_form_submit(&$form, &$form_state) {
  * Form API submit callback for the delete button.
  */
 function entityform_type_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/content/entityform_types/manage/' . $form_state['entityform_type']->type . '/delete';
+  $form_state['redirect'] = 'admin/structure/entityform_types/manage/' . $form_state['entityform_type']->type . '/delete';
 }
 function _entityform_type_get_submit_url($type) {
   return 'eform/submit/' . str_replace('_', '-', $type);

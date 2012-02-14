@@ -83,7 +83,7 @@ function entityform_entity_info() {
     'module' => 'entityform',
     // The information below is used by the EntityformUIController (which extends the EntityDefaultUIController)
     'admin ui' => array(
-      'path' => 'admin/content/entityforms/list',
+      'path' => 'admin/structure/entityforms/list',
       'front path' => 'entityform',
       'file' => 'entityform.admin.inc',
       'controller class' => 'EntityformUIController',
@@ -115,7 +115,7 @@ function entityform_entity_info() {
     'module' => 'entityform',
     // Enable the entity API's admin UI.
     'admin ui' => array(
-      'path' => 'admin/content/entityform_types',
+      'path' => 'admin/structure/entityform_types',
       'file' => 'entityform_type.admin.inc',
       'controller class' => 'EntityformTypeUIController',
     ),
@@ -138,8 +138,8 @@ function entityform_entity_info_alter(&$entity_info) {
     $entity_info['entityform']['bundles'][$type] = array(
       'label' => $info->label,
       'admin' => array(
-        'path' => 'admin/content/entityform_types/manage/%entityform_type',
-        'real path' => 'admin/content/entityform_types/manage/' . $type,
+        'path' => 'admin/structure/entityform_types/manage/%entityform_type',
+        'real path' => 'admin/structure/entityform_types/manage/' . $type,
         'bundle argument' => 4,
         'access arguments' => array('administer entityform types'),
       ),
@@ -722,8 +722,8 @@ function entityform_submission_page($entityform_type) {
  */
 function entityform_menu_local_tasks_alter(&$data, $router_item, $root_path) {
   // Add action link 'admin/structure/entityforms/add' on 'admin/structure/entityforms'.
-  if ($root_path == 'admin/content/entityforms') {
-    $item = menu_get_item('admin/content/entityforms/add');
+  if ($root_path == 'admin/structure/entityforms') {
+    $item = menu_get_item('admin/structure/entityforms/add');
     if ($item['access']) {
       $data['actions']['output'][] = array(
         '#theme' => 'menu_local_action',

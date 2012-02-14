@@ -285,7 +285,7 @@ $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
 
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
-$handler->display->display_options['path'] = 'admin/content/entityforms/list/%';
+$handler->display->display_options['path'] = 'admin/structure/entityforms/list/%';
 
 if(module_exists('views_data_export')) {
   /* Display: Data export */
@@ -388,7 +388,7 @@ if(module_exists('views_data_export')) {
   $handler->display->display_options['fields']['changed']['hide_empty'] = 0;
   $handler->display->display_options['fields']['changed']['empty_zero'] = 0;
   $handler->display->display_options['fields']['changed']['hide_alter_empty'] = 0;
-  $handler->display->display_options['path'] = 'admin/content/entityforms/csv/%';
+  $handler->display->display_options['path'] = 'admin/structure/entityforms/csv/%';
   $handler->display->display_options['displays'] = array(
     'entityforms_admin_page' => 'entityforms_admin_page',
     'default' => 0,

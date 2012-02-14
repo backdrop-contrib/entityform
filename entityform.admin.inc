@@ -301,7 +301,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     $form['actions']['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete entityform'),
-      '#suffix' => l(t('Cancel'), 'admin/content/entityforms'),
+      '#suffix' => l(t('Cancel'), 'admin/structure/entityforms'),
       '#submit' => $submit + array('entityform_form_submit_delete'),
       '#weight' => 45,
     );
@@ -411,7 +411,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
  * @todo Remove hard-coded path
  */
 function entityform_form_submit_delete(&$form, &$form_state) {
-  $form_state['redirect'] = 'admin/content/entityforms/entityform/' . $form_state['entityform']->entityform_id . '/delete';
+  $form_state['redirect'] = 'admin/structure/entityforms/entityform/' . $form_state['entityform']->entityform_id . '/delete';
 }
 
 
@@ -430,7 +430,7 @@ function entityform_delete_form($form, &$form_state, $entityform) {
 
   $form = confirm_form($form,
   t('Are you sure you want to delete this Submission for %type?', array('%type' => $entityform->getTypeName())),
-    'admin/content/entityforms/entityform',
+    "admin/structure/entityform_types/manage/{$entityform->type}/submissions",
     '<p>' . t('This action cannot be undone.') . '</p>',
   t('Delete'),
   t('Cancel'),
@@ -451,7 +451,7 @@ function entityform_delete_form_submit($form, &$form_state) {
   drupal_set_message(t('The Submission for %name has been deleted.', array('%name' => $entityform->getTypeName())));
   watchdog('entityform', 'Deleted Submission for %name.', array('%name' => $entityform->getTypeName()));
 
-  $form_state['redirect'] = 'admin/content/entityforms/list/' . $entityform->type;
+  $form_state['redirect'] = "admin/structure/entityform_types/manage/{$entityform->type}/submissions";
 }
 
 
@@ -485,7 +485,7 @@ function theme_entityform_add_list($variables) {
   }
   else {
     if (user_access('administer entityform types')) {
-      $output = '<p>' . t('Entityform Entities cannot be added because you have not created any entityform types yet. Go to the <a href="@create-entityform-type">entityform type creation page</a> to add a new entityform type.', array('@create-entityform-type' => url('admin/content/entityform_types/add'))) . '</p>';
+      $output = '<p>' . t('Entityform Entities cannot be added because you have not created any entityform types yet. Go to the <a href="@create-entityform-type">entityform type creation page</a> to add a new entityform type.', array('@create-entityform-type' => url('admin/structure/entityform_types/add'))) . '</p>';
     }
     else {
       $output = '<p>' . t('No entityform types have been created yet for you to use.') . '</p>';
@@ -502,7 +502,7 @@ function entityform_set_breadcrumb() {
   $breadcrumb = array(
     l(t('Home'), '<front>'),
     l(t('Administration'), 'admin'),
-    l(t('Content'), 'admin/content'),
+    l(t('Content'), 'admin/structure'),
   );
 
   drupal_set_breadcrumb($breadcrumb);
