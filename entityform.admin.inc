@@ -79,10 +79,8 @@ class EntityformUIController extends EntityDefaultUIController {
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
     $items['entityform/' . $wildcard . '/edit'] = array(
-      //       'title' => 'Edit',
-      //       'type' => MENU_DEFAULT_LOCAL_TASK,
-      //       'weight' => -10,
-      //       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
+    	'title callback' => 'entityform_page_title',
+      'title arguments' => array(1, 'edit'),
       'page callback' => 'entityform_form_wrapper',
       'page arguments' => array(1,'edit'),
       'access callback' => 'entityform_access',
@@ -268,22 +266,37 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   if (!empty($form['#submit'])) {
     $submit += $form['#submit'];
   }
-  if ($entityform_type->data['draftable']) {
-    $form['actions']['save'] = array(
+  if($mode == 'submit') {
+    if ($entityform_type->data['draftable']) {
+      $form['actions']['save'] = array(
+        '#type' => 'submit',
+        '#value' => t('Save Draft'),
+        //'#limit_validation_errors' => array(), //cause erros
+        '#entityform_draft' => '1',
+        '#submit' => $submit + array('entityform_edit_form_submit'),
+      );
+    }
+    $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Save Draft'),
-      //'#limit_validation_errors' => array(), //cause erros
-      '#entityform_draft' => '1',
+      '#value' => t('Submit Form'),
+      '#entityform_draft' => $entityform->draft,
       '#submit' => $submit + array('entityform_edit_form_submit'),
     );
   }
-  $form['actions']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Submit Form'),
-    '#entityform_draft' => '0',
-    '#submit' => $submit + array('entityform_edit_form_submit'),
-  );
-
+  else
+  {
+    $form['user_info'] =  array(
+            '#type' => 'markup',
+            '#markup' => _entityform_get_submit_info($entityform),
+            '#weight' => -200,
+    );
+    $form['actions']['save'] = array(
+          '#type' => 'submit',
+          '#value' => t('Save Changes'),
+          '#entityform_draft' => '0',
+          '#submit' => $submit + array('entityform_edit_form_submit'),
+    );
+  }
   if (!empty($entityform->name)) {
     $form['actions']['delete'] = array(
       '#type' => 'submit',

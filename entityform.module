@@ -775,7 +775,15 @@ function entityform_render_to_text($render_array, $print_empty_title = FALSE, $i
   }
   return $output;
 }
-
+function _entityform_get_submit_info($entityform) {
+  $account = user_load($entityform->uid);
+  return t("Submitted by !name on !date",
+    array(
+            '!name' => theme('username', array('account' => $account)),
+            '!date' => format_date($entityform->created),
+    )
+  );
+}
 /**
  * The class used for entityform entities
  */
@@ -857,13 +865,8 @@ class EntityformController extends EntityAPIController {
    */
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
     $content['submission'] = parent::buildContent($entity, $view_mode, $langcode, $content);
-    $account = user_load($entity->uid);
     $content['info']['user'] =  array(
-      '#markup' => t("Submitted by !name on !date",
-    array(
-        '!name' => theme('username', array('account' => $account)),
-        '!date' => format_date($entity->created),
-      )),
+      '#markup' => _entityform_get_submit_info($entity),
       '#weight' => -100,
     );
 
