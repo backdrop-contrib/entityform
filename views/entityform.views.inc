@@ -285,7 +285,13 @@ $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
 
 /* Display: Page */
 $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
-$handler->display->display_options['path'] = 'admin/structure/entityforms/list/%';
+$handler->display->display_options['path'] = 'admin/structure/entityforms/list';
+$handler->display->display_options['path'] = 'admin/structure/entityforms/list';
+$handler->display->display_options['menu']['type'] = 'normal';
+$handler->display->display_options['menu']['title'] = 'Enityform Submissions';
+$handler->display->display_options['menu']['description'] = 'View Submissions for all Entityforms';
+$handler->display->display_options['menu']['weight'] = '0';
+$handler->display->display_options['menu']['name'] = 'management';
 
 if(module_exists('views_data_export')) {
   /* Display: Data export */

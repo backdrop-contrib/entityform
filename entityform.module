@@ -83,6 +83,7 @@ function entityform_entity_info() {
     'module' => 'entityform',
     // The information below is used by the EntityformUIController (which extends the EntityDefaultUIController)
     'admin ui' => array(
+      //@todo this goes to default submissions View, what do to if View is disabled?
       'path' => 'admin/structure/entityforms/list',
       'front path' => 'entityform',
       'file' => 'entityform.admin.inc',
