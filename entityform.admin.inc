@@ -279,7 +279,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     $form['actions']['submit'] = array(
       '#type' => 'submit',
       '#value' => t('Submit Form'),
-      '#entityform_draft' => $entityform->draft,
+      '#entityform_draft' => 0,
       '#submit' => $submit + array('entityform_edit_form_submit'),
     );
   }

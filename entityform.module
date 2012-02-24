@@ -573,7 +573,7 @@ function entityform_confirm_email($entityform) {
     //don't send email if user editing another user's submission
     return;
   }
-  if ($user->mail) {
+  if (!empty($user->mail)) {
     $entityform_type = entityform_type_load($entityform->type);
     if (!empty($entityform_type->data['confirm_email'])) {
       $email_subject = variable_get('site_name', '') . ' ' . t('Form Submission') . ': ' . $entityform_type->label;
