@@ -259,6 +259,7 @@ function entityform_type_access($op, $type = NULL, $account = NULL) {
 }
 function _entityform_get_entityform_views_options() {
   $views = views_get_enabled_views();
+  $options = array();
   foreach ($views as $view) {
     if ($view->base_table == 'entityform') {
       foreach ($view->display as $display) {
