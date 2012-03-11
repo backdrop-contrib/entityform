@@ -40,7 +40,7 @@ class EntityformUIController extends EntityDefaultUIController {
       'title callback' => 'entityform_page_title',
       'title arguments' => array(2, 1),
       'page callback' => 'entityform_form_wrapper',
-      'page arguments' => array(2,'submit'),
+      'page arguments' => array(2, 'submit'),
       'access callback' => 'entityform_access',
       'access arguments' => array('submit', 2),
       'file' => 'entityform.admin.inc',
@@ -79,10 +79,10 @@ class EntityformUIController extends EntityDefaultUIController {
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
     $items['entityform/' . $wildcard . '/edit'] = array(
-    	'title callback' => 'entityform_page_title',
+      'title callback' => 'entityform_page_title',
       'title arguments' => array(1, 'edit'),
       'page callback' => 'entityform_form_wrapper',
-      'page arguments' => array(1,'edit'),
+      'page arguments' => array(1, 'edit'),
       'access callback' => 'entityform_access',
       'access arguments' => array('edit', 1),
       'weight' => 0,
@@ -266,7 +266,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   if (!empty($form['#submit'])) {
     $submit += $form['#submit'];
   }
-  if($mode == 'submit') {
+  if ($mode == 'submit') {
     if ($entityform_type->data['draftable']) {
       $form['actions']['save'] = array(
         '#type' => 'submit',
@@ -283,8 +283,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
       '#submit' => $submit + array('entityform_edit_form_submit'),
     );
   }
-  else
-  {
+  else {
     $form['user_info'] =  array(
             '#type' => 'markup',
             '#markup' => _entityform_get_submit_info($entityform),
@@ -382,7 +381,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   $entityform->changed = time();
 
   $entityform->save();
-  if($form_state['entityform_form_mode'] == 'submit') {
+  if ($form_state['entityform_form_mode'] == 'submit') {
     if (empty($entityform->draft)) {
       if (!empty($entityform_type->data['redirect_path']) ) {
         $entityform_type->data['redirect_path'];
@@ -391,14 +390,12 @@ function entityform_edit_form_submit(&$form, &$form_state) {
         $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
         $form_state['redirect'] = array($confirm_path[0], $confirm_path[1]);
       }
-  
     }
     else {
       $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
     }
   }
-  else
-  {
+  else {
     $info = entity_get_info('entityform_type');
     $form_state['redirect'] = $info['admin ui']['path'] . "/manage/{$entityform_type->type}/submissions";
     drupal_set_message(t('The submission has been saved.'));

@@ -238,8 +238,8 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
   }
   if (isset($entityform) && $type_name) {
     $op = ($op == 'view') ? 'view' : 'edit';
-    if ($op == 'view' && is_object($entityform) && $entityform->uid == $user->uid) {
-      //for now user can always view their own submissions
+    if ($op == 'view' && is_object($entityform) && !empty($user->uid) && $entityform->uid == $user->uid) {
+      //for now user can always view their own submissions - anonymous users can view any submissions
       return TRUE;
     }
     if (user_access("$op any entityform", $account)) {
@@ -912,7 +912,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     $view = parent::view($entities, $view_mode, $langcode, $page);
     foreach ($entities as $entity_id => $entity) {
       module_load_include('inc', 'entityform', 'entityform.admin');
-      $view['form'][$entity_id] = entityform_form_wrapper(entityform_empty_load($entity->type),'submit');
+      $view['form'][$entity_id] = entityform_form_wrapper(entityform_empty_load($entity->type), 'submit');
     }
     return $view;
   }
