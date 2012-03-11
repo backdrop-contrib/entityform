@@ -2,6 +2,8 @@ name = Entityform
 description = Provides fieldable entity forms
 core = 7.x
 
+configure = admin/structure/entityform_types
+
 dependencies[] = entity
 dependencies[] = views
 
