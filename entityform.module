@@ -207,6 +207,10 @@ function entityform_permission() {
  */
 function entityform_access($op, $entityform = NULL, $account = NULL) {
   // User #1 has all privileges:
+  global $user;
+  if (!isset($account)) {
+    $account = $user;
+  }
   if ($account->uid == 1) {
     return TRUE;
   }
