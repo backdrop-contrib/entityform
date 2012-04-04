@@ -206,6 +206,10 @@ function entityform_permission() {
  *   Whether access is allowed or not.
  */
 function entityform_access($op, $entityform = NULL, $account = NULL) {
+  // User #1 has all privileges:
+  if ($account->uid == 1) {
+    return TRUE;
+  }
   if (!empty($entityform)) {
     if (is_object($entityform) ) {
       $type_name = $entityform->type;
