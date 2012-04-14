@@ -557,7 +557,10 @@ function entityform_confirm_page($entityform_type) {
   );
   if ($entityform_type->data['submission_show_submitted']) {
     $controller = entity_get_controller('entityform');
-    $entityform = entityform_load($entityform_id);
+    if (!$entityform = entityform_load($entityform_id)) {
+      //entityform_id in url was alter return page not found
+      return MENU_NOT_FOUND;
+    }
     $content = $controller->view(array($entityform->entityform_id => $entityform), 'confirmation', NULL, TRUE);
     $render_array['submission_data'] = $content;
   }
