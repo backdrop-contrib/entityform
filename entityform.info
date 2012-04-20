@@ -1,6 +1,7 @@
-name = Entityform
+name = Entityforms
 description = Provides fieldable entity forms
 core = 7.x
+package = Entityforms
 
 configure = admin/structure/entityform_types
 
