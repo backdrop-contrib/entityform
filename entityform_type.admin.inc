@@ -349,8 +349,17 @@ function _entityform_form_email_list_validate($element, &$form_state, $form) {
  */
 function entityform_type_form_submit(&$form, &$form_state) {
   $entityform_type = entity_ui_form_submit_build_entity($form, $form_state);
+  if (empty($entityform_type->is_new)) {
+    $form_state['redirect'] = 'admin/structure/entityform_types';
+  }
+  else
+  {
+    drupal_set_message(t('The Entityform @label has been created. Add fields to this form below', array('@label' => $entityform_type->label)));
+    $form_state['redirect'] = "admin/structure/entityform_types/manage/{$entityform_type->type}/fields";
+  }
   $entityform_type->save();
-  $form_state['redirect'] = 'admin/structure/entityform_types';
+
+  
 }
 
 
