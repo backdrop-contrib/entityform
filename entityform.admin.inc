@@ -241,6 +241,7 @@ function entityform_delete_form_wrapper($entityform) {
  *     with only a entityform type defined.
  */
 function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit') {
+  global $user;
   $entityform_type = entityform_type_load($entityform->type);
   // Add the field related form elements.
   $form_state['entityform'] = $entityform;
@@ -267,7 +268,8 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     $submit += $form['#submit'];
   }
   if ($mode == 'submit') {
-    if ($entityform_type->data['draftable']) {
+    //If form is draftable and user is logged in add draft button
+    if ($entityform_type->data['draftable'] && !empty($user->uid)) {
       $form['actions']['save'] = array(
         '#type' => 'submit',
         '#value' => t('Save Draft'),
