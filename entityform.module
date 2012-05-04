@@ -819,6 +819,12 @@ class Entityform extends Entity {
     $entityform_type = entityform_type_load($this->type);
     return $entityform_type->label;
   }
+  /**
+   * Returns the user who submitted this profile.
+   */
+  public function user() {
+    return user_load($this->uid);
+  }
 
 
 }
