@@ -315,13 +315,26 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   $form['#validate'][] = 'entityform_set_required';
   return $form;
 }
+/**
+ * Called after_build on entityforms
+ * This makes sure that required fields aren't require when saving a Draft.
+ * A Draft is not complete so shouldn't enforce required fields
+ * @param array $form
+ * @param array $form_state
+ * @return array
+ */
 function entityform_clear_required($form, &$form_state) {
-  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 &&       $form_state['values']['save'] == $form_state['input']['op']  ) {
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 && isset($form_state['input']['op']) && $form_state['values']['save'] == $form_state['input']['op']  ) {
     _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
-
   return $form;
 }
+/**
+ * @param array $form
+ * @param array $props
+ *   properties to set
+ * @param boolean $must_match
+ */
 function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
   $matched = TRUE;
   if ($must_match) {
