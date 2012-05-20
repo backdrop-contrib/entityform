@@ -297,18 +297,20 @@ function entityform_get_types($type_name = NULL) {
 }
 
 function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
-  $query = new EntityFieldQuery();
-  $query->entityCondition('entity_type', "entityform");
-  if ($type) {
-    $query->propertyCondition('type', $type);
-  }
   if ($uid) {
-    $query->propertyCondition('uid', $uid);
-  }
-  $query->propertyCondition('draft', $draft);
-  $result = $query->execute();
-  if (isset($result['entityform'])) {
-    return $result['entityform'];
+    $query = new EntityFieldQuery();
+    $query->entityCondition('entity_type', "entityform");
+    if ($type) {
+      $query->propertyCondition('type', $type);
+    }
+    if ($uid) {
+      $query->propertyCondition('uid', $uid);
+    }
+    $query->propertyCondition('draft', $draft);
+    $result = $query->execute();
+    if (isset($result['entityform'])) {
+      return $result['entityform'];
+    }
   }
   return array();
 }
@@ -320,14 +322,17 @@ function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
     global $user;
     $uid = $user->uid;
   }
-  $submissions = entityform_get_submissions($type, $uid, $draft);
-  $submission = array_shift($submissions);
-  if (!$submission) {
-    return NULL;
+  if ($uid) {
+    $submissions = entityform_get_submissions($type, $uid, $draft);
+    $submission = array_shift($submissions);
+    if (!$submission) {
+      return NULL;
+    }
+    else {
+      return entityform_load($submission->entityform_id);
+    }
   }
-  else {
-    return entityform_load($submission->entityform_id);
-  }
+  return NULL;
 }
 function entityform_user_submitted($type, $uid = NULL) {
   if (!$uid) {
