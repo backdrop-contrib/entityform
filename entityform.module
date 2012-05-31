@@ -296,6 +296,15 @@ function entityform_get_types($type_name = NULL) {
   return isset($type_name) ? reset($types) : $types;
 }
 
+/**
+ * Get all the submissions for a user
+ * @param string $type
+ *   The EntityformType to restrict submissions for
+ * @param int $uid
+ *   uid of user to get submissions for
+ * @param int $draft
+ * @return array
+ */
 function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
   if ($uid) {
     $query = new EntityFieldQuery();
@@ -303,9 +312,7 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
     if ($type) {
       $query->propertyCondition('type', $type);
     }
-    if ($uid) {
-      $query->propertyCondition('uid', $uid);
-    }
+    $query->propertyCondition('uid', $uid);
     $query->propertyCondition('draft', $draft);
     $result = $query->execute();
     if (isset($result['entityform'])) {
@@ -314,9 +321,23 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
   }
   return array();
 }
-function entityform_user_draft($type, $uid = NULL) {
+/**
+ * Get the current draft submission if any for a user
+ * @param string $type
+ *   Entityform Type
+ * @param int $uid
+ * @return Ambigous <NULL, A, mixed>
+ */
+function entityform_user_draft($type, $uid) {
   return entityform_user_previous_submission($type, $uid, 1);
 }
+/**
+ * Get previous submission for a form for a user
+ * @param string $type
+ * @param int $uid
+ * @param int $draft
+ * @return NULL|Ambigous <A, mixed>
+ */
 function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
   if (!$uid) {
     global $user;
@@ -334,6 +355,12 @@ function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
   }
   return NULL;
 }
+/**
+ * Has the user submitted a form
+ * @param string $type
+ * @param unknown_type $uid
+ * @return boolean
+ */
 function entityform_user_submitted($type, $uid = NULL) {
   if (!$uid) {
     global $user;
