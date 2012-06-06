@@ -96,11 +96,31 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#default_value' => !empty($entityform_type->data['draftable']),
     '#description' => t('Should users be able to save a draft of this form?'),
   );
+  $form['data']['draft_set']['draft_button_text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Override Draft Button Text'),
+      '#default_value' => empty($entityform_type->data['draft_button_text'])?'':$entityform_type->data['draft_button_text'],
+      '#description' => t('Text to use for draft save button.  If blank it will default to "Save Draft".'),
+  );
   $form['data']['draft_set']['draft_save_text'] = array(
     '#type' => 'textarea',
     '#title' => t('Draft save text'),
     '#default_value' => empty($entityform_type->data['draft_save_text']) ? '' : $entityform_type->data['draft_save_text'],
     '#description' => t('Text to dispaly to the user when the form is saved as a draft'),
+  );
+  //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
+  $form['data']['formoverride_set'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Form Overrides'),
+      '#collapsible' => TRUE,
+      '#group' => 'additional_settings',
+      '#weight' => 25,
+  );
+  $form['data']['formoverride_set']['submit_button_text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Override Save Button Text'),
+      '#default_value' => empty($entityform_type->data['submit_button_text'])?'':$entityform_type->data['submit_button_text'],
+      '#description' => t('Text to use for submit button.  If blank it will default to "Submit Form".'),
   );
   //****************EMAIL FIELDSET SETTINGS *********************//
   $form['data']['email_set'] = array(
@@ -108,13 +128,13 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#title' => t('Email settings'),
     '#collapsible' => TRUE,
     '#group' => 'additional_settings',
-    '#weight' => 20,
+    '#weight' => 30,
   );
   $form['data']['email_set']['confirm_email'] = array(
     '#type' => 'checkbox',
     '#title' => t('Send Confirmation Email'),
     '#default_value' => !empty($entityform_type->data['confirm_email']),
-    '#description' => t('Should users recieve a conformation email when submitting this form?'),
+    '#description' => t('Should users receive a conformation email when submitting this form?'),
   );
   $form['data']['email_set']['email_body'] = array(
     '#type' => 'textarea',
@@ -141,7 +161,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#title' => t('Submission Page settings'),
     '#collapsible' => TRUE,
     '#group' => 'additional_settings',
-    '#weight' => 20,
+    '#weight' => 40,
   );
   $form['data']['submission_page_set']['submission_text'] = array(
     '#type' => 'textarea',
@@ -179,7 +199,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#title' => t('Access settings'),
     '#collapsible' => TRUE,
     '#group' => 'additional_settings',
-    '#weight' => 40,
+    '#weight' => 50,
   );
   $form['data']['access_set']['form_status'] = array(
     '#type' => 'select',
@@ -352,14 +372,11 @@ function entityform_type_form_submit(&$form, &$form_state) {
   if (empty($entityform_type->is_new)) {
     $form_state['redirect'] = 'admin/structure/entityform_types';
   }
-  else
-  {
+  else {
     drupal_set_message(t('The Entityform @label has been created. Add fields to this form below', array('@label' => $entityform_type->label)));
     $form_state['redirect'] = "admin/structure/entityform_types/manage/{$entityform_type->type}/fields";
   }
   $entityform_type->save();
-
-  
 }
 
 

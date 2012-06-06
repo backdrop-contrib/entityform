@@ -1,7 +1,12 @@
 <?php
 /**
-* Implements hook_views_default_views().
-*/
+ * @file
+ * Default views.
+ */
+
+/**
+ * Implements hook_views_default_views().
+ */
 function entityform_views_default_views() {
   $view = new view;
   $view->name = 'entityforms';
@@ -233,7 +238,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['menu']['weight'] = '0';
   $handler->display->display_options['menu']['name'] = 'management';
 
-  if(module_exists('views_data_export')) {
+  if (module_exists('views_data_export')) {
     /* Display: Data export */
     $handler = $view->new_display('views_data_export', 'Data export', 'views_data_export_1');
     $handler->display->display_options['pager']['type'] = 'none';

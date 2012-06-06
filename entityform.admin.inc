@@ -272,7 +272,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     if ($entityform_type->data['draftable'] && !empty($user->uid)) {
       $form['actions']['save'] = array(
         '#type' => 'submit',
-        '#value' => t('Save Draft'),
+        '#value' => empty($entityform_type->data['draft_button_text'])?t('Save Draft'):t($entityform_type->data['draft_button_text']),
         //'#limit_validation_errors' => array(), //cause erros
         '#entityform_draft' => '1',
         '#submit' => $submit + array('entityform_edit_form_submit'),
@@ -280,7 +280,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     }
     $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => t('Submit Form'),
+      '#value' => empty($entityform_type->data['submit_button_text'])?t('Submit Form'):t($entityform_type->data['submit_button_text']),
       '#entityform_draft' => 0,
       '#submit' => $submit + array('entityform_edit_form_submit'),
     );
