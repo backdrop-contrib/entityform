@@ -328,7 +328,7 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
  * @param int $uid
  * @return Ambigous <NULL, A, mixed>
  */
-function entityform_user_draft($type, $uid) {
+function entityform_user_draft($type, $uid = NULL) {
   return entityform_user_previous_submission($type, $uid, 1);
 }
 /**
