@@ -238,7 +238,22 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
       }
       return FALSE;
     }
-    return entityform_user_submitted($type_name);
+    //confirm page
+    $entityform_id = $_GET['entityform_id'];
+    if (empty($user->uid)) {
+      // If this is anonymous user then entityform_id should be stored in session
+      if (!isset($_SESSION['entityform_submission'])) {
+        return FALSE;
+      }
+      $match = $_SESSION['entityform_submission'] == $entityform_id;
+      unset($_SESSION['entityform_submission']);
+      return $match;
+    }
+    else {
+      $entityform = entityform_load($entityform_id);
+      //only grant access if this is the user who made the submission
+      return $entityform->uid == $user->uid;
+    }
     // return user_access("submit $type_name entityform");
   }
   if ($op == 'confirm') {
