@@ -186,6 +186,10 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   );
   $view_options = _entityform_get_entityform_views_options();
   $view_options['default_view'] = t('Use Default');
+  if (!empty($entityform_type->data['submissions_view']) && strstr($entityform_type->data['submissions_view'], ':')) {
+    $parts = explode(':', $entityform_type->data['submissions_view']);
+    $entityform_type->data['submissions_view'] = $parts[0];
+  }
   $form['data']['submissions_set']['submissions_view'] = array(
     '#type' => 'select',
     '#title' => t('View for Submissions'),

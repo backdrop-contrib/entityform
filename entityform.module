@@ -26,13 +26,12 @@ function entityform_menu() {
     'file' => 'entityform.pages.admin.inc',
   );
   $items[$submissions_path] = array(
-    'title' => 'Form Submissions',
-    'page callback' => 'entityform_submission_page',
-    'page arguments' => array($path_count - 2),
-    'access arguments' => array('view any entityform'),
-    'type' => MENU_LOCAL_TASK,
+      'title' => 'Form Submissions',
+      'page callback' => 'entityform_submission_page',
+      'page arguments' => array($path_count - 2),
+      'access arguments' => array('view any entityform'),
+      'type' => MENU_LOCAL_TASK,
   );
-
   return $items;
 }
 /**
@@ -75,6 +74,15 @@ function entityform_entity_info() {
         'label' => t('Confirmation'),
         'custom settings' => FALSE,
       ),
+      'download' => array(
+        'label' => t('Downloads'),
+        'custom settings' => FALSE,
+      ),
+       'table' => array(
+         'label' => t('Submissions Table'),
+         'custom settings' => FALSE,
+      ),
+
     ),
     'label callback' => 'entity_class_label',
     'uri callback' => 'entity_class_uri',
@@ -290,7 +298,7 @@ function _entityform_get_entityform_views_options() {
     if ($view->base_table == 'entityform') {
       foreach ($view->display as $display) {
         if ($display->display_plugin == 'page') {
-          $options[$view->name . ':' . $display->id] = $view->human_name . '->' . $display->display_title;
+          $options[$view->name] = $view->human_name;
         }
       }
     }
@@ -768,16 +776,49 @@ function entityform_mail($key, &$message, $params) {
  * @return string
  * 	Rendered view
  */
-function entityform_submission_page($entityform_type) {
+function entityform_submission_page($entityform_type , $display_id = NULL) {
   drupal_set_title($entityform_type->label);
   if (!empty($entityform_type->data['submissions_view']) && $entityform_type->data['submissions_view'] != 'default_view') {
     $submission_view = $entityform_type->data['submissions_view'];
   }
   else {
-    $submission_view = variable_get('entityform_default_submissions_view', 'entityforms:entityforms_admin_page');
+    $submission_view = variable_get('entityform_default_submissions_view', 'entityforms');
   }
+  // Previous setting used "view_name:display_id" - handle that condition.
   $parts = explode(':', $submission_view);
-  return views_embed_view($parts[0], $parts[1], $entityform_type->type);
+  $view_name = $parts[0];
+  $view = views_get_view($view_name);
+
+  $path = current_path();
+  $display_ids = array_keys($view->display);
+  if (empty($display_id)) {
+    // if more than 1 display then get 2nd(non-default)
+    $display_id = count($display_ids) > 1? $display_ids[1]:$display_ids[0];
+  }
+  else {
+    // If display_id was passed in path remove it.
+    $path_parts = explode('/', $path);
+    array_pop($path_parts);
+    $path = implode('/', $path_parts);
+  }
+  array_shift($display_ids);
+  // Create links to other displays
+  foreach ($display_ids as $display) {
+    // Don't provide direct links to export displays. These will be attached other displays.
+    if ($view->display[$display]->display_plugin != 'views_data_export') {
+      $links[] = array(
+        'href' => "$path/$display",
+        'title' => $view->display[$display]->display_title,
+      );
+    }
+  }
+  $links = theme(
+    'links',
+    array(
+      'links' => $links,
+      'attributes' => array('class' => 'tabs secondary'))
+  );
+  return $links . views_embed_view($view_name, $display_id, $entityform_type->type);
 }
 
 /**
@@ -984,4 +1025,69 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     return $view;
   }
 
+}
+/**
+ * Implements hook_views_pre_view().
+ *
+ * This add all Fields for the Bundle to the View at runtime
+ * View Requirements
+ *   1. First argument must bundle machine name
+ *   2. All Fields will added if the if the display_id starts with "autofields_
+ */
+function entityform_views_pre_view(&$view, &$display_id, &$args) {
+  if ($view->base_table == 'entityform' && strpos($display_id, 'autofields_') === 0) {
+    $type = $view->args[0];
+    _entityform_view_add_all_fields($view, $display_id, $type);
+  }
+  return;
+}
+
+/**
+ * Add automatically add all the fields for a Bundle to a View
+ */
+function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
+  $instances = field_info_instances('entityform', $bundle_name);
+  // when adding autofields to view let view modes determine which fields should be include and in what order
+  switch ($display_id) {
+    case 'autofields_csv':
+    case 'autofields_xml':
+      $view_mode = 'download';
+      break;
+    case 'autofields_table':
+      $view_mode = 'table';
+      break;
+    default:
+      $view_mode = 'default';
+  }
+  $autofields = array();
+  foreach ($instances as $instance) {
+    $field_display = isset($instance['display'][$view_mode])?$instance['display'][$view_mode]:$instance['display']['default'];
+    // don't add to autofields if this field was hidden in the view mode
+    if ($field_display['type'] != 'hidden') {
+      $autofields[$field_display['weight']] = array(
+        'field_name' => $instance['field_name'],
+        'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
+      );
+    }
+  }
+  // reorder fields to match view mode
+  ksort($autofields);
+  foreach ($autofields as $field) {
+    $view->add_item($display_id, 'field', "field_data_{$field['field_name']}", $field['field_name'], $field['options']);
+  }
+}
+/**
+ * Implements hook_help().
+ */
+function entityform_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case "admin/structure/entityform_types/manage/%/display/download":
+      $output = t('This View Mode is used to control which fields will be included CSV and XML downloads and their order.');
+      break;
+    case "admin/structure/entityform_types/manage/%/display/table":
+      $output = t('This View Mode is used to control which fields will be included submissions table and their order.');
+      break;
+  }
+  return $output;
 }

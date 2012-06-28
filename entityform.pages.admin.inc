@@ -14,7 +14,7 @@ function entityform_settings($form, &$form_state) {
   $form['entityform_default_submissions_view'] = array(
     '#type' => 'select',
     '#title' => t('Default View for Submissions'),
-    '#default_value' => variable_get('entityform_default_submissions_view', 'entityforms:entityforms_admin_page'),
+    '#default_value' => variable_get('entityform_default_submissions_view', 'entityforms'),
   );
   $form['entityform_default_submissions_view']['#options'] = _entityform_get_entityform_views_options();
   return system_settings_form($form);
