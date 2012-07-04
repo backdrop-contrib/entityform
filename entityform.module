@@ -26,11 +26,11 @@ function entityform_menu() {
     'file' => 'entityform.pages.admin.inc',
   );
   $items[$submissions_path] = array(
-      'title' => 'Form Submissions',
-      'page callback' => 'entityform_submission_page',
-      'page arguments' => array($path_count - 2),
-      'access arguments' => array('view any entityform'),
-      'type' => MENU_LOCAL_TASK,
+    'title' => 'Form Submissions',
+    'page callback' => 'entityform_submission_page',
+    'page arguments' => array($path_count - 2),
+    'access arguments' => array('view any entityform'),
+    'type' => MENU_LOCAL_TASK,
   );
   return $items;
 }
