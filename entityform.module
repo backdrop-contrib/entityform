@@ -234,7 +234,7 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
 
   global $user;
   if ($op == 'submit' || $op == 'confirm') {
-    if (is_object($entityform_type) && is_array($entityform_type->data) && array_intersect($entityform_type->data['roles'], array_keys($user->roles))) {
+    if (isset($entityform_type) && is_object($entityform_type) && is_array($entityform_type->data) && array_intersect($entityform_type->data['roles'], array_keys($user->roles))) {
       $can_submit = TRUE;
     }
     else {
