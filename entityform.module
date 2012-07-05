@@ -286,7 +286,10 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
  * Access callback for the entity API.
  */
 function entityform_type_access($op, $type = NULL, $account = NULL) {
-  if ($op == 'view') {
+  // If coming from EntityDrupalWrapper::entityAccess then entity type will be sent
+  // This is used in EntityReferences module
+  // @see EntityDrupalWrapperm, entityAccess
+  if (isset($type) && is_object($type) && get_class($type) == 'EntityformType' && $op == 'view') {
     return entityform_access('submit', $type, $account);
   }
   return user_access('administer entityform types', $account);
