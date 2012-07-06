@@ -1,4 +1,7 @@
 <?php
+/*
+ * @file Default Rules
+ */
 /**
  * Implements hook_default_rules_configuration().
  */

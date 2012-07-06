@@ -10,7 +10,7 @@ define('ENTITYFORM_STATUS_CLOSED', 'ENTITYFORM_CLOSED');
 define('ENTITYFORM_STATUS_OPEN', 'ENTITYFORM_OPEN');
 /**
  * Implements hook_menu().
-*/
+ */
 function entityform_menu() {
   $items = array();
   $entity_info = entity_get_info('entityform_type');
@@ -489,7 +489,7 @@ function entityform_save(Entityform $entityform) {
 }
 /*
  * to be used in page arguments load function
-*/
+ */
 function entityform_empty_load($type) {
   $type = str_replace("-", "_", $type);
   return entityform_create(array('type' => $type));

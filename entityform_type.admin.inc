@@ -392,9 +392,9 @@ function _entityform_type_get_submit_url($type) {
 function _entityform_type_get_confirm_url($type) {
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
-function entityform_get_submission_rule_options(){
+function entityform_get_submission_rule_options() {
   $conditions = array(
-      'plugin' => array('rule','rule set'),
+      'plugin' => array('rule', 'rule set'),
       'active' => TRUE,
       );
   $entities = entity_load('rules_config', FALSE, $conditions);
