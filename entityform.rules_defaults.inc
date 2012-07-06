@@ -1,13 +1,13 @@
 <?php
 /*
  * @file Default Rules
- */
+*/
 /**
  * Implements hook_default_rules_configuration().
  */
 function entityform_default_rules_configuration() {
   $exported_rules[] = <<<'EOD'
-  { "rules_email_entityform_submitter" : {
+{ "rules_email_entityform_submitter" : {
     "LABEL" : "Email Entityform Submitter",
     "PLUGIN" : "rule",
     "TAGS" : [ "entityform submission" ],
@@ -28,7 +28,7 @@ function entityform_default_rules_configuration() {
       { "mail" : {
           "to" : [ "submitted-entityform:user:mail" ],
           "subject" : "Thanks for the submitting the form [entityform-type:label]\r\n\r\n",
-          "message" : "We have received your submission of the form [entityform-type:label].\r\n\r\n[entityform-type:notification-text]",
+          "message" : "We have received your submission of the form [entityform-type:label].\r\n\r\n[entityform-type:notification-text]\r\n\r\n[submitted-entityform:textexport-email]",
           "language" : [ "" ]
         }
       }
