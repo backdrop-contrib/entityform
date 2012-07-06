@@ -40,6 +40,32 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'description' => t("The date the form was most recently updated."),
     );
 
+
+    return $info;
+  }
+}
+/**
+ * Extend the defaults.
+ */
+class EntityformTypeMetadataController extends EntityDefaultMetadataController {
+
+  public function entityPropertyInfo() {
+    $info = parent::entityPropertyInfo();
+    $properties = &$info[$this->type]['properties'];
+    $properties['notification_text'] = array(
+        'label' => t("Notification Text"),
+        'description' => t("Custom text to display in notifications."),
+        'getter callback' => 'entityformtype_metadata_get_properties',
+        'type' => 'text',
+        'computed' => TRUE,
+    );
+    $properties['notify_emails'] = array(
+        'label' => t("Notification Emails"),
+        'description' => t("Emails to notify"),
+        'getter callback' => 'entityformtype_metadata_get_properties',
+        'type' => 'text',
+        'computed' => TRUE,
+    );
     return $info;
   }
 }

@@ -122,33 +122,29 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#default_value' => empty($entityform_type->data['submit_button_text'])?'':$entityform_type->data['submit_button_text'],
       '#description' => t('Text to use for submit button.  If blank it will default to "Submit Form".'),
   );
-  //****************EMAIL FIELDSET SETTINGS *********************//
-  $form['data']['email_set'] = array(
+  //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
+  $form['data']['notifications_set'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Email settings'),
+    '#title' => t('Notifications settings'),
     '#collapsible' => TRUE,
     '#group' => 'additional_settings',
     '#weight' => 30,
   );
-  $form['data']['email_set']['confirm_email'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Send Confirmation Email'),
-    '#default_value' => !empty($entityform_type->data['confirm_email']),
-    '#description' => t('Should users receive a conformation email when submitting this form?'),
+  $form['data']['notifications_set']['submission_rules'] = array(
+      '#type' => 'select',
+      '#title' => t('Submission Rules'),
+      '#description' => t('Select the Rules to invoke on submission'),
+      '#default_value' => empty($entityform_type->data['submission_rules']) ? array() : $entityform_type->data['submission_rules'],
+      '#multiple' => TRUE,
+      '#options' => entityform_get_submission_rule_options(),
   );
-  $form['data']['email_set']['email_body'] = array(
+  $form['data']['notifications_set']['notification_text'] = array(
     '#type' => 'textarea',
     '#title' => t('Email Text'),
-    '#default_value' => empty($entityform_type->data['email_body']) ? '' : $entityform_type->data['email_body'],
+    '#default_value' => empty($entityform_type->data['notification_text']) ? '' : $entityform_type->data['notification_text'],
     '#description' => t('Text for Confirmation Email. DO NOT put HTML in this field'),
   );
-  $form['data']['email_set']['confirm_email_show_submitted'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show Submission information in confirm email'),
-    '#default_value' => !empty($entityform_type->data['confirm_email_show_submitted']),
-    '#description' => t('Show submitted data in conformation email?'),
-  );
-  $form['data']['email_set']['notify_emails'] = array(
+  $form['data']['notifications_set']['notify_emails'] = array(
     '#type' => 'textfield',
     '#title' => t('Notification Emails'),
     '#default_value' => empty($entityform_type->data['notify_emails']) ? '' : $entityform_type->data['notify_emails'],
@@ -395,4 +391,19 @@ function _entityform_type_get_submit_url($type) {
 }
 function _entityform_type_get_confirm_url($type) {
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
+}
+function entityform_get_submission_rule_options(){
+  $conditions = array(
+      'plugin' => array('rule','rule set'),
+      'active' => TRUE,
+      );
+  $entities = entity_load('rules_config', FALSE, $conditions);
+  ksort($entities);
+  $rules = array();
+  foreach ($entities as $entity) {
+    if (in_array('entityform submission', $entity->tags)) {
+      $rules[$entity->name] = $entity->label;
+    }
+  }
+  return $rules;
 }
