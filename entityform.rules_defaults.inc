@@ -28,7 +28,7 @@ function entityform_default_rules_configuration() {
       { "mail" : {
           "to" : [ "submitted-entityform:user:mail" ],
           "subject" : "Thanks for the submitting the form [entityform-type:label]\r\n\r\n",
-          "message" : "We have received your submission of the form [entityform-type:label].\r\n\r\n[entityform-type:notification-text]\r\n\r\n[submitted-entityform:textexport-email]",
+          "message" : "We have received your submission of the form [entityform-type:label].\r\n\r\n[entityform-type:notification-text]",
           "language" : [ "" ]
         }
       }
