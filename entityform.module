@@ -23,7 +23,7 @@ function entityform_menu() {
       'page callback' => 'drupal_get_form',
       'page arguments' => array('entityform_settings'),
       'access arguments' => array('administer site configuration'),
-      'file' => 'entityform.pages.admin.inc',
+      'file' => 'entityform_type.admin.inc',
   );
   $items[$submissions_path] = array(
       'title' => 'Form Submissions',
@@ -638,6 +638,16 @@ function entityform_confirm_page($entityform_type) {
 
   return $render_array;
 }
+function entityform_confirm_title($entityform_type) {
+  if (!isset($entityform_type->data['submission_page_title']) || empty($entityform_type->data['submission_page_title'])) {
+    $default_values = variable_get('entityform_type_defaults', array());
+    if (empty($default_values['data']['submission_page_title'])) {
+      return 'Thank You';
+    }
+    return $default_values['data']['submission_page_title'];
+  }
+  return $entityform_type->data['submission_page_title'];
+}
 /**
  * Implements hook_entity_insert().
  */
@@ -945,6 +955,9 @@ class EntityformTypeController extends EntityAPIControllerExportable {
    */
   public function create(array $values = array()) {
     // Add values that are specific to our Entityform
+
+    $default_values = variable_get('entityform_type_defaults', array());
+    $values += $default_values;
     $values += array(
         'id' => '',
         'is_new' => TRUE,
@@ -1019,11 +1032,14 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
 function entityform_help($path, $arg) {
   $output = '';
   switch ($path) {
-    case "admin/structure/entityform_types/manage/%/display/download":
+    case 'admin/structure/entityform_types/manage/%/display/download':
       $output = t('This View Mode is used to control which fields will be included CSV and XML downloads and their order.');
       break;
-    case "admin/structure/entityform_types/manage/%/display/table":
+    case 'admin/structure/entityform_types/manage/%/display/table':
       $output = t('This View Mode is used to control which fields will be included submissions table and their order.');
+      break;
+    case 'admin/config/content/entityform':
+      $output = t('Set the default settings for new Entityform Types. This will be used for new Entityform Types.');
       break;
   }
   return $output;
@@ -1039,6 +1055,22 @@ function _entityform_invoke_submission_rules($entityform) {
   if (is_array($entityform_type->data['submission_rules'])) {
     foreach ($entityform_type->data['submission_rules'] as $rule_name) {
       rules_invoke_component($rule_name, $entityform, $entityform_type);
+    }
+  }
+}
+/*
+ * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
+* Fieldset elements must end with '_set'
+*/
+function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
+  //set #parents to skip sets in form values
+  foreach (element_children($elements) as $key) {
+    if (strrpos($key, '_set') === drupal_strlen($key) - drupal_strlen('_set')) {
+      foreach (element_children($elements[$key]) as $sub_key ) {
+        $new_parents = $parents;
+        $new_parents[] = $sub_key;
+        $elements[$key][$sub_key]['#parents'] = $new_parents;
+      }
     }
   }
 }
