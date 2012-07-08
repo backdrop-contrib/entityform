@@ -18,12 +18,12 @@ function entityform_menu() {
   $path_count = count(explode('/', $submissions_path));
 
   $items['admin/config/content/entityform'] = array(
-    'title' => 'Entityform Settings',
-    'description' => '',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('entityform_settings'),
-    'access arguments' => array('administer site configuration'),
-    'file' => 'entityform.pages.admin.inc',
+      'title' => 'Entityform Settings',
+      'description' => '',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('entityform_settings'),
+      'access arguments' => array('administer site configuration'),
+      'file' => 'entityform_type.admin.inc',
   );
   $items[$submissions_path] = array(
     'title' => 'Form Submissions',
@@ -638,8 +638,16 @@ function entityform_confirm_page($entityform_type) {
 
   return $render_array;
 }
-
-
+function entityform_confirm_title($entityform_type) {
+  if (!isset($entityform_type->data['submission_page_title']) || empty($entityform_type->data['submission_page_title'])) {
+    $default_values = variable_get('entityform_type_defaults', array());
+    if (empty($default_values['data']['submission_page_title'])) {
+      return 'Thank You';
+    }
+    return $default_values['data']['submission_page_title'];
+  }
+  return $entityform_type->data['submission_page_title'];
+}
 function entityform_confirm_email($entityform) {
   global $user;
   if ($user->uid != $entityform->uid && !user_is_anonymous()) {
@@ -1011,10 +1019,13 @@ class EntityformTypeController extends EntityAPIControllerExportable {
    */
   public function create(array $values = array()) {
     // Add values that are specific to our Entityform
+
+    $default_values = variable_get('entityform_type_defaults', array());
+    $values += $default_values;
     $values += array(
-      'id' => '',
-      'is_new' => TRUE,
-      'data' => '',
+        'id' => '',
+        'is_new' => TRUE,
+        'data' => '',
     );
     $entityform_type = parent::create($values);
     return $entityform_type;
@@ -1085,12 +1096,37 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
 function entityform_help($path, $arg) {
   $output = '';
   switch ($path) {
-    case "admin/structure/entityform_types/manage/%/display/download":
+    case 'admin/structure/entityform_types/manage/%/display/download':
       $output = t('This View Mode is used to control which fields will be included CSV and XML downloads and their order.');
       break;
-    case "admin/structure/entityform_types/manage/%/display/table":
+    case 'admin/structure/entityform_types/manage/%/display/table':
       $output = t('This View Mode is used to control which fields will be included submissions table and their order.');
+      break;
+    case 'admin/config/content/entityform':
+      $output = t('Set the default settings for new Entityform Types. This will be used for new Entityform Types.');
       break;
   }
   return $output;
+}
+function entityformtype_metadata_get_properties($entityform_type, array $options, $name, $entity_type) {
+  if (isset($entityform_type->data[$name])) {
+    return $entityform_type->data[$name];
+  }
+  return NULL;
+}
+/*
+ * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
+ * Fieldset elements must end with '_set'
+ */
+function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
+  //set #parents to skip sets in form values
+  foreach (element_children($elements) as $key) {
+    if (strrpos($key, '_set') === drupal_strlen($key) - drupal_strlen('_set')) {
+      foreach (element_children($elements[$key]) as $sub_key ) {
+        $new_parents = $parents;
+        $new_parents[] = $sub_key;
+        $elements[$key][$sub_key]['#parents'] = $new_parents;
+      }
+    }
+  }
 }

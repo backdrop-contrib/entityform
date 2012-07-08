@@ -48,7 +48,8 @@ class EntityformUIController extends EntityDefaultUIController {
       'type' => MENU_CALLBACK,
     );
     $items['eform/%entityform_type/confirm'] = array(
-      'title' => 'Thank You',
+      'title callback' => 'entityform_confirm_title',
+      'title arguments' => array(1),
       'description' => '',
       'page callback' => 'entityform_confirm_page',
       'page arguments' => array(1, 3),
