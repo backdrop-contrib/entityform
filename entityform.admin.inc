@@ -184,6 +184,7 @@ class EntityformUIController extends EntityDefaultUIController {
 function entityform_form_wrapper($entityform, $mode = 'submit') {
   // Add the breadcrumb for the form's location.
   //entityform_set_breadcrumb();
+  $make_form = TRUE;
   if (!empty($entityform->is_new)) {
     $entityform_type = entityform_type_load($entityform->type);
     $draft = FALSE;
@@ -209,13 +210,27 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
         case 'disallow':
           // @TODO how should this be handled
           if ($old_submission) {
-            return t('You have already submitted this form.');
+            drupal_set_message('You have already submitted this form.');
+            $make_form = FALSE;
           }
           break;
       }
     }
   }
-  return drupal_get_form('entityform_edit_form', $entityform, $mode);
+  $output = array();
+  // Instructions get printed even if form is not created
+  if (!empty($entityform_type->data['instruction_pre'])) {
+    $output['intro'] = array(
+        '#type' => 'markup',
+        '#markup' => "<div class='pre-intructions' >" . $entityform_type->data['instruction_pre'] . "</div>",
+        '#weight' => -100,
+    );
+  }
+  if ($make_form) {
+    $form = drupal_get_form('entityform_edit_form', $entityform, $mode);
+    $output += $form;
+  }
+  return $output;
 }
 
 
@@ -248,13 +263,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   $form_state['entityform'] = $entityform;
   $form_state['entityform_form_mode'] = $mode;
   field_attach_form('entityform', $entityform, $form, $form_state);
-  if (!empty($entityform_type->data['instruction_pre'])) {
-    $form['intro'] = array(
-      '#type' => 'markup',
-      '#markup' => "<div class='pre-intructions' >" . $entityform_type->data['instruction_pre'] . "</div>",
-      '#weight' => -100,
-    );
-  }
+
   $form['actions'] = array(
     '#type' => 'container',
     '#attributes' => array('class' => array('form-actions')),
