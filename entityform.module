@@ -638,61 +638,14 @@ function entityform_confirm_page($entityform_type) {
 
   return $render_array;
 }
-
-
-function entityform_confirm_email($entityform) {
-  global $user;
-  if ($user->uid != $entityform->uid && !user_is_anonymous()) {
-    //don't send email if user editing another user's submission
-    return;
-  }
-  $entityform_type = entityform_type_load($entityform->type);
-  if (!empty($user->mail)) {
-    if (!empty($entityform_type->data['confirm_email'])) {
-      $email_subject = variable_get('site_name', '') . ' ' . t('Form Submission') . ': ' . $entityform_type->label;
-      if (empty($entityform_type->data['email_body'])) {
-        $entityform_type->data['email_body'] = '';
-      }
-      $email_alter = array(
-          'subject' => $email_subject,
-          'body' => array($entityform_type->data['email_body']),
-          // let modules switch which module this email should call
-          'email_module' => 'entityform',
-      );
-      if ($entityform_type->data['confirm_email_show_submitted']) {
-        //add submission data
-        $content = entity_get_controller('entityform')->view(array($entityform->entityform_id => $entityform), 'email');
-        $email_alter['body'][] = entityform_render_to_text($content);
-      }
-
-      drupal_alter(
-      array(
-      'entityform_email',
-      "entityform_{$entityform_type->type}_email",
-      ),
-      $email_alter,
-      $entityform
-      );
-      //modules can set $email_alter to NULL or FALSE to stop email
-      if (!empty($email_alter)) {
-        $email_module = $email_alter['email_module'];
-        unset( $email_alter['email_module']);
-        drupal_mail($email_module, 'entityform_confirm', $user->mail, NULL, $email_alter);
-      }
-    }
-  }
-  if (!empty($entityform_type->data['notify_emails'])) {
-    drupal_mail('entityform', 'notify', $entityform_type->data['notify_emails'], NULL, array('entityform' => $entityform, 'entityform_type' => $entityform_type));
-  }
-}
-
-
 /**
  * Implements hook_entity_insert().
  */
 function entityform_entity_insert($entity, $type) {
   if ($type == 'entityform') {
+    if (module_exists('rules')) {
     _entityform_invoke_submission_rules($entity);
+    }
   }
   elseif ($type == 'entityform_type') {
     if (isset($entity->paths)) {
@@ -723,7 +676,9 @@ function entityform_entity_insert($entity, $type) {
  */
 function entityform_entity_update($entity, $type) {
   if ($type == 'entityform' && empty($entity->draft)) {
-    entityform_confirm_email($entity);
+    if (module_exists('rules')) {
+      _entityform_invoke_submission_rules($entity);
+    }
   }
   elseif ($type == 'entityform_type') {
     if (isset($entity->paths)) {
@@ -750,27 +705,6 @@ function entityform_entity_update($entity, $type) {
         }
       }
     }
-  }
-}
-
-/**
- * Implements hook_mail().
- */
-function entityform_mail($key, &$message, $params) {
-  global $user;
-  switch ($key) {
-    case 'entityform_confirm':
-      $message = array_merge($message, $params);
-      break;
-    case 'notify':
-      $entityform = $params['entityform'];
-      $entityform_type = $params['entityform_type'];
-      $message['subject'] = $email_subject = t('Notification') . ' - ' . variable_get('site_name', '') . ' ' . t('Form Submission') . ': ' . $entityform_type->label;
-      $body = 'User: ' . $user->name;
-      $body .= "\nForm: " . $entityform_type->label;
-      $body .= "\nView:" . url('entityform/' . $entityform->entityform_id, array('absolute' => TRUE));
-      $message['body'][] = $body;
-      break;
   }
 }
 /**
