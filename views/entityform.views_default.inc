@@ -346,7 +346,7 @@ function entityform_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
-  $handler->display->display_options['path'] = 'admin/reports/entityforms/submissions/%/list';
+  $handler->display->display_options['path'] = 'entityform-submissions/submissions/%/list';
   $handler->display->display_options['menu']['type'] = 'default tab';
   $handler->display->display_options['menu']['title'] = 'List';
   $handler->display->display_options['menu']['description'] = 'View Submissions for all Entityforms';
@@ -470,7 +470,7 @@ function entityform_views_default_views() {
     $handler->display->display_options['arguments']['type']['limit'] = '0';
     $handler->display->display_options['arguments']['type']['transform_dash'] = 0;
     $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
-    $handler->display->display_options['path'] = 'admin/reports/entityforms/downloads/%/xml';
+    $handler->display->display_options['path'] = 'entityform-submissions/downloads/%/xml';
     $handler->display->display_options['displays'] = array(
         'entityforms_admin_page' => 'entityforms_admin_page',
         'autofields_table' => 'autofields_table',
@@ -594,7 +594,7 @@ function entityform_views_default_views() {
     $handler->display->display_options['arguments']['type']['limit'] = '0';
     $handler->display->display_options['arguments']['type']['transform_dash'] = 0;
     $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
-    $handler->display->display_options['path'] = 'admin/reports/entityforms/downloads/%/csv';
+    $handler->display->display_options['path'] = 'entityform-submissions/downloads/%/csv';
     $handler->display->display_options['displays'] = array(
         'entityforms_admin_page' => 'entityforms_admin_page',
         'autofields_table' => 'autofields_table',
@@ -800,7 +800,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['fields']['changed']['hide_empty'] = 0;
   $handler->display->display_options['fields']['changed']['empty_zero'] = 0;
   $handler->display->display_options['fields']['changed']['hide_alter_empty'] = 0;
-  $handler->display->display_options['path'] = 'admin/reports/entityforms/submissions/%/table';
+  $handler->display->display_options['path'] = 'entityform-submissions/submissions/%/table';
   $handler->display->display_options['menu']['type'] = 'tab';
   $handler->display->display_options['menu']['title'] = 'Table';
   $handler->display->display_options['menu']['description'] = 'View Submissions for all Entityforms';
@@ -811,5 +811,122 @@ function entityform_views_default_views() {
 
 
   $views[$view->name] = $view;
+  /*
+   * Views to Display Entityform types that will links to submissions
+   */
+  $view = new view;
+  $view->name = 'entityform_type_list';
+  $view->description = 'Provide an index of entityform types that link to submission View';
+  $view->tag = 'default';
+  $view->base_table = 'entityform_type';
+  $view->human_name = 'Entityform Type List';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Entityform Submissions';
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'view any entityform';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['query']['options']['query_comment'] = FALSE;
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '30';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['columns'] = array(
+      'type' => 'type',
+      'label' => 'label',
+  );
+  $handler->display->display_options['style_options']['default'] = 'type';
+  $handler->display->display_options['style_options']['info'] = array(
+      'type' => array(
+          'sortable' => 0,
+          'default_sort_order' => 'asc',
+          'align' => '',
+          'separator' => '',
+          'empty_column' => 0,
+      ),
+      'label' => array(
+          'sortable' => 1,
+          'default_sort_order' => 'asc',
+          'align' => '',
+          'separator' => '',
+          'empty_column' => 0,
+      ),
+  );
+  $handler->display->display_options['style_options']['override'] = 1;
+  $handler->display->display_options['style_options']['sticky'] = 0;
+  $handler->display->display_options['style_options']['empty_table'] = 0;
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['empty'] = FALSE;
+  $handler->display->display_options['header']['area']['content'] = 'Click a form label below to view the forms submissions';
+  $handler->display->display_options['header']['area']['format'] = 'filtered_html';
+  $handler->display->display_options['header']['area']['tokenize'] = 0;
+  /* Field: Entityform Type: Machine-readable name */
+  $handler->display->display_options['fields']['type']['id'] = 'type';
+  $handler->display->display_options['fields']['type']['table'] = 'entityform_type';
+  $handler->display->display_options['fields']['type']['field'] = 'type';
+  $handler->display->display_options['fields']['type']['label'] = '';
+  $handler->display->display_options['fields']['type']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['type']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['make_link'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['type']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['type']['alter']['more_link'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['type']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['type']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['type']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['type']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['type']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['type']['hide_alter_empty'] = 1;
+  /* Field: Entityform Type: Label */
+  $handler->display->display_options['fields']['label']['id'] = 'label';
+  $handler->display->display_options['fields']['label']['table'] = 'entityform_type';
+  $handler->display->display_options['fields']['label']['field'] = 'label';
+  $handler->display->display_options['fields']['label']['label'] = 'Entityform Type';
+  $handler->display->display_options['fields']['label']['alter']['alter_text'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['make_link'] = 1;
+  $handler->display->display_options['fields']['label']['alter']['path'] = 'admin/reports/entityforms/submissions/[type]';
+  $handler->display->display_options['fields']['label']['alter']['absolute'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['external'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['replace_spaces'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['trim_whitespace'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['nl2br'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['word_boundary'] = 1;
+  $handler->display->display_options['fields']['label']['alter']['ellipsis'] = 1;
+  $handler->display->display_options['fields']['label']['alter']['more_link'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['strip_tags'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['trim'] = 0;
+  $handler->display->display_options['fields']['label']['alter']['html'] = 0;
+  $handler->display->display_options['fields']['label']['element_label_colon'] = 1;
+  $handler->display->display_options['fields']['label']['element_default_classes'] = 1;
+  $handler->display->display_options['fields']['label']['hide_empty'] = 0;
+  $handler->display->display_options['fields']['label']['empty_zero'] = 0;
+  $handler->display->display_options['fields']['label']['hide_alter_empty'] = 1;
+
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page');
+  $handler->display->display_options['path'] = 'admin/reports/entityforms';
+  $handler->display->display_options['menu']['type'] = 'normal';
+  $handler->display->display_options['menu']['title'] = 'Entityform Submissions';
+  $handler->display->display_options['menu']['description'] = 'View Submissions for all Entityforms';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+  $views[$view->name] = $view;
+
   return $views;
 }
