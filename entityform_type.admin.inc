@@ -300,16 +300,15 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   $view_options = _entityform_get_entityform_views_options();
   if ($op != 'defaults') {
-    $view_options['default_view'] = t('Use Default');
+    $view_options['default'] = t('Use Default');
   }
-  if (!empty($entityform_type->data['submissions_view']) && strstr($entityform_type->data['submissions_view'], ':')) {
-    $parts = explode(':', $entityform_type->data['submissions_view']);
-    $entityform_type->data['submissions_view'] = $parts[0];
-  }
+  $submission_view = $entityform_type->data['submissions_view'];
+  $parts = explode(':', $submission_view);
+  $submission_view = $parts[0];
   $form['data']['submissions_set']['submissions_view'] = array(
       '#type' => 'select',
       '#title' => t('View for Submissions'),
-      '#default_value' => empty($entityform_type->data['submissions_view']) ? 'default_view' : $entityform_type->data['submissions_view'],
+      '#default_value' => $submission_view,
       '#options' => $view_options,
   );
   $form['entityform_default_submission_view']['#options'] = _entityform_get_entityform_views_options();

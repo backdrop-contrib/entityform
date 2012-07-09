@@ -725,12 +725,7 @@ function entityform_entity_update($entity, $type) {
  */
 function entityform_submission_page($entityform_type , $display_id = NULL) {
   drupal_set_title($entityform_type->label);
-  if (!empty($entityform_type->data['submissions_view']) && $entityform_type->data['submissions_view'] != 'default_view') {
-    $submission_view = $entityform_type->data['submissions_view'];
-  }
-  else {
-    $submission_view = variable_get('entityform_default_submissions_view', 'entityforms');
-  }
+  $submission_view = _entityform_get_type_data_setting($entityform_type, 'submissions_view');
   // Previous setting used "view_name:display_id" - handle that condition.
   $parts = explode(':', $submission_view);
   $view_name = $parts[0];
@@ -748,26 +743,49 @@ function entityform_submission_page($entityform_type , $display_id = NULL) {
     array_pop($path_parts);
     $path = implode('/', $path_parts);
   }
+  // Remove master display.
   array_shift($display_ids);
-  // Create links to other displays
-  foreach ($display_ids as $display) {
-    // Don't provide direct links to export displays. These will be attached other displays.
-    if ($view->display[$display]->display_plugin != 'views_data_export') {
-      $links[] = array(
-          'href' => "$path/$display",
-          'title' => $view->display[$display]->display_title,
-      );
+  $links = '';
+  if (count($display_ids) > 1) {
+    // Create links to other displays
+    foreach ($display_ids as $display) {
+      // Don't provide direct links to export displays. These will be attached other displays.
+      if ($view->display[$display]->display_plugin != 'views_data_export') {
+        $links[] = array(
+            'href' => "$path/$display",
+            'title' => $view->display[$display]->display_title,
+        );
+      }
     }
+    $links = theme(
+        'links',
+        array(
+            'links' => $links,
+            'attributes' => array('class' => 'tabs secondary'))
+    );
   }
-  $links = theme(
-      'links',
-      array(
-          'links' => $links,
-          'attributes' => array('class' => 'tabs secondary'))
-  );
   return $links . views_embed_view($view_name, $display_id, $entityform_type->type);
 }
+function _entityform_get_type_data_setting($entityform_type, $setting, $default_value = NULL) {
+  static $empty_type;
 
+  if (!empty($entityform_type->data[$setting]) && $entityform_type->data[$setting] != 'default' && $entityform_type->data[$setting] != 'default_view') {
+    return $entityform_type->data[$setting];
+  }
+  else {
+    if ($default_value !== NULL) {
+      return $default_value;
+    }
+    if (empty($empty_type)) {
+      //Load empty type which will have defaults filled in.
+      $empty_type = entity_get_controller('entityform_type')->create();
+    }
+    if (isset($empty_type->data[$setting])) {
+      return $empty_type->data[$setting];
+    }
+    return NULL;
+  }
+}
 /**
  * Implements hook_menu_local_tasks_alter().
  */
@@ -961,7 +979,9 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     $values += array(
         'id' => '',
         'is_new' => TRUE,
-        'data' => '',
+        'data' => array(
+            'submissions_view' => 'entityforms'
+            ),
     );
     $entityform_type = parent::create($values);
     return $entityform_type;

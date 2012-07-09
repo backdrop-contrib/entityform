@@ -21,6 +21,7 @@ function entityform_views_default_views() {
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'List';
+  $handler->display->display_options['use_ajax'] = TRUE;
   $handler->display->display_options['access']['type'] = 'perm';
   $handler->display->display_options['access']['perm'] = 'view any entityform';
   $handler->display->display_options['cache']['type'] = 'none';
@@ -70,7 +71,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['relationships']['uid']['field'] = 'uid';
   $handler->display->display_options['relationships']['uid']['required'] = 0;
   if (module_exists('views_bulk_operations')) {
-  /* Field: Bulk operations: Entityform */
+    /* Field: Bulk operations: Entityform */
     $handler->display->display_options['fields']['views_bulk_operations']['id'] = 'views_bulk_operations';
     $handler->display->display_options['fields']['views_bulk_operations']['table'] = 'entityform';
     $handler->display->display_options['fields']['views_bulk_operations']['field'] = 'views_bulk_operations';
@@ -321,6 +322,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['arguments']['type']['default_action'] = 'not found';
   $handler->display->display_options['arguments']['type']['title_enable'] = 1;
   $handler->display->display_options['arguments']['type']['title'] = 'Submissions for %1';
+  $handler->display->display_options['arguments']['type']['default_argument_type'] = 'fixed';
   $handler->display->display_options['arguments']['type']['default_argument_skip_url'] = 0;
   $handler->display->display_options['arguments']['type']['summary']['number_of_records'] = '0';
   $handler->display->display_options['arguments']['type']['summary']['format'] = 'default_summary';
@@ -344,15 +346,17 @@ function entityform_views_default_views() {
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
-  $handler->display->display_options['path'] = 'admin/structure/entityform_types/manage/%/submissions/list';
+  $handler->display->display_options['path'] = 'admin/reports/entityforms/submissions/%/list';
+  $handler->display->display_options['menu']['type'] = 'default tab';
   $handler->display->display_options['menu']['title'] = 'List';
   $handler->display->display_options['menu']['description'] = 'View Submissions for all Entityforms';
   $handler->display->display_options['menu']['weight'] = '0';
   $handler->display->display_options['menu']['name'] = 'management';
   $handler->display->display_options['menu']['context'] = 0;
-  $handler->display->display_options['tab_options']['type'] = 'tab';
+  $handler->display->display_options['tab_options']['type'] = 'normal';
   $handler->display->display_options['tab_options']['title'] = 'Submissions';
   $handler->display->display_options['tab_options']['weight'] = '0';
+  $handler->display->display_options['tab_options']['name'] = 'management';
   if (module_exists('views_data_export')) {
     /* Display: XML Data export */
     $handler = $view->new_display('views_data_export', 'XML Data export', 'autofields_xml');
@@ -466,10 +470,11 @@ function entityform_views_default_views() {
     $handler->display->display_options['arguments']['type']['limit'] = '0';
     $handler->display->display_options['arguments']['type']['transform_dash'] = 0;
     $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
-    $handler->display->display_options['path'] = 'admin/structure/entityforms/xml/%';
+    $handler->display->display_options['path'] = 'admin/reports/entityforms/downloads/%/xml';
     $handler->display->display_options['displays'] = array(
         'entityforms_admin_page' => 'entityforms_admin_page',
         'autofields_table' => 'autofields_table',
+        'block_1' => 'block_1',
         'default' => 0,
     );
 
@@ -589,7 +594,7 @@ function entityform_views_default_views() {
     $handler->display->display_options['arguments']['type']['limit'] = '0';
     $handler->display->display_options['arguments']['type']['transform_dash'] = 0;
     $handler->display->display_options['arguments']['type']['break_phrase'] = 0;
-    $handler->display->display_options['path'] = 'admin/structure/entityforms/csv/%';
+    $handler->display->display_options['path'] = 'admin/reports/entityforms/downloads/%/csv';
     $handler->display->display_options['displays'] = array(
         'entityforms_admin_page' => 'entityforms_admin_page',
         'autofields_table' => 'autofields_table',
@@ -795,13 +800,15 @@ function entityform_views_default_views() {
   $handler->display->display_options['fields']['changed']['hide_empty'] = 0;
   $handler->display->display_options['fields']['changed']['empty_zero'] = 0;
   $handler->display->display_options['fields']['changed']['hide_alter_empty'] = 0;
-  $handler->display->display_options['path'] = 'admin/structure/entityform_types/manage/%/submissions/table';
+  $handler->display->display_options['path'] = 'admin/reports/entityforms/submissions/%/table';
   $handler->display->display_options['menu']['type'] = 'tab';
   $handler->display->display_options['menu']['title'] = 'Table';
   $handler->display->display_options['menu']['description'] = 'View Submissions for all Entityforms';
   $handler->display->display_options['menu']['weight'] = '0';
   $handler->display->display_options['menu']['name'] = 'management';
   $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['tab_options']['weight'] = '0';
+
 
   $views[$view->name] = $view;
   return $views;
