@@ -39,7 +39,12 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'schema field' => 'changed',
       'description' => t("The date the form was most recently updated."),
     );
-
+    $properties['type'] = array(
+        'label' => t("Entityform Type"),
+        'type' => 'entityform_type',
+        'schema field' => 'type',
+        'description' => t("The Entityform Type for the Entityform Submission."),
+    );
 
     return $info;
   }
