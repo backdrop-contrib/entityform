@@ -1,20 +1,22 @@
 <?php
 function entityform_notifications_entity_update($entity, $type) {
   if ($type == 'entityform' && empty($entity->draft)) {
-    _entityform_invoke_rules($entity,'submission_rules');
+    entityform_invoke_rules($entity,'submission_rules');
   }
 }
 function entityform_notifications_entity_insert($entity, $type) {
   if ($type == 'entityform' && empty($entity->draft)) {
-    _entityform_invoke_rules($entity,'submission_rules');
+    entityform_invoke_rules($entity,'submission_rules');
   }
 }
 /**
  * Implements hook_form_FORM_ID_alter().
  */
 function entityform_notifications_form_entityform_settings_alter(&$form, &$form_state, $form_id) {
-  _entityform_notifications_type_settings($form, $form_id);
-
+  $notifications_set = _entityform_notifications_type_settings($form, $form_id);
+  $notifications_set['#collapsed'] = TRUE;
+  $form['entityform_type_defaults']['data']['notifications_set'] = $notifications_set;
+  _entityform_remove_fieldsets_from_tree($form['entityform_type_defaults']['data'], array('entityform_type_defaults', 'data'));
 }
 /**
  * Implements hook_form_FORM_ID_alter()
@@ -32,23 +34,22 @@ function entityform_notifications_form_variable_edit_form_alter(&$form, &$form_s
  * Implements hook_form_FORM_ID_alter().
  */
 function entityform_notifications_form_entityform_type_form_alter(&$form, &$form_state, $form_id) {
-  _entityform_notifications_type_settings($form, $form_id);
+  $notifications_set = _entityform_notifications_type_settings($form, $form_id);
+  $form['data'] ['notifications_set'] = $notifications_set;
+  _entityform_remove_fieldsets_from_tree($form['data'], array('data'));
 
 }
-function _entityform_notifications_type_settings(&$form, $form_id) {
+function _entityform_notifications_type_settings($form, $form_id) {
   $entityform_type = $form['#entityform_type'];
   //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
-  $form['data']['notifications_set'] = array(
+  $notifications_set = array(
       '#type' => 'fieldset',
       '#title' => t('Notifications settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
       '#weight' => 30,
   );
-  if ($form_id == 'entityform_settings') {
-    $form['data']['notifications_set']['#collapsed'] = TRUE;
-  }
-  $form['data']['notifications_set']['submission_rules'] = array(
+  $notifications_set['submission_rules'] = array(
       '#type' => 'select',
       '#title' => t('Submission Rules'),
       '#description' => t('Select the Rules to invoke on submission'),
@@ -56,17 +57,18 @@ function _entityform_notifications_type_settings(&$form, $form_id) {
       '#multiple' => TRUE,
       '#options' => entityform_get_submission_rule_options(),
   );
-  $form['data']['notifications_set']['notification_text'] = array(
+  $notifications_set['notification_text'] = array(
       '#type' => 'textarea',
       '#title' => t('Email Text'),
       '#default_value' => empty($entityform_type->data['notification_text']) ? '' : $entityform_type->data['notification_text'],
       '#description' => t('Text for Confirmation Email. DO NOT put HTML in this field'),
   );
-  $form['data']['notifications_set']['notify_emails'] = array(
+  $notifications_set['notify_emails'] = array(
       '#type' => 'textfield',
       '#title' => t('Notification Emails'),
       '#default_value' => empty($entityform_type->data['notify_emails']) ? '' : $entityform_type->data['notify_emails'],
       '#description' => t('Enter emails that should be notified for each form submissions.'),
       '#element_validate' => array('_entityform_form_email_list_validate'),
   );
+  return $notifications_set;
 }

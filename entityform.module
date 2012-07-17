@@ -190,13 +190,16 @@ function entityform_tokens($type, $tokens, array $data = array(), array $options
             $field_display = isset($instance['display'][$view_mode]) ? $instance['display'][$view_mode] : $instance['display']['default'];
             // don't add to autofields if this field was hidden in the view mode
             if ($field_display['type'] != 'hidden') {
-              $autofields[$field_display['weight']] = array(
-                'field_name' => $instance['field_name'],
-                'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
-              );
-              $item = field_get_items('entityform', $entityform, $instance['field_name']);
-              $autofields[$field_display['weight']] = field_view_value('entityform', $entityform, $instance['field_name'], $item[0], $field_display);
-              $autofields[$field_display['weight']]['#title'] = $instance['label'];
+              $items = field_get_items('entityform', $entityform, $instance['field_name']);
+              if (!empty($items)) {
+                $autofields[$field_display['weight']] = array(
+                  'field_name' => $instance['field_name'],
+                  'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
+                );
+
+                $autofields[$field_display['weight']] = field_view_value('entityform', $entityform, $instance['field_name'], $items[0], $field_display);
+                $autofields[$field_display['weight']]['#title'] = $instance['label'];
+              }
             }
           }
           // reorder fields to match view mode
@@ -722,12 +725,7 @@ function entityform_confirm_title($entityform_type) {
  * Implements hook_entity_insert().
  */
 function entityform_entity_insert($entity, $type) {
-  if ($type == 'entityform') {
-    if (module_exists('rules')) {
-    _entityform_invoke_submission_rules($entity);
-    }
-  }
-  elseif ($type == 'entityform_type') {
+  if ($type == 'entityform_type') {
     if (isset($entity->paths)) {
       foreach ($entity->paths as $key => $path) {
         $path = $entity->paths[$key];
@@ -755,12 +753,7 @@ function entityform_entity_insert($entity, $type) {
  * Implements hook_entity_update().
  */
 function entityform_entity_update($entity, $type) {
-  if ($type == 'entityform' && empty($entity->draft)) {
-    if (module_exists('rules')) {
-      _entityform_invoke_submission_rules($entity);
-    }
-  }
-  elseif ($type == 'entityform_type') {
+  if ($type == 'entityform_type') {
     if (isset($entity->paths)) {
       foreach ($entity->paths as $key => $path) {
         $path = $entity->paths[$key];

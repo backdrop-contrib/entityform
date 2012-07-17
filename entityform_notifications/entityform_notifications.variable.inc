@@ -7,7 +7,7 @@
 /**
  * Implements hook_variable_group_info()
  */
-function entityform_variable_group_info() {
+function entityform_notifications_variable_group_info() {
   // Group for variable that have no group
   $groups['entityform'] = array(
     'title' => t('EntityForm Email'),
@@ -19,7 +19,7 @@ function entityform_variable_group_info() {
 /**
  * Implements hook_variable_info().
  */
-function entityform_variable_info($options) {
+function entityform_notifications_variable_info($options) {
 
   $variable['entityform_notify_submitter_[mail_part]'] = array(
     'title' => t('Email Entityform Submitter'),
@@ -52,4 +52,4 @@ function entityform_variable_info($options) {
   );
 
   return $variable;
-}  
+}
