@@ -409,7 +409,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   if ($form_state['entityform_form_mode'] == 'submit') {
     if (empty($entityform->draft)) {
       if (!empty($entityform_type->data['redirect_path']) ) {
-        $entityform_type->data['redirect_path'];
+        $form_state['redirect'] = $entityform_type->data['redirect_path'];
       }
       else {
         global $user;
