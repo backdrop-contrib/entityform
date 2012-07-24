@@ -1159,3 +1159,16 @@ function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
     }
   }
 }
+/**
+ * Implements hook_forms().
+ */
+function entityform_forms() {
+  $types = entityform_get_types();
+  foreach ($types as $machine_name => $type) {
+    $forms[$machine_name . '_entityform_edit_form'] = array(
+        'callback' => 'entityform_edit_form'
+    );
+  }
+
+  return $forms;
+}

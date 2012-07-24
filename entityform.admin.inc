@@ -227,7 +227,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
     );
   }
   if ($make_form) {
-    $form = drupal_get_form('entityform_edit_form', $entityform, $mode);
+    $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
     $output += $form;
   }
   return $output;
