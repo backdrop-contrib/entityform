@@ -1,0 +1,9 @@
+name = Entityforms Notifications
+description = Provides notifications for Entityforms
+core = 7.x
+package = Entityforms
+
+
+dependencies[] = entityform
+dependencies[] = rules
+dependencies[] = variable_email

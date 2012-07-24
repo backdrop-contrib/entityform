@@ -46,6 +46,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     $entityform_type->type = '';
   }
   $form = _entityform_type_setttings_elements($entityform_type, $op);
+  $form['#entityform_type'] = $entityform_type;
   $form['label'] = array(
     '#title' => t('Label'),
     '#type' => 'textfield',
@@ -170,6 +171,7 @@ function entityform_settings($form, &$form_state) {
   //choose the default View for viewing for submissions
   $defaults = entity_get_controller('entityform_type')->create();
   $form = _entityform_type_setttings_elements($defaults, 'defaults');
+  $form['#entityform_type'] = $defaults;
   $form['entityform_type_defaults']['data'] = $form['data'];
   $form['entityform_type_defaults']['#tree'] = TRUE;
   $form['entityform_type_defaults']['#type'] = 'value';
@@ -233,35 +235,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#default_value' => empty($entityform_type->data['submit_button_text'])?'':$entityform_type->data['submit_button_text'],
       '#description' => t('Text to use for submit button.  If blank it will default to "Submit Form".'),
   );
-  //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
-  $form['data']['notifications_set'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Notifications settings'),
-    '#collapsible' => TRUE,
-    '#group' => 'additional_settings',
-    '#weight' => 30,
-  );
-  $form['data']['notifications_set']['submission_rules'] = array(
-      '#type' => 'select',
-      '#title' => t('Submission Rules'),
-      '#description' => t('Select the Rules to invoke on submission'),
-      '#default_value' => empty($entityform_type->data['submission_rules']) ? array() : $entityform_type->data['submission_rules'],
-      '#multiple' => TRUE,
-      '#options' => entityform_get_submission_rule_options(),
-  );
-  $form['data']['notifications_set']['notification_text'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Email Text'),
-    '#default_value' => empty($entityform_type->data['notification_text']) ? '' : $entityform_type->data['notification_text'],
-    '#description' => t('Text for Confirmation Email. DO NOT put HTML in this field'),
-  );
-  $form['data']['notifications_set']['notify_emails'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Notification Emails'),
-    '#default_value' => empty($entityform_type->data['notify_emails']) ? '' : $entityform_type->data['notify_emails'],
-    '#description' => t('Enter emails that should be notified for each form submissions.'),
-    '#element_validate' => array('_entityform_form_email_list_validate'),
-  );
+
   //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
   $form['data']['submission_page_set'] = array(
       '#type' => 'fieldset',

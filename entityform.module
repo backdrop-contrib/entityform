@@ -106,6 +106,7 @@ function entityform_entity_info() {
           'menu wildcard' => '%entityform',
       ),
       'metadata controller class' => 'EntityformMetadataController',
+      'metatags' => FALSE,
   );
   // The entity that holds information about the entity types
   $return['entityform_type'] = array(
@@ -163,6 +164,58 @@ function entityform_entity_info_alter(&$entity_info) {
   }
 }
 
+/**
+ * Implements hook_token_info_alter().
+ */
+function entityform_token_info_alter(&$data) {
+  $data['tokens']['entityform']['entityform-submittd-data'] = array(
+    'name' => t('Submitted data'),
+    'description' => t('A summary of submitted data.'),
+  );
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function entityform_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+  if ($type == 'entityform' && !empty($data['entityform'])) {
+    $entityform = $data['entityform'];
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'entityform-submittd-data':
+          $instances = field_info_instances('entityform', $entityform->type);
+          $view_mode = 'email';
+          $autofields = array();
+          foreach ($instances as $instance) {
+            $field_display = isset($instance['display'][$view_mode]) ? $instance['display'][$view_mode] : $instance['display']['default'];
+            // don't add to autofields if this field was hidden in the view mode
+            if ($field_display['type'] != 'hidden') {
+              $items = field_get_items('entityform', $entityform, $instance['field_name']);
+              if (!empty($items)) {
+                $autofields[$field_display['weight']] = array(
+                  'field_name' => $instance['field_name'],
+                  'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
+                );
+
+                $autofields[$field_display['weight']] = field_view_value('entityform', $entityform, $instance['field_name'], $items[0], $field_display);
+                $autofields[$field_display['weight']]['#title'] = $instance['label'];
+              }
+            }
+          }
+          // reorder fields to match view mode
+          ksort($autofields);
+          $replacements[$original] = theme('entityform_submittd_data', array(
+            'instances' => $instances,
+            'fields' => $autofields,
+            'entityform' => $entityform,
+          ));
+          break;
+      }
+    }
+  }
+  return $replacements;
+}
 
 /**
  * Implements hook_permission().
@@ -575,9 +628,23 @@ function entityform_theme() {
           'render element' => 'elements',
           'template' => 'entityform',
       ),
+      'entityform_submittd_data' => array(
+          'render element' => 'elements',
+          'template' => 'entityform-submittd-data',
+      ),
   );
 }
 
+function template_preprocess_entityform_submittd_data(&$variables) {
+  $entityform = $variables['entityform'];
+
+  $variables['date'] = format_date($entityform->created);
+  $variables['name'] = theme('username', array('account' => $entityform));
+
+  $uri = entity_uri('entityform', $entityform);
+  $uri['options']['absolute'] = TRUE;
+  $variables['url'] = url($uri['path'], $uri['options']);
+}
 
 function entityform_draft_page($entityform_type) {
   $args = func_get_args();
@@ -659,12 +726,7 @@ function entityform_confirm_title($entityform_type) {
  * Implements hook_entity_insert().
  */
 function entityform_entity_insert($entity, $type) {
-  if ($type == 'entityform') {
-    if (module_exists('rules')) {
-    _entityform_invoke_submission_rules($entity);
-    }
-  }
-  elseif ($type == 'entityform_type') {
+  if ($type == 'entityform_type') {
     if (isset($entity->paths)) {
       foreach ($entity->paths as $key => $path) {
         $path = $entity->paths[$key];
@@ -692,12 +754,7 @@ function entityform_entity_insert($entity, $type) {
  * Implements hook_entity_update().
  */
 function entityform_entity_update($entity, $type) {
-  if ($type == 'entityform' && empty($entity->draft)) {
-    if (module_exists('rules')) {
-      _entityform_invoke_submission_rules($entity);
-    }
-  }
-  elseif ($type == 'entityform_type') {
+  if ($type == 'entityform_type') {
     if (isset($entity->paths)) {
       foreach ($entity->paths as $key => $path) {
         $path = $entity->paths[$key];
@@ -1077,13 +1134,15 @@ function entityformtype_metadata_get_properties($entityform_type, array $options
   }
   return NULL;
 }
-function _entityform_invoke_submission_rules($entityform) {
+function entityform_invoke_rules($entityform, $rule_setting) {
   $entityform_type = entityform_type_load($entityform->type);
-  if (is_array($entityform_type->data['submission_rules'])) {
-    foreach ($entityform_type->data['submission_rules'] as $rule_name) {
-      rules_invoke_component($rule_name, $entityform, $entityform_type);
+  $return_values = array();
+  if (is_array($entityform_type->data[$rule_setting])) {
+    foreach ($entityform_type->data[$rule_setting] as $rule_name) {
+      $return_values[] = rules_invoke_component($rule_name, $entityform, $entityform_type);
     }
   }
+  return $return_values;
 }
 /*
  * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
@@ -1100,4 +1159,17 @@ function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
       }
     }
   }
+}
+/**
+ * Implements hook_forms().
+ */
+function entityform_forms() {
+  $types = entityform_get_types();
+  foreach ($types as $machine_name => $type) {
+    $forms[$machine_name . '_entityform_edit_form'] = array(
+        'callback' => 'entityform_edit_form'
+    );
+  }
+
+  return $forms;
 }
