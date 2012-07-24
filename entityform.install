@@ -171,3 +171,24 @@ function entityform_update_7002(&$sandbox = NULL) {
   }
   return $ret;
 }
+/**
+ * Enable entityform_notifications if necessary
+ */
+function entityform_update_7003(&$sandbox = NULL) {
+  $ret = array();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'entityform_type');
+  $results = $query->execute();
+
+  $ids = isset($results['entityform_type']) ? array_keys($results['entityform_type']) : array();
+  $entities = $ids ? entity_load('entityform_type', $ids) : array();
+  foreach ($entities as $eid => $entityform_type) {
+    if (!empty($entityform_type->data['submission_rules'])) {
+      if (!module_enable(array('entityform_notifications'))) {
+        throw new DrupalUpdateException('New module entityform_notifications could not be enabled.');
+      }
+      break;
+    }
+  }
+  return $ret;
+}
