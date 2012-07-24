@@ -106,6 +106,7 @@ function entityform_entity_info() {
           'menu wildcard' => '%entityform',
       ),
       'metadata controller class' => 'EntityformMetadataController',
+      'metatags' => FALSE,
   );
   // The entity that holds information about the entity types
   $return['entityform_type'] = array(
