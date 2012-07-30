@@ -210,7 +210,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
         case 'disallow':
           // @TODO how should this be handled
           if ($old_submission) {
-            drupal_set_message('You have already submitted this form.');
+            drupal_set_message(t('You have already submitted this form.'));
             $make_form = FALSE;
           }
           break;
@@ -227,8 +227,11 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
     );
   }
   if ($make_form) {
-    $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
-    $output += $form;
+    $rule_returns = entityform_invoke_rules($entityform, 'access_rules');
+    if (_entityform_rules_all_pass($rule_returns)) {
+      $form = drupal_get_form('entityform_edit_form', $entityform, $mode);
+      $output += $form;
+    }
   }
   return $output;
 }

@@ -169,8 +169,8 @@ function entityform_entity_info_alter(&$entity_info) {
  */
 function entityform_token_info_alter(&$data) {
   $data['tokens']['entityform']['entityform-submittd-data'] = array(
-    'name' => t('Submitted data'),
-    'description' => t('A summary of submitted data.'),
+      'name' => t('Submitted data'),
+      'description' => t('A summary of submitted data.'),
   );
 }
 
@@ -194,8 +194,8 @@ function entityform_tokens($type, $tokens, array $data = array(), array $options
               $items = field_get_items('entityform', $entityform, $instance['field_name']);
               if (!empty($items)) {
                 $autofields[$field_display['weight']] = array(
-                  'field_name' => $instance['field_name'],
-                  'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
+                    'field_name' => $instance['field_name'],
+                    'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
                 );
 
                 $autofields[$field_display['weight']] = field_view_value('entityform', $entityform, $instance['field_name'], $items[0], $field_display);
@@ -206,9 +206,9 @@ function entityform_tokens($type, $tokens, array $data = array(), array $options
           // reorder fields to match view mode
           ksort($autofields);
           $replacements[$original] = theme('entityform_submittd_data', array(
-            'instances' => $instances,
-            'fields' => $autofields,
-            'entityform' => $entityform,
+              'instances' => $instances,
+              'fields' => $autofields,
+              'entityform' => $entityform,
           ));
           break;
       }
@@ -1045,7 +1045,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
         'is_new' => TRUE,
         'data' => array(
             'submissions_view' => 'entityforms'
-            ),
+        ),
     );
     $entityform_type = parent::create($values);
     return $entityform_type;
@@ -1137,17 +1137,40 @@ function entityformtype_metadata_get_properties($entityform_type, array $options
 function entityform_invoke_rules($entityform, $rule_setting) {
   $entityform_type = entityform_type_load($entityform->type);
   $return_values = array();
-  if (is_array($entityform_type->data[$rule_setting])) {
+  if (isset($entityform_type->data[$rule_setting]) && is_array($entityform_type->data[$rule_setting])) {
     foreach ($entityform_type->data[$rule_setting] as $rule_name) {
       $return_values[] = rules_invoke_component($rule_name, $entityform, $entityform_type);
     }
   }
   return $return_values;
 }
+function _entityform_rules_all_pass($rule_returns) {
+  $pass = FALSE;
+  if (empty($rule_returns)) {
+    // No Returns so pass
+    return TRUE;
+  }
+  foreach ($rule_returns as $rule_return) {
+    if ($rule_return === FALSE) {
+      //First Rule that didn't pass
+      return FALSE;
+    }
+    if (is_array($rule_return)) {
+      //This is not a Condition Component
+      //The first value should be a returned "Truth Value"
+      if (isset($rule_return[0]) && $rule_return[0] == FALSE) {
+        //First Rule that didn't pass
+        return FALSE;
+      }
+    }
+  }
+  //All Rules passed
+  return TRUE;
+}
 /*
  * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
-* Fieldset elements must end with '_set'
-*/
+ * Fieldset elements must end with '_set'
+ */
 function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
   //set #parents to skip sets in form values
   foreach (element_children($elements) as $key) {

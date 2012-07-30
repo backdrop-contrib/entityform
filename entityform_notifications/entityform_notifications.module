@@ -55,7 +55,7 @@ function _entityform_notifications_type_settings($form, $form_id) {
       '#description' => t('Select the Rules to invoke on submission'),
       '#default_value' => empty($entityform_type->data['submission_rules']) ? array() : $entityform_type->data['submission_rules'],
       '#multiple' => TRUE,
-      '#options' => entityform_get_submission_rule_options(),
+      '#options' => entityform_get_rule_options(array('rule', 'rule set'),'entityform submission'),
   );
   $notifications_set['notification_text'] = array(
       '#type' => 'textarea',

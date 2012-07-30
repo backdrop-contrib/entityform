@@ -324,6 +324,14 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#default_value' => empty($entityform_type->data['resubmit_action']) ? 'new' : $entityform_type->data['resubmit_action'],
       '#description' => t('Action to take if logged in user has already submitted form.'),
   );
+  $form['data']['access_set']['access_rules'] = array(
+    '#type' => 'select',
+    '#title' => t('Access Rules'),
+    '#description' => t('Select the Rules to invoke to determine if the user will be shown the form fields. This does not control whether the user can see the form page.'),
+    '#default_value' => empty($entityform_type->data['access_rules']) ? array() : $entityform_type->data['access_rules'],
+    '#multiple' => TRUE,
+    '#options' => entityform_get_rule_options(array('and', 'or', 'rule', 'rule set'), 'entityform access'),
+  );
 
   return $form;
 }
@@ -402,16 +410,16 @@ function _entityform_type_get_submit_url($type) {
 function _entityform_type_get_confirm_url($type) {
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
-function entityform_get_submission_rule_options() {
+function entityform_get_rule_options($plugin_types, $tag) {
   $conditions = array(
-      'plugin' => array('rule', 'rule set'),
+      'plugin' => $plugin_types,
       'active' => TRUE,
       );
   $entities = entity_load('rules_config', FALSE, $conditions);
   ksort($entities);
   $rules = array();
   foreach ($entities as $entity) {
-    if (in_array('entityform submission', $entity->tags)) {
+    if (in_array($tag, $entity->tags)) {
       $rules[$entity->name] = $entity->label;
     }
   }
