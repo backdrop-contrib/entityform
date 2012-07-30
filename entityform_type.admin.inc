@@ -54,6 +54,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#description' => t('The human-readable name of this entityform type.'),
     '#required' => TRUE,
     '#size' => 30,
+    '#weight' => -50,
   );
 
   // Machine-readable type name.
