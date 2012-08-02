@@ -795,17 +795,10 @@ function entityform_submission_page($entityform_type , $display_id = NULL) {
   $view_name = $parts[0];
   $view = views_get_view($view_name);
 
-  $path = current_path();
   $display_ids = array_keys($view->display);
   if (empty($display_id)) {
     // if more than 1 display then get 2nd(non-default)
     $display_id = count($display_ids) > 1? $display_ids[1]:$display_ids[0];
-  }
-  else {
-    // If display_id was passed in path remove it.
-    $path_parts = explode('/', $path);
-    array_pop($path_parts);
-    $path = implode('/', $path_parts);
   }
   // Remove master display.
   array_shift($display_ids);
@@ -816,7 +809,7 @@ function entityform_submission_page($entityform_type , $display_id = NULL) {
       // Don't provide direct links to export displays. These will be attached other displays.
       if ($view->display[$display]->display_plugin != 'views_data_export') {
         $links[] = array(
-            'href' => "$path/$display",
+            'href' => _entityform_get_submissions_view_path($display),
             'title' => $view->display[$display]->display_title,
         );
       }
@@ -828,7 +821,46 @@ function entityform_submission_page($entityform_type , $display_id = NULL) {
             'attributes' => array('class' => 'tabs secondary'))
     );
   }
-  return $links . views_embed_view($view_name, $display_id, $entityform_type->type);
+  return $links . entityform_embed_view($view_name, $display_id, $entityform_type->type);
+}
+/**
+ * Generates path for View based on current menu_item
+ * Adds display id on the end
+ * @param string $display_id
+ * @return string
+ *   New path for View
+ */
+function _entityform_get_submissions_view_path($display_id) {
+  $menu_item = menu_get_item();
+  $menu_path = $menu_item['path'];
+  $menu_path_parts = explode('/', $menu_path);
+  $path_parts = explode('/', current_path());
+  while (count($path_parts) > count($menu_path_parts)) {
+    array_pop($path_parts);
+  }
+  $path_parts[] = $display_id;
+  return implode('/', $path_parts);
+}
+/**
+ * Embed a view using a PHP snippet.
+ * Exactly the same as views_embed_view but adds override_path b/c View is embedded
+ * @see views_embed_view()
+ */
+function entityform_embed_view($name, $display_id = 'default') {
+  $args = func_get_args();
+  array_shift($args); // remove $name
+  if (count($args)) {
+    array_shift($args); // remove $display_id
+  }
+
+  $view = views_get_view($name);
+  // This needed so VBO will work correctly.
+  $view->override_path = _entityform_get_submissions_view_path($display_id);
+  if (!$view || !$view->access($display_id)) {
+    return;
+  }
+
+  return $view->preview($display_id, $args);
 }
 function _entityform_get_type_data_setting($entityform_type, $setting, $default_value = NULL) {
   static $empty_type;
