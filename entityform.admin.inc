@@ -429,9 +429,11 @@ function entityform_edit_form_submit(&$form, &$form_state) {
         $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
         $form_state['redirect'] = array($confirm_path[0], $confirm_path[1]);
       }
+      drupal_set_message(t('Your submission has been saved.'));
     }
     else {
       $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
+      drupal_set_message(t('Your draft submission has been saved.'));
     }
   }
   else {
