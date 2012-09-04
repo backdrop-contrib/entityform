@@ -228,15 +228,23 @@ function entityform_permission() {
           'title' => t('Administer entityform types'),
           'description' => t('Create and delete fields for entityform types, and set their permissions.'),
       ),
-      'administer entityforms' => array(
-          'title' => t('Administer entityforms'),
-          'description' => t('Edit and delete all entityforms'),
-      ),
-      "edit any entityform" => array(
+      'edit any entityform' => array(
           'title' => t('Edit any entityform submission'),
       ),
-      "view any entityform" => array(
+      'view any entityform' => array(
           'title' => t('View any entityform submission'),
+      ),
+      'delete any entityform' => array(
+          'title' => t('Delete any entityform submission'),
+      ),
+      'edit own entityform' => array(
+          'title' => t('Edit own entityform submission'),
+      ),
+      'view own entityform' => array(
+          'title' => t('View own entityform submission'),
+      ),
+      'delete own entityform' => array(
+          'title' => t('Delete own entityform submission'),
       ),
   );
   return $permissions;
@@ -324,24 +332,17 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
     }
     // return user_access("submit $type_name entityform");
   }
-  if ($op == 'confirm') {
-
-  }
-  if (isset($entityform) && $type_name) {
-    $op = ($op == 'view') ? 'view' : 'edit';
-    if ($op == 'view' && is_object($entityform) && !empty($user->uid) && $entityform->uid == $user->uid) {
-      //for now user can always view their own submissions - anonymous users can view any submissions
+  if (isset($entityform) && $type_name && is_object($entityform)) {
+    if (user_access("$op any entityform", $account)) {
       return TRUE;
     }
-    if (user_access("$op any entityform", $account)) {
+    elseif (!empty($user->uid) && $entityform->uid == $user->uid && user_access("$op own entityform", $account)) {
       return TRUE;
     }
   }
 
   return FALSE;
 }
-
-
 /**
  * Access callback for the entity API.
  */

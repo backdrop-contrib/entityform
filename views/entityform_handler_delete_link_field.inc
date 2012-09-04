@@ -19,7 +19,7 @@ class entityform_handler_delete_link_field extends entityform_handler_link_field
 
     //Creating a dummy entityform to check access against
     $dummy_entityform = (object) array('type' => $type);
-    if (!entityform_access('edit', $dummy_entityform)) {
+    if (!entityform_access('delete', $dummy_entityform)) {
       return;
     }
 

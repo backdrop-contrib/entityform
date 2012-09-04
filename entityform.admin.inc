@@ -80,13 +80,13 @@ class EntityformUIController extends EntityDefaultUIController {
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
     );
     $items['entityform/' . $wildcard . '/edit'] = array(
-      'title callback' => 'entityform_page_title',
-      'title arguments' => array(1, 'edit'),
+      'title' => 'Edit',
       'page callback' => 'entityform_form_wrapper',
       'page arguments' => array(1, 'edit'),
       'access callback' => 'entityform_access',
       'access arguments' => array('edit', 1),
       'weight' => 0,
+      'type' => MENU_LOCAL_TASK,
       'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
       'file' => 'entityform.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
@@ -97,9 +97,9 @@ class EntityformUIController extends EntityDefaultUIController {
       'page callback' => 'entityform_delete_form_wrapper',
       'page arguments' => array(1),
       'access callback' => 'entityform_access',
-      'access arguments' => array('edit', 1),
+      'access arguments' => array('delete', 1),
       'type' => MENU_LOCAL_TASK,
-      'context' => MENU_CONTEXT_INLINE,
+      'context' => MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE,
       'weight' => 10,
       'file' => 'entityform.admin.inc',
       'file path' => drupal_get_path('module', $this->entityInfo['module']),
@@ -115,6 +115,11 @@ class EntityformUIController extends EntityDefaultUIController {
       'access callback' => 'entityform_access',
       'access arguments' => array('view', 1),
       'type' => MENU_CALLBACK,
+    );
+    $items['entityform/' . $wildcard . '/view']  = array(
+      'title' => 'View',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
     );
     return $items;
   }
