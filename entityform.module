@@ -955,6 +955,13 @@ function _entityform_get_submit_info($entityform) {
  */
 class Entityform extends Entity {
 
+  /**
+   * The user id who submitted this form.
+   *
+   * @var int
+   */
+  public $uid;
+
   public function __construct($values = array()) {
     parent::__construct($values, 'entityform');
   }
@@ -972,13 +979,23 @@ class Entityform extends Entity {
     $entityform_type = entityform_type_load($this->type);
     return $entityform_type->label;
   }
+
   /**
-   * Returns the user who submitted this profile.
+   * Returns the user who submitted this form.
    */
   public function user() {
     return user_load($this->uid);
   }
 
+  /**
+   * Sets a new user who submitted this form.
+   *
+   * @param $account
+   *   The user account object or the user account id (uid).
+   */
+  public function setUser($account) {
+    $this->uid = is_object($account) ? $account->uid : $account;
+  }
 
 }
 
