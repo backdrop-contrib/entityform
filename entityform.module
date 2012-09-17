@@ -660,7 +660,7 @@ function entityform_draft_page($entityform_type) {
       'submit_text' => array(
           '#type' => 'markup',
           '#prefix' => '<div class="draft-text">',
-          '#markup' => $draft_text,
+          '#markup' => _entityform_format_text($draft_text, array('entityform_type' => $entityform_type)),
           '#suffix' => '</div>',
       ),
   );
@@ -683,20 +683,21 @@ function entityform_draft_page($entityform_type) {
  */
 function entityform_confirm_page($entityform_type) {
   $entityform_id = $_GET['entityform_id'];
+  $entityform = entityform_load($entityform_id);
   $render_array = array(
       'submit_text' => array(
           '#type' => 'markup',
           '#prefix' => '<div class="submission-text">',
-          '#markup' => $entityform_type->data['submission_text'],
+          '#markup' => _entityform_format_text($entityform_type->data['submission_text'], array('entityform_type' => $entityform_type, 'entityform' => $entityform)),
           '#suffix' => '</div>',
       ),
   );
   if ($entityform_type->data['submission_show_submitted']) {
-    $controller = entity_get_controller('entityform');
-    if (!$entityform = entityform_load($entityform_id)) {
+    if (empty($entityform)) {
       //entityform_id in url was alter return page not found
       return MENU_NOT_FOUND;
     }
+    $controller = entity_get_controller('entityform');
     $content = $controller->view(array($entityform->entityform_id => $entityform), 'confirmation', NULL, TRUE);
     $render_array['submission_data'] = $content;
   }
@@ -1007,9 +1008,16 @@ class EntityformType extends Entity {
 
   public $type;
   public $label;
+  public $data;
 
   public function __construct($values = array()) {
     parent::__construct($values, 'entityform_type');
+  }
+  /*
+   * Get the redirect path for this EntityformType with tokens replaced
+  */
+  public function get_redirect_path($entityform = NULL) {
+    return _entityform_format_text($this->data['redirect_path'], array('entityform_type' => $this, 'entityform' => $entityform));
   }
 }
 
@@ -1246,4 +1254,24 @@ function entityform_forms() {
   }
 
   return $forms;
+}
+function _entityform_format_text($text_value, $token_types = array()) {
+  $is_filtered = FALSE;
+  if (is_array($text_value)) {
+    // We are dealing for a filtered text value
+    $text = $text_value['value'];
+    $format = $text_value['filter'];
+    $is_filtered = TRUE;
+  }
+  else {
+    $text = check_plain($text_value);
+  }
+  if ($token_types !== FALSE) {
+    $token_types[] = 'global';
+    $text = token_replace($text, $token_types);
+  }
+  if ($is_filtered) {
+    $text = check_markup($text, $format);
+  }
+  return $text;
 }

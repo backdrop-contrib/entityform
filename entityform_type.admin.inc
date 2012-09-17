@@ -78,9 +78,10 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#description' => t('What path should the user be redirected to on correct submission?  Leave blank for default action'),
   );
   $form['data']['instruction_pre'] = array(
-    '#type' => 'textarea',
+    '#type' => 'text_format',
     '#title' => t('Intro Form instructions'),
-    '#default_value' => empty($entityform_type->data['instruction_pre']) ? '' : $entityform_type->data['instruction_pre'],
+    '#default_value' => empty($entityform_type->data['instruction_pre']['value']) ? '' : $entityform_type->data['instruction_pre']['value'],
+    '#format' => empty($entityform_type->data['instruction_pre']['format']) ? NULL : $entityform_type->data['instruction_pre']['format'],
   );
   _entityform_remove_fieldsets_from_tree($form['data'], array('data'));
 
@@ -160,6 +161,24 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#weight' => 99,
     );
   }
+  if (module_exists('token')) {
+    $form['tokens'] = array(
+      '#title' => t('Available Tokens'),
+      '#type' => 'fieldset',
+      '#collapsible' => TRUE,
+      '#weight' => '39',
+    );
+    $form['tokens']['token_tree'] = array(
+      '#theme' => 'token_tree',
+      '#token_types' => array('global_types', 'entityform_type', 'entityform'),
+    );
+  }
+  else {
+    $form['tokens'] = array(
+      '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'http://drupal.org/project/token')) . '</p>',
+    );
+  }
+
   return $form;
 }
 /**
@@ -217,9 +236,10 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#description' => t('Text to use for draft save button.  If blank it will default to "Save Draft".'),
   );
   $form['data']['draft_set']['draft_save_text'] = array(
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => t('Draft save text'),
-      '#default_value' => empty($entityform_type->data['draft_save_text']) ? '' : $entityform_type->data['draft_save_text'],
+      '#default_value' => empty($entityform_type->data['draft_save_text']['value']) ? '' : $entityform_type->data['draft_save_text']['value'],
+      '#format' => empty($entityform_type->data['draft_save_text']['format']) ? NULL : $entityform_type->data['draft_save_text']['format'],
       '#description' => t('Text to dispaly to the user when the form is saved as a draft'),
   );
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
@@ -253,9 +273,10 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
 
   $form['data']['submission_page_set']['submission_text'] = array(
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => t('Submission Reply'),
-      '#default_value' => empty($entityform_type->data['submission_text']) ? '' : $entityform_type->data['submission_text'],
+      '#default_value' => empty($entityform_type->data['submission_text']['value']) ? '' : $entityform_type->data['submission_text']['value'],
+      '#format' => empty($entityform_type->data['submission_text']['format']) ? NULL : $entityform_type->data['submission_text']['format'],
       '#description' => t('Text for correct submission'),
   );
   $form['data']['submission_page_set']['submission_show_submitted'] = array(

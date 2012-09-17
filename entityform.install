@@ -192,3 +192,22 @@ function entityform_update_7003(&$sandbox = NULL) {
   }
   return $ret;
 }
+/**
+ * Change textarea values to support filters.
+ */
+function entityform_update_7004(&$sandbox = NULL) {
+  // Set array of text fields that will use filters  
+  $filter_text_fields = array('draft_save_text', 'submission_text', 'instruction_pre');
+  $entityform_types = entityform_get_types();
+  foreach ($entityform_types as $entityform_type) {
+    foreach ($filter_text_fields as $filter_text_field) {
+      if (isset($entityform_type->data[$filter_text_field])) {
+        $entityform_type->data[$filter_text_field] = array(
+          'value' => $entityform_type->data[$filter_text_field],
+          'format' => NULL,
+        );
+      }
+    }
+    $entityform_type->save();
+  }
+}

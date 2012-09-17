@@ -143,8 +143,14 @@ class EntityformUIController extends EntityDefaultUIController {
   public function confirm_path($bundle, $entityform_id = NULL) {
     module_load_include('inc', 'entityform', 'entityform_type.admin');
     $entityform_type = entityform_type_load($bundle);
-    if (!empty($entityform_type->data['redirect_path'])) {
-      return $entityform_type->data['redirect_path'];
+    if (!empty($entityform_id)) {
+      $redirect_path = $entityform_type->get_redirect_path(entityform_load($entityform_id));
+    }
+    else {
+      $redirect_path = $entityform_type->get_redirect_path();
+    }
+    if (!empty($redirect_path)) {
+      return $redirect_path;
     }
     $path = _entityform_type_get_confirm_url($bundle);
     $path = drupal_get_path_alias($path);
@@ -227,7 +233,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
   if (!empty($entityform_type->data['instruction_pre'])) {
     $output['intro'] = array(
         '#type' => 'markup',
-        '#markup' => "<div class='pre-intructions' >" . $entityform_type->data['instruction_pre'] . "</div>",
+        '#markup' => "<div class='pre-intructions' >" . _entityform_format_text($entityform_type->data['instruction_pre'], array('entityform_type' => $entityform_type)) . "</div>",
         '#weight' => -100,
     );
   }
@@ -416,8 +422,9 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   $entityform->save();
   if ($form_state['entityform_form_mode'] == 'submit') {
     if (empty($entityform->draft)) {
-      if (!empty($entityform_type->data['redirect_path']) ) {
-        $form_state['redirect'] = $entityform_type->data['redirect_path'];
+      $redirect_path = $entityform_type->get_redirect_path($entityform);
+      if (!empty($redirect_path) ) {
+        $form_state['redirect'] = $redirect_path;
       }
       else {
         global $user;
