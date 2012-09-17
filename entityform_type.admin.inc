@@ -306,11 +306,12 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#description' => t('Can users submit this form?'),
   );
   $form['data']['access_set']['roles'] = array(
-      '#type' => 'select',
+      '#type' => 'checkboxes',
       '#title' => t('Roles'),
       '#options' => user_roles(),
       '#default_value' => empty($entityform_type->data['roles']) ? array() : $entityform_type->data['roles'],
-      '#description' => t('Roles who can submit this form.'),
+      '#description' => t('Please select the Role(s) that can submit this form.'),
+      '#required' => TRUE,
       '#multiple' => TRUE,
   );
   $form['data']['access_set']['resubmit_action'] = array(
