@@ -1255,6 +1255,12 @@ function entityform_forms() {
 
   return $forms;
 }
+/**
+ * Replace tokens and convert text to markup filter
+ * @param string $text_value
+ * @param array $token_types
+ * @return string
+ */
 function _entityform_format_text($text_value, $token_types = array()) {
   $is_filtered = FALSE;
   if (is_array($text_value)) {
