@@ -1266,7 +1266,7 @@ function _entityform_format_text($text_value, $token_types = array()) {
   if (is_array($text_value)) {
     // We are dealing for a filtered text value
     $text = $text_value['value'];
-    $format = $text_value['filter'];
+    $format = $text_value['format'];
     $is_filtered = TRUE;
   }
   else {
