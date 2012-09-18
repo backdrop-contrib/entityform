@@ -244,6 +244,15 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
       $output += $form;
     }
   }
+  if (user_access('administer entityform types')) {
+    //Make contextual likes if user has access
+    $contextual_links = array();
+    $contextual_links['entityform_edit']= array(
+      'admin/structure/entityform_types/manage',
+      array($entityform_type->type),
+    );
+    $output['#contextual_links'] = $contextual_links;
+  }
   return $output;
 }
 
