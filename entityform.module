@@ -1281,3 +1281,37 @@ function _entityform_format_text($text_value, $token_types = array()) {
   }
   return $text;
 }
+/**
+ * Implements hook_views_query_alter().
+ * 
+ * Control access to Entityforms in Views.
+ * This will only work if entityform is the base table of the View
+ */
+function entityform_views_query_alter(&$view, &$query) {
+  global $user;
+  if ($view->base_table == 'entityform' && !user_access('view any entityform')) {
+    // @todo user $query to make sure this is the alias
+    $table_alias = 'entityform';
+    if (user_access('view own entityform')) {
+      //Make sure View only returns entityforms for current User
+      $uid = $user->uid;
+    }
+    else {
+      //Provide uid that will never match because 
+      //the current user has no permission to view Entityforms.
+      //The permission should have be implemented on the View but just in case.
+      $uid = -1;
+    }
+    $query->where[] = array(
+        'conditions' => array(
+            array(
+                'field' => "$table_alias.uid",
+                'value' => $uid,
+                'operator' => '=',
+            ),
+        ),
+        'type' => 'AND',
+        'args' => array(),
+    );
+  }
+}
