@@ -1283,7 +1283,7 @@ function _entityform_format_text($text_value, $token_types = array()) {
 }
 /**
  * Implements hook_views_query_alter().
- * 
+ *
  * Control access to Entityforms in Views.
  * This will only work if entityform is the base table of the View
  */
@@ -1297,7 +1297,7 @@ function entityform_views_query_alter(&$view, &$query) {
       $uid = $user->uid;
     }
     else {
-      //Provide uid that will never match because 
+      //Provide uid that will never match because
       //the current user has no permission to view Entityforms.
       //The permission should have be implemented on the View but just in case.
       $uid = -1;
