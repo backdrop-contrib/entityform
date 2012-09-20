@@ -48,8 +48,8 @@ class EntityformUIController extends EntityDefaultUIController {
       'type' => MENU_CALLBACK,
     );
     $items['eform/%entityform_type/confirm'] = array(
-      'title callback' => 'entityform_confirm_title',
-      'title arguments' => array(1),
+      'title callback' => 'entityform_type_page_title',
+      'title arguments' => array(1, 'confirm'),
       'description' => '',
       'page callback' => 'entityform_confirm_page',
       'page arguments' => array(1, 3),
@@ -64,6 +64,15 @@ class EntityformUIController extends EntityDefaultUIController {
       'page arguments' => array(1),
       'access callback' => TRUE,
       'access arguments' => array('draft_save', 1),
+    );
+    $items['eform/%entityform_type/submissions'] = array(
+        'title callback' => 'entityform_type_page_title',
+        'title arguments' => array(1, 'view submissions'),
+        'description' => '',
+        'page callback' => 'entityform_submission_page',
+        'page arguments' => array(1, NULL, 'user'),
+        'access callback' => entityform_access,
+        'access arguments' => array('view submissions', 1),
     );
     $types = array_keys(entityform_get_types());
     $controller = entity_ui_controller('entityform');
@@ -229,6 +238,17 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
     }
   }
   $output = array();
+  if (entityform_access('view submissions', $entityform_type)) {
+    //Only show link if this user has submission that will show up in the selected View
+    $results = views_get_view_result($entityform_type->data['user_submissions_view'], NULL, $entityform_type->type);
+    if (!empty($results)) {
+      $output['submissions_link'] = array(
+        '#type' => 'markup',
+        '#markup' => "<div class='submissions-link' >" . l(t('View your previous submissions'), "eform/{$entityform_type->type}/submissions") . "</div>",
+        '#weight' => -100,
+      );
+    }
+  }
   // Instructions get printed even if form is not created
   if (!empty($entityform_type->data['instruction_pre'])) {
     $output['intro'] = array(
