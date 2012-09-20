@@ -32,6 +32,7 @@ function entityform_menu() {
       'page arguments' => array($path_count - 2),
       'access arguments' => array('view any entityform'),
       'type' => MENU_LOCAL_TASK,
+      'weight' => 100,
   );
   $items['admin/reports/entityforms/submissions/%entityform_type'] = array(
       'title callback' => 'entityform_type_page_title',
