@@ -300,7 +300,10 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   if ($op != 'defaults') {
     $view_options['default'] = t('Use Default');
   }
+  $user_view_options = $view_options;
+  $user_view_options[''] = t('None');
   $submission_view = $entityform_type->data['submissions_view'];
+  $user_submission_view = $entityform_type->data['submissions_view'];
   $parts = explode(':', $submission_view);
   $submission_view = $parts[0];
   $form['data']['submissions_set']['submissions_view'] = array(
@@ -308,6 +311,12 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('View for Submissions'),
       '#default_value' => $submission_view,
       '#options' => $view_options,
+  );
+  $form['data']['submissions_set']['user_submissions_view'] = array(
+      '#type' => 'select',
+      '#title' => t('View for Current User\'s Submissions'),
+      '#default_value' => $submission_view,
+      '#options' => $user_view_options,
   );
   $form['entityform_default_submission_view']['#options'] = _entityform_get_entityform_views_options();
   //****************ACCESS FIELDSET SETTINGS *********************//
