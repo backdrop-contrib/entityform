@@ -343,6 +343,12 @@ function entityform_views_default_views() {
   $handler->display->display_options['filters']['created']['expose']['operator'] = 'created_op';
   $handler->display->display_options['filters']['created']['expose']['identifier'] = 'created';
   $handler->display->display_options['filters']['created']['expose']['multiple'] = FALSE;
+  /* Filter criterion: Entityform: Draft */
+  $handler->display->display_options['filters']['draft']['id'] = 'draft';
+  $handler->display->display_options['filters']['draft']['table'] = 'entityform';
+  $handler->display->display_options['filters']['draft']['field'] = 'draft';
+  $handler->display->display_options['filters']['draft']['operator'] = '!=';
+  $handler->display->display_options['filters']['draft']['value']['value'] = '1';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
@@ -1182,6 +1188,12 @@ function entityform_views_default_views() {
   $handler->display->display_options['filters']['uid_current']['field'] = 'uid_current';
   $handler->display->display_options['filters']['uid_current']['relationship'] = 'uid';
   $handler->display->display_options['filters']['uid_current']['value'] = '1';
+  /* Filter criterion: Entityform: Draft */
+  $handler->display->display_options['filters']['draft']['id'] = 'draft';
+  $handler->display->display_options['filters']['draft']['table'] = 'entityform';
+  $handler->display->display_options['filters']['draft']['field'] = 'draft';
+  $handler->display->display_options['filters']['draft']['operator'] = '!=';
+  $handler->display->display_options['filters']['draft']['value']['value'] = '1';
   
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
