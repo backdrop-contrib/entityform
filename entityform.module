@@ -26,14 +26,16 @@ function entityform_menu() {
       'file' => 'entityform_type.admin.inc',
   );
   $items[$submissions_path] = array(
-      'title' => 'Form Submissions',
+      'title callback' => 'entityform_type_page_title',
+      'title arguments' => array(1, 'submissions report'),
       'page callback' => 'entityform_submission_page',
       'page arguments' => array($path_count - 2),
       'access arguments' => array('view any entityform'),
       'type' => MENU_LOCAL_TASK,
   );
   $items['admin/reports/entityforms/submissions/%entityform_type'] = array(
-      'title' => 'Form Submissions',
+      'title callback' => 'entityform_type_page_title',
+      'title arguments' => array(1, 'submissions report'),
       'page callback' => 'entityform_submission_page',
       'page arguments' => array(4),
       'access arguments' => array('view any entityform'),
@@ -332,6 +334,11 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
     }
     // return user_access("submit $type_name entityform");
   }
+  if ($op == 'view submissions'
+      && !empty($entityform_type->data['user_submissions_view'])
+      && user_access('view own entityform')) {
+    return TRUE;
+  }
   if (isset($entityform) && $type_name && is_object($entityform)) {
     if (user_access("$op any entityform", $account)) {
       return TRUE;
@@ -586,10 +593,12 @@ function entityform_uri(Entityform $entityform) {
  */
 function entityform_page_title(Entityform $entityform, $op = 'view') {
   $entityform_type = entityform_get_types($entityform->type);
-  if ($op == 'submit') {
-    return $entityform_type->label;
+  switch ($op) {
+    case 'submit':
+      return $entityform_type->label;
+    default:
+      return t('Form Submission') . ': ' . $entityform_type->label;;
   }
-  return t('Form Submission') . ': ' . $entityform_type->label;
 }
 
 
@@ -714,15 +723,23 @@ function entityform_confirm_page($entityform_type) {
 
   return $render_array;
 }
-function entityform_confirm_title($entityform_type) {
-  if (!isset($entityform_type->data['submission_page_title']) || empty($entityform_type->data['submission_page_title'])) {
-    $default_values = variable_get('entityform_type_defaults', array());
-    if (empty($default_values['data']['submission_page_title'])) {
-      return 'Thank You';
+function entityform_type_page_title($entityform_type, $op) {
+  if ($op == 'confirm') {
+    if (!isset($entityform_type->data['submission_page_title']) || empty($entityform_type->data['submission_page_title'])) {
+      $default_values = variable_get('entityform_type_defaults', array());
+      if (empty($default_values['data']['submission_page_title'])) {
+        return 'Thank You';
+      }
+      return $default_values['data']['submission_page_title'];
     }
-    return $default_values['data']['submission_page_title'];
+    return $entityform_type->data['submission_page_title'];
   }
-  return $entityform_type->data['submission_page_title'];
+  if ($op == 'submissions report') {
+    return t('Form Submissions') . ': ' . $entityform_type->label;
+  }
+  if ($op == 'view submissions') {
+    return t('Your Submissions') . ': ' . $entityform_type->label;
+  }
 }
 /**
  * Implements hook_entity_insert().
@@ -789,9 +806,22 @@ function entityform_entity_update($entity, $type) {
  * @return string
  * 	Rendered view
  */
-function entityform_submission_page($entityform_type , $display_id = NULL) {
-  drupal_set_title($entityform_type->label);
-  $submission_view = _entityform_get_type_data_setting($entityform_type, 'submissions_view');
+function entityform_submission_page($entityform_type , $display_id = NULL, $mode = 'admins') {
+  $output = array();
+  if ($mode == 'admins') {
+    //showing reports view for admins
+    $submission_view = _entityform_get_type_data_setting($entityform_type, 'submissions_view');
+  }
+  else {
+    //showing current users submissions
+    $submission_view = _entityform_get_type_data_setting($entityform_type, 'user_submissions_view');
+    $output['return_link'] = array(
+      '#theme' => 'link',
+      '#path' => "eform/submit/{$entityform_type->type}",
+      '#text' => 'Return to form',
+      '#options' => array('attributes' => array(), 'html' => FALSE),
+    );
+  }
   // Previous setting used "view_name:display_id" - handle that condition.
   $parts = explode(':', $submission_view);
   $view_name = $parts[0];
@@ -816,14 +846,17 @@ function entityform_submission_page($entityform_type , $display_id = NULL) {
         );
       }
     }
-    $links = theme(
-        'links',
-        array(
-            'links' => $links,
-            'attributes' => array('class' => 'tabs secondary'))
+    $output['links'] = array(
+      '#theme' => 'links',
+      '#links' => $links,
+      '#attributes' => array('class' => 'tabs secondary'),
     );
   }
-  return $links . entityform_embed_view($view_name, $display_id, $entityform_type->type);
+  $output['view'] = array(
+      '#type' => 'markup',
+      '#markup' => entityform_embed_view($view_name, $display_id, $entityform_type->type),
+  );
+  return $output;
 }
 /**
  * Generates path for View based on current menu_item
@@ -1102,7 +1135,8 @@ class EntityformTypeController extends EntityAPIControllerExportable {
         'id' => '',
         'is_new' => TRUE,
         'data' => array(
-            'submissions_view' => 'entityforms'
+            'submissions_view' => 'entityforms',
+            'user_submissions_view' => 'user_entityforms',
         ),
     );
     $entityform_type = parent::create($values);

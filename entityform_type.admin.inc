@@ -291,7 +291,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   // Let Each entityform use a different View for viewing Submission
   $form['data']['submissions_set'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Submissions View'),
+      '#title' => t('Submissions Views'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
       '#weight' => 30,
@@ -303,19 +303,32 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   $user_view_options = $view_options;
   $user_view_options[''] = t('None');
   $submission_view = $entityform_type->data['submissions_view'];
-  $user_submission_view = $entityform_type->data['submissions_view'];
+  $user_submission_view = isset($entityform_type->data['user_submissions_view'])? $entityform_type->data['user_submissions_view']: '';
   $parts = explode(':', $submission_view);
   $submission_view = $parts[0];
+  if ($op == 'defaults') {
+    //If selected Views are no longer available select defaults.
+    if (!array_key_exists($submission_view, $view_options)) {
+      $submission_view = 'entityforms';
+    }
+    if (!array_key_exists($user_submission_view, $user_view_options)) {
+      $submission_view = 'user_entityforms';
+    }
+  }
   $form['data']['submissions_set']['submissions_view'] = array(
       '#type' => 'select',
-      '#title' => t('View for Submissions'),
+      '#title' => t('View for Submissions Reports'),
+      '#description' => t('Select the View that should be used Submission reports.'),
       '#default_value' => $submission_view,
       '#options' => $view_options,
   );
+  $user_view_description = 'Select the View that should be used to show users their previous submissions.';
+  $user_view_description .= ' If "None" is selected then the users will not see a previous submissions link.';
   $form['data']['submissions_set']['user_submissions_view'] = array(
       '#type' => 'select',
       '#title' => t('View for Current User\'s Submissions'),
-      '#default_value' => $submission_view,
+      '#description' => t($user_view_description),
+      '#default_value' => $user_submission_view,
       '#options' => $user_view_options,
   );
   $form['entityform_default_submission_view']['#options'] = _entityform_get_entityform_views_options();
