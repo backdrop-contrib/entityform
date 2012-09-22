@@ -1157,15 +1157,17 @@ class EntityformTypeController extends EntityAPIControllerExportable {
    */
   public function load($ids = array(), $conditions = array()) {
     $entityform_types = parent::load($ids, $conditions);
-    foreach ($entityform_types as $entityform_type) {
-      $entityform_type->paths = array();
-      $path_types = _entityform_type_get_path_types($entityform_type->type);
-      foreach ($path_types as $key => $path_type) {
-        //check for existing alias
-        $conditions = array('source' => $path_type['default_path']);
-        $path = path_load($conditions);
-        if ($path !== FALSE) {
-          $entityform_type->paths[$key] = $path;
+    if (module_exists('path')) {
+      foreach ($entityform_types as $entityform_type) {
+        $entityform_type->paths = array();
+        $path_types = _entityform_type_get_path_types($entityform_type->type);
+        foreach ($path_types as $key => $path_type) {
+          //check for existing alias
+          $conditions = array('source' => $path_type['default_path']);
+          $path = path_load($conditions);
+          if ($path !== FALSE) {
+            $entityform_type->paths[$key] = $path;
+          }
         }
       }
     }
@@ -1177,14 +1179,16 @@ class EntityformTypeController extends EntityAPIControllerExportable {
   public function delete($ids, DatabaseTransaction $transaction = NULL) {
     $entities = $ids ? $this->load($ids) : FALSE;
     if ($entities) {
-      foreach ($entities as $id => $entity) {
-        try {
-          $path_types = _entityform_type_get_path_types($entity->type);
-          foreach ($path_types as $path_type) {
-            path_delete(array('source' => $path_type['default_path']));
+      if (module_exists('path')) {
+        foreach ($entities as $id => $entity) {
+          try {
+            $path_types = _entityform_type_get_path_types($entity->type);
+            foreach ($path_types as $path_type) {
+              path_delete(array('source' => $path_type['default_path']));
+            }
+          } 
+          catch (Exception $e) {
           }
-        } 
-        catch (Exception $e) {
         }
       }
       parent::delete($ids, $transaction);
