@@ -108,20 +108,11 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#tree' => TRUE,
       '#element_validate' => array('_entityform_paths_form_element_validate'),
     );
-    $existing_paths = array(
-      'submit' => array(
-        'default_path' => _entityform_type_get_submit_url( $entityform_type->type),
-        'title' => 'Submit URL alias',
-      ),
-      'confirm' => array(
-        'default_path' => _entityform_type_get_confirm_url( $entityform_type->type),
-        'title' => 'Confirm URL alias',
-      ),
-    );
-    foreach ($existing_paths as $key => $existing_path) {
+    $path_types = _entityform_type_get_path_types($entityform_type->type);
+    foreach ($path_types as $key => $path_type) {
       $form['paths'][$key]['alias'] = array(
         '#type' => 'textfield',
-        '#title' => check_plain($existing_path['title']),
+        '#title' => check_plain($path_type['title']),
         '#default_value' => isset($entityform_type->paths[$key])? $entityform_type->paths[$key]['alias']: '',
         '#maxlength' => 255,
         '#description' => t('Optionally specify an alternative URL by which this content can be accessed. For example, type "about" when writing an about page. Use a relative path and don\'t add a trailing slash or the URL alias won\'t work.'),
@@ -373,9 +364,9 @@ function _entityform_paths_form_element_validate($element, &$form_state, $comple
       // Ensure that the submitted alias does not exist yet.
       $query = db_select('url_alias')
       ->condition('alias', $path['alias'])
-      ->condition('language', $path['language']);
+      ->condition('language', LANGUAGE_NONE);
       if (!empty($original_entityform_type->paths[$path_type])) {
-        $query->condition('source', $original_entityform_type->paths[$path_type]['source'], '<>');
+        $query->condition('pid', $original_entityform_type->paths[$path_type]['pid'], '<>');
       }
       $query->addExpression('1');
       $query->range(0, 1);
