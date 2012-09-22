@@ -743,47 +743,22 @@ function entityform_type_page_title($entityform_type, $op) {
   }
 }
 /**
- * Implements hook_entity_insert().
+ * Implements hook_entity_presave().
+ * 
+ * Manage path aliases for Entityform Types
  */
-function entityform_entity_insert($entity, $type) {
-  if ($type == 'entityform_type') {
-    if (isset($entity->paths)) {
+function entityform_entity_presave($entity, $type) {
+  if ($type == 'entityform_type' && module_exists('path')) {
+     if (isset($entity->paths)) {
+      $original_entity = $entity->original;
       foreach ($entity->paths as $key => $path) {
-        $path = $entity->paths[$key];
-        $path['alias'] = trim($path['alias']);
-        // Only save a non-empty alias.
-        if (!empty($path['alias'])) {
-          // Ensure fields for programmatic executions.
-          switch ($key) {
-            case 'submit':
-              $path['source'] = _entityform_type_get_submit_url($entity->type);
-              break;
-            case 'confirm':
-              $path['source'] = _entityform_type_get_confirm_url($entity->type);
-              break;
-          }
-
-          $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
-          path_save($path);
-        }
-      }
-    }
-  }
-}
-/**
- * Implements hook_entity_update().
- */
-function entityform_entity_update($entity, $type) {
-  if ($type == 'entityform_type') {
-    if (isset($entity->paths)) {
-      foreach ($entity->paths as $key => $path) {
+        $original_path = isset($original_entity->paths[$key]) ? $original_entity->paths[$key] : array();
         $path = $entity->paths[$key];
         $path['alias'] = trim($path['alias']);
         // Delete old alias if user erased it.
-        if (!empty($path['pid']) && empty($path['alias'])) {
-          path_delete($path['pid']);
+        if (!empty($original_path['pid']) && empty($path['alias'])) {
+          path_delete($original_path['pid']);
         }
-        // Only save a non-empty alias.
         if (!empty($path['alias'])) {
           // Ensure fields for programmatic executions.
           switch ($key) {
@@ -794,7 +769,14 @@ function entityform_entity_update($entity, $type) {
               $path['source'] = _entityform_type_get_confirm_url($entity->type);
               break;
           }
-          $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
+          // Entityform Types aren't translateable
+          $path['language'] = LANGUAGE_NONE;
+          if (!empty($original_path['pid'])) {
+            $path['pid'] = $original_path['pid'];
+          }
+          else {
+            unset($path['pid']);
+          }
           path_save($path);
         }
       }
@@ -1053,6 +1035,7 @@ class EntityformType extends Entity {
   public function get_redirect_path($entityform = NULL) {
     return _entityform_format_text($this->data['redirect_path'], array('entityform_type' => $this, 'entityform' => $entityform));
   }
+  
 }
 
 
@@ -1151,7 +1134,32 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     }
     return $view;
   }
-
+  /**
+   * Overridden to load paths also
+   */
+  public function load($ids = array(), $conditions = array()) {
+    $entityform_types = parent::load($ids, $conditions);
+    foreach ($entityform_types as $entityform_type) {
+      $entityform_type->paths = array();
+      $existing_paths = array(
+          'submit' => array(
+              'default_path' => _entityform_type_get_submit_url( $entityform_type->type),
+          ),
+          'confirm' => array(
+              'default_path' => _entityform_type_get_confirm_url( $entityform_type->type),
+          ),
+      );
+      foreach ($existing_paths as $key => $existing_path) {
+          //check for existing alias
+          $conditions = array('source' => $existing_path['default_path']);
+          $path = path_load($conditions);
+          if ($path !== FALSE) {
+            $entityform_type->paths[$key] = $path;
+          }  
+      }
+    }
+    return $entityform_types;
+  }
 }
 /**
  * Implements hook_views_pre_view().
@@ -1349,4 +1357,10 @@ function entityform_views_query_alter(&$view, &$query) {
         'args' => array(),
     );
   }
+}
+function _entityform_type_get_submit_url($type) {
+  return 'eform/submit/' . str_replace('_', '-', $type);
+}
+function _entityform_type_get_confirm_url($type) {
+  return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
