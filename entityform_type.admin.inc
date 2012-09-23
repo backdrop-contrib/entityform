@@ -298,7 +298,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Access settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 50,
+      '#weight' => 10,
   );
   $form['data']['access_set']['form_status'] = array(
       '#type' => 'select',
