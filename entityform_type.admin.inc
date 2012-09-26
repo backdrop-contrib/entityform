@@ -53,7 +53,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#title' => t('Label'),
     '#type' => 'textfield',
     '#default_value' => $entityform_type->label,
-    '#description' => t('The human-readable name of this entityform type.'),
+    '#description' => t('The human-readable name of this Entityform Type.  This text will be displayed as part of the list in the Entityform Types page.  This name must be unqiue.'),
     '#required' => TRUE,
     '#size' => 30,
     '#weight' => -50,
@@ -77,13 +77,14 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#type' => 'textfield',
     '#title' => t('Redirect Path'),
     '#default_value' => empty($entityform_type->data['redirect_path']) ? '' : $entityform_type->data['redirect_path'],
-    '#description' => t('What path should the user be redirected to on correct submission?  Leave blank for default action'),
+    '#description' => t('What relative path should the user be redirected to on a correct submission?  Leave blank for default action.'),
   );
   $form['data']['instruction_pre'] = array(
     '#type' => 'text_format',
     '#title' => t('Intro Form instructions'),
     '#default_value' => empty($entityform_type->data['instruction_pre']['value']) ? '' : $entityform_type->data['instruction_pre']['value'],
     '#format' => empty($entityform_type->data['instruction_pre']['format']) ? NULL : $entityform_type->data['instruction_pre']['format'],
+    '#description' => t('These user instructions will appear at the top of every page within this form.'),
   );
   _entityform_remove_fieldsets_from_tree($form['data'], array('data'));
 
@@ -202,7 +203,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Draft save text'),
       '#default_value' => empty($entityform_type->data['draft_save_text']['value']) ? '' : $entityform_type->data['draft_save_text']['value'],
       '#format' => empty($entityform_type->data['draft_save_text']['format']) ? NULL : $entityform_type->data['draft_save_text']['format'],
-      '#description' => t('Text to dispaly to the user when the form is saved as a draft'),
+      '#description' => t('This text will be displayed to the user when the form is saved as a draft.'),
   );
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
   $form['data']['formoverride_set'] = array(
@@ -239,7 +240,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Submission Reply'),
       '#default_value' => empty($entityform_type->data['submission_text']['value']) ? '' : $entityform_type->data['submission_text']['value'],
       '#format' => empty($entityform_type->data['submission_text']['format']) ? NULL : $entityform_type->data['submission_text']['format'],
-      '#description' => t('Text for correct submission'),
+      '#description' => t('This text will be displayed to the user when a correct form is submitted.'),
   );
   $form['data']['submission_page_set']['submission_show_submitted'] = array(
       '#type' => 'checkbox',
@@ -308,7 +309,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
           ENTITYFORM_STATUS_CLOSED => t('Closed form new form submissions'),
       ),
       '#default_value' => empty($entityform_type->data['form_status']) ? 'open' : $entityform_type->data['form_status'],
-      '#description' => t('Can users submit this form?'),
+      '#description' => t('Can users submit this form?  Open means the users can submit this form.  Closed means the user can not submit the form.'),
   );
   $form['data']['access_set']['roles'] = array(
       '#type' => 'checkboxes',
