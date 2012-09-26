@@ -933,7 +933,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['menu']['name'] = 'management';
   $handler->display->display_options['menu']['context'] = 0;
   $views[$view->name] = $view;
-  
+
   $view = new view;
   $view->name = 'user_entityforms';
   $view->description = 'A list of all entityforms submissions';
@@ -943,7 +943,7 @@ function entityform_views_default_views() {
   $view->core = 7;
   $view->api_version = '3.0';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
-  
+
   /* Display: Master */
   $handler = $view->new_display('default', 'Master', 'default');
   $handler->display->display_options['title'] = 'List';
@@ -1194,7 +1194,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['filters']['draft']['field'] = 'draft';
   $handler->display->display_options['filters']['draft']['operator'] = '!=';
   $handler->display->display_options['filters']['draft']['value']['value'] = '1';
-  
+
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'entityforms_admin_page');
   $handler->display->display_options['display_description'] = 'Show the current user\'s submissions for a entityform type';
@@ -1210,7 +1210,6 @@ function entityform_views_default_views() {
   $handler->display->display_options['tab_options']['weight'] = '0';
   $handler->display->display_options['tab_options']['name'] = 'management';
   $views[$view->name] = $view;
-  
 
   return $views;
 }

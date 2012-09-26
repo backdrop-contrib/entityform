@@ -336,8 +336,8 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
     // return user_access("submit $type_name entityform");
   }
   if ($op == 'view submissions'
-      && !empty($entityform_type->data['user_submissions_view'])
-      && user_access('view own entityform')) {
+  && !empty($entityform_type->data['user_submissions_view'])
+  && user_access('view own entityform')) {
     return TRUE;
   }
   if (isset($entityform) && $type_name && is_object($entityform)) {
@@ -736,54 +736,29 @@ function entityform_type_page_title($entityform_type, $op) {
     return $entityform_type->data['submission_page_title'];
   }
   if ($op == 'submissions report') {
-    return t('Form Submissions') . ': ' . $entityform_type->label;
+    return t('Form Submissions') . (is_object($entityform_type)?': ' . $entityform_type->label:'');
   }
   if ($op == 'view submissions') {
-    return t('Your Submissions') . ': ' . $entityform_type->label;
+    return t('Your Submissions') . (is_object($entityform_type)?': ' . $entityform_type->label:'');
   }
 }
 /**
- * Implements hook_entity_insert().
+ * Implements hook_entity_presave().
+ *
+ * Manage path aliases for Entityform Types
  */
-function entityform_entity_insert($entity, $type) {
-  if ($type == 'entityform_type') {
+function entityform_entity_presave($entity, $type) {
+  if ($type == 'entityform_type' && module_exists('path')) {
     if (isset($entity->paths)) {
+      $original_entity = $entity->original;
       foreach ($entity->paths as $key => $path) {
-        $path = $entity->paths[$key];
-        $path['alias'] = trim($path['alias']);
-        // Only save a non-empty alias.
-        if (!empty($path['alias'])) {
-          // Ensure fields for programmatic executions.
-          switch ($key) {
-            case 'submit':
-              $path['source'] = _entityform_type_get_submit_url($entity->type);
-              break;
-            case 'confirm':
-              $path['source'] = _entityform_type_get_confirm_url($entity->type);
-              break;
-          }
-
-          $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
-          path_save($path);
-        }
-      }
-    }
-  }
-}
-/**
- * Implements hook_entity_update().
- */
-function entityform_entity_update($entity, $type) {
-  if ($type == 'entityform_type') {
-    if (isset($entity->paths)) {
-      foreach ($entity->paths as $key => $path) {
+        $original_path = isset($original_entity->paths[$key]) ? $original_entity->paths[$key] : array();
         $path = $entity->paths[$key];
         $path['alias'] = trim($path['alias']);
         // Delete old alias if user erased it.
-        if (!empty($path['pid']) && empty($path['alias'])) {
-          path_delete($path['pid']);
+        if (!empty($original_path['pid']) && empty($path['alias'])) {
+          path_delete($original_path['pid']);
         }
-        // Only save a non-empty alias.
         if (!empty($path['alias'])) {
           // Ensure fields for programmatic executions.
           switch ($key) {
@@ -794,12 +769,37 @@ function entityform_entity_update($entity, $type) {
               $path['source'] = _entityform_type_get_confirm_url($entity->type);
               break;
           }
-          $path['language'] = isset($node->language) ? $node->language : LANGUAGE_NONE;
+          // Entityform Types aren't translateable
+          $path['language'] = LANGUAGE_NONE;
+          if (_entityform_alias_is_used($path)) {
+            watchdog('entityform', "Could not create alias @alias for EntityformType entity '@type'",
+            array(
+            '@alias' => $path['alias'],
+            '@type' => $entity->type,
+            ),
+            WATCHDOG_WARNING
+            );
+          }
           path_save($path);
         }
       }
     }
   }
+}
+function _entityform_alias_is_used($path) {
+  // Ensure that the submitted alias does not exist yet.
+  $query = db_select('url_alias')
+  ->condition('alias', $path['alias'])
+  ->condition('language', $path['language']);
+  if (!empty($path['pid'])) {
+    $query->condition('pid', $path['pid'], '<>');
+  }
+  $query->addExpression('1');
+  $query->range(0, 1);
+  if ($query->execute()->fetchField()) {
+    return TRUE;
+  }
+  return FALSE;
 }
 /**
  * Page for view submission
@@ -817,10 +817,10 @@ function entityform_submission_page($entityform_type , $display_id = NULL, $mode
     //showing current users submissions
     $submission_view = _entityform_get_type_data_setting($entityform_type, 'user_submissions_view');
     $output['return_link'] = array(
-      '#theme' => 'link',
-      '#path' => "eform/submit/{$entityform_type->type}",
-      '#text' => 'Return to form',
-      '#options' => array('attributes' => array(), 'html' => FALSE),
+        '#theme' => 'link',
+        '#path' => "eform/submit/{$entityform_type->type}",
+        '#text' => 'Return to form',
+        '#options' => array('attributes' => array(), 'html' => FALSE),
     );
   }
   // Previous setting used "view_name:display_id" - handle that condition.
@@ -848,9 +848,9 @@ function entityform_submission_page($entityform_type , $display_id = NULL, $mode
       }
     }
     $output['links'] = array(
-      '#theme' => 'links',
-      '#links' => $links,
-      '#attributes' => array('class' => 'tabs secondary'),
+        '#theme' => 'links',
+        '#links' => $links,
+        '#attributes' => array('class' => 'tabs secondary'),
     );
   }
   $output['view'] = array(
@@ -979,10 +979,10 @@ function entityform_render_to_text($render_array, $print_empty_title = FALSE, $i
 function _entityform_get_submit_info($entityform) {
   $account = user_load($entityform->uid);
   return t("Submitted by !name on !date",
-      array(
-          '!name' => theme('username', array('account' => $account)),
-          '!date' => format_date($entityform->created),
-      )
+  array(
+      '!name' => theme('username', array('account' => $account)),
+      '!date' => format_date($entityform->created),
+  )
   );
 }
 /**
@@ -1053,6 +1053,7 @@ class EntityformType extends Entity {
   public function get_redirect_path($entityform = NULL) {
     return _entityform_format_text($this->data['redirect_path'], array('entityform_type' => $this, 'entityform' => $entityform));
   }
+
 }
 
 
@@ -1151,7 +1152,60 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     }
     return $view;
   }
-
+  /**
+   * Overridden to load paths also
+   */
+  public function load($ids = array(), $conditions = array()) {
+    $entityform_types = parent::load($ids, $conditions);
+    if (module_exists('path')) {
+      foreach ($entityform_types as $entityform_type) {
+        $entityform_type->paths = array();
+        $path_types = _entityform_type_get_path_types($entityform_type->type);
+        foreach ($path_types as $key => $path_type) {
+          //check for existing alias
+          $conditions = array('source' => $path_type['default_path']);
+          $path = path_load($conditions);
+          if ($path !== FALSE) {
+            $entityform_type->paths[$key] = $path;
+          }
+        }
+      }
+    }
+    return $entityform_types;
+  }
+  /**
+   * Overridden to delete aliases.
+   */
+  public function delete($ids, DatabaseTransaction $transaction = NULL) {
+    $entities = $ids ? $this->load($ids) : FALSE;
+    if ($entities) {
+      if (module_exists('path')) {
+        foreach ($entities as $id => $entity) {
+          try {
+            $path_types = _entityform_type_get_path_types($entity->type);
+            foreach ($path_types as $path_type) {
+              path_delete(array('source' => $path_type['default_path']));
+            }
+          }
+          catch (Exception $e) {
+          }
+        }
+      }
+      parent::delete($ids, $transaction);
+    }
+  }
+}
+function _entityform_type_get_path_types($type) {
+  return array(
+      'submit' => array(
+          'default_path' => _entityform_type_get_submit_url( $type),
+          'title' => 'Submit URL alias',
+      ),
+      'confirm' => array(
+          'default_path' => _entityform_type_get_confirm_url( $type),
+          'title' => 'Confirm URL alias',
+      ),
+  );
 }
 /**
  * Implements hook_views_pre_view().
@@ -1349,4 +1403,10 @@ function entityform_views_query_alter(&$view, &$query) {
         'args' => array(),
     );
   }
+}
+function _entityform_type_get_submit_url($type) {
+  return 'eform/submit/' . str_replace('_', '-', $type);
+}
+function _entityform_type_get_confirm_url($type) {
+  return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }

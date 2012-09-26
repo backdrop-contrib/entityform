@@ -108,54 +108,14 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#tree' => TRUE,
       '#element_validate' => array('_entityform_paths_form_element_validate'),
     );
-    $existing_paths = array(
-      'submit' => array(
-        'default_path' => _entityform_type_get_submit_url( $entityform_type->type),
-        'title' => 'Submit URL alias',
-      ),
-      'confirm' => array(
-        'default_path' => _entityform_type_get_confirm_url( $entityform_type->type),
-        'title' => 'Confirm URL alias',
-      ),
-    );
-    foreach ($existing_paths as $key => $existing_path) {
-      if ($op == 'edit') {
-        //check for existing alias
-        $conditions = array('source' => $existing_path['default_path']);
-        $path = path_load($conditions);
-        if ($path === FALSE) {
-          $path = array();
-        }
-      }
-      else {
-        $path = array();
-      }
-      $path += array(
-        'pid' => NULL,
-        'source' => isset($entityform_type) ? $existing_path['default_path'] : NULL,
-        'alias' => '',
-        'language' => LANGUAGE_NONE,
-      );
+    $path_types = _entityform_type_get_path_types($entityform_type->type);
+    foreach ($path_types as $key => $path_type) {
       $form['paths'][$key]['alias'] = array(
         '#type' => 'textfield',
-        '#title' => check_plain($existing_path['title']),
-        '#default_value' => $path['alias'],
+        '#title' => check_plain($path_type['title']),
+        '#default_value' => isset($entityform_type->paths[$key])? $entityform_type->paths[$key]['alias']: '',
         '#maxlength' => 255,
-        '#collapsible' => TRUE,
-        '#collapsed' => TRUE,
         '#description' => t('Optionally specify an alternative URL by which this content can be accessed. For example, type "about" when writing an about page. Use a relative path and don\'t add a trailing slash or the URL alias won\'t work.'),
-      );
-      $form['paths'][$key]['pid'] = array(
-        '#type' => 'value',
-        '#value' => $path['pid'],
-      );
-      $form['paths'][$key]['source'] = array(
-        '#type' => 'value',
-        '#value' => $path['source'],
-      );
-      $form['paths'][$key]['language'] = array(
-        '#type' => 'value',
-        '#value' => $path['language'],
       );
     }
     $form['additional_settings'] = array(
@@ -338,7 +298,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Access settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 50,
+      '#weight' => 10,
   );
   $form['data']['access_set']['form_status'] = array(
       '#type' => 'select',
@@ -386,7 +346,8 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
  * Form element validation handler for URL alias form element.
  */
 function _entityform_paths_form_element_validate($element, &$form_state, $complete_form) {
-  $previous_pathes = array();
+  $previous_paths = array();
+  $original_entityform_type = $form_state['entityform_type'];
   foreach ($form_state['values']['paths'] as $path_type => $path) {
     // Trim the submitted value.
     $alias = trim($path['alias']);
@@ -394,18 +355,18 @@ function _entityform_paths_form_element_validate($element, &$form_state, $comple
       form_set_value($element[$path_type]['alias'], $alias, $form_state);
 
       $path = $form_state['values']['paths'][$path_type];
-      if (in_array($path['alias'], $previous_pathes)) {
+      if (in_array($path['alias'], $previous_paths)) {
         form_error($element[$path_type]['alias'], "Aliases must be unique.");
         return;
       }
-      $previous_pathes[] = $path['alias'];
+      $previous_paths[] = $path['alias'];
 
       // Ensure that the submitted alias does not exist yet.
       $query = db_select('url_alias')
       ->condition('alias', $path['alias'])
-      ->condition('language', $path['language']);
-      if (!empty($path['source'])) {
-        $query->condition('source', $path['source'], '<>');
+      ->condition('language', LANGUAGE_NONE);
+      if (!empty($original_entityform_type->paths[$path_type])) {
+        $query->condition('pid', $original_entityform_type->paths[$path_type]['pid'], '<>');
       }
       $query->addExpression('1');
       $query->range(0, 1);
@@ -450,12 +411,6 @@ function entityform_type_form_submit(&$form, &$form_state) {
  */
 function entityform_type_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/entityform_types/manage/' . $form_state['entityform_type']->type . '/delete';
-}
-function _entityform_type_get_submit_url($type) {
-  return 'eform/submit/' . str_replace('_', '-', $type);
-}
-function _entityform_type_get_confirm_url($type) {
-  return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
 function entityform_get_rule_options($plugin_types, $tag) {
   $conditions = array(
