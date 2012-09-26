@@ -5,7 +5,7 @@
  */
 
 /**
- * Implements hook_variable_group_info()
+ * Implements hook_variable_group_info().
  */
 function entityform_notifications_variable_group_info() {
   // Group for variable that have no group

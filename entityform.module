@@ -10,7 +10,7 @@ define('ENTITYFORM_STATUS_CLOSED', 'ENTITYFORM_CLOSED');
 define('ENTITYFORM_STATUS_OPEN', 'ENTITYFORM_OPEN');
 /**
  * Implements hook_menu().
-*/
+ */
 function entityform_menu() {
   $items = array();
   $entity_info = entity_get_info('entityform_type');
@@ -558,7 +558,7 @@ function entityform_save(Entityform $entityform) {
 }
 /*
  * to be used in page arguments load function
-*/
+ */
 function entityform_empty_load($type) {
   $type = str_replace("-", "_", $type);
   return entityform_create(array('type' => $type));
@@ -736,10 +736,10 @@ function entityform_type_page_title($entityform_type, $op) {
     return $entityform_type->data['submission_page_title'];
   }
   if ($op == 'submissions report') {
-    return t('Form Submissions') . ': ' . $entityform_type->label;
+    return t('Form Submissions') . (is_object($entityform_type)?': ' . $entityform_type->label:'');
   }
   if ($op == 'view submissions') {
-    return t('Your Submissions') . ': ' . $entityform_type->label;
+    return t('Your Submissions') . (is_object($entityform_type)?': ' . $entityform_type->label:'');
   }
 }
 /**
@@ -1186,7 +1186,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
             foreach ($path_types as $path_type) {
               path_delete(array('source' => $path_type['default_path']));
             }
-          } 
+          }
           catch (Exception $e) {
           }
         }
@@ -1316,8 +1316,8 @@ function _entityform_rules_all_pass($rule_returns) {
 }
 /*
  * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
-* Fieldset elements must end with '_set'
-*/
+ * Fieldset elements must end with '_set'
+ */
 function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
   //set #parents to skip sets in form values
   foreach (element_children($elements) as $key) {
