@@ -71,7 +71,7 @@ class EntityformUIController extends EntityDefaultUIController {
         'description' => '',
         'page callback' => 'entityform_submission_page',
         'page arguments' => array(1, NULL, 'user'),
-        'access callback' => entityform_access,
+        'access callback' => 'entityform_access',
         'access arguments' => array('view submissions', 1),
     );
     $types = array_keys(entityform_get_types());
