@@ -69,6 +69,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       'exists' => 'entityform_get_types',
       'source' => array('label'),
     ),
+    '#weight' => -49,
     '#description' => t('A unique machine-readable name for this entityform type. It must only contain lowercase letters, numbers, and underscores.'),
   );
   $form['data']['#tree'] = TRUE;
