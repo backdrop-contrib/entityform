@@ -771,6 +771,10 @@ function entityform_entity_presave($entity, $type) {
           }
           // Entityform Types aren't translateable
           $path['language'] = LANGUAGE_NONE;
+          if (!empty($original_path['pid'])) {
+            //make sure we update original path
+            $path['pid'] = $original_path['pid'];
+          }
           if (_entityform_alias_is_used($path)) {
             watchdog('entityform', "Could not create alias @alias for EntityformType entity '@type'",
             array(
@@ -780,7 +784,10 @@ function entityform_entity_presave($entity, $type) {
             WATCHDOG_WARNING
             );
           }
-          path_save($path);
+          else {
+            path_save($path);
+          }
+          
         }
       }
     }
