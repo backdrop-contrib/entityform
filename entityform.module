@@ -787,7 +787,6 @@ function entityform_entity_presave($entity, $type) {
           else {
             path_save($path);
           }
-          
         }
       }
     }
