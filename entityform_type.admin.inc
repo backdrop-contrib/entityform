@@ -48,6 +48,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     $entityform_type->type = '';
   }
   $form = _entityform_type_setttings_elements($entityform_type, $op);
+  entityform_type_prepare_edit($entityform_type);
   $form['#entityform_type'] = $entityform_type;
   $form['label'] = array(
     '#title' => t('Label'),
@@ -87,6 +88,83 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#format' => empty($entityform_type->data['instruction_pre']['format']) ? NULL : $entityform_type->data['instruction_pre']['format'],
     '#description' => t('These user instructions will appear at the top of every page within this form.'),
   );
+  if (module_exists('menu')) {
+    // Menu Settings
+    $link = $entityform_type->menu;
+
+    $form['menu'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Menu settings'),
+        '#access' => user_access('administer menu'),
+        '#collapsible' => TRUE,
+        '#collapsed' => !$link['link_title'],
+        '#group' => 'additional_settings',
+        '#attached' => array(
+            'js' => array(drupal_get_path('module', 'menu') . '/menu.js'),
+        ),
+        '#tree' => TRUE,
+        '#weight' => 80,
+        '#attributes' => array('class' => array('menu-link-form')),
+    );
+    $form['menu']['enabled'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Provide a menu link'),
+        '#default_value' => (int) (bool) $link['mlid'],
+    );
+    $form['menu']['link'] = array(
+        '#type' => 'container',
+        '#parents' => array('menu'),
+        '#states' => array(
+            'invisible' => array(
+                'input[name="menu[enabled]"]' => array('checked' => FALSE),
+            ),
+        ),
+    );
+
+    // Populate the element with the link data.
+    foreach (array('mlid', 'module', 'hidden', 'has_children', 'customized', 'options', 'expanded', 'hidden') as $key) {
+      $form['menu']['link'][$key] = array('#type' => 'value', '#value' => $link[$key]);
+    }
+
+    $form['menu']['link']['link_title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Menu link title'),
+        '#default_value' => $link['link_title'],
+    );
+
+    $form['menu']['link']['description'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Description'),
+        '#default_value' => isset($link['options']['attributes']['title']) ? $link['options']['attributes']['title'] : '',
+        '#rows' => 1,
+        '#description' => t('Shown when hovering over the menu link.'),
+    );
+
+    $default = ($link['mlid'] ? $link['menu_name'] . ':' . $link['plid'] : '');
+    // If the current parent menu item is not present in options, use the first
+    // available option as default value.
+    // @todo User should not be allowed to access menu link settings in such a
+    // case.
+    $options = _menu_get_options(menu_get_menus(), menu_get_menus(), $link);
+    if (!isset($options[$default])) {
+      $array = array_keys($options);
+      $default = reset($array);
+    }
+    $form['menu']['link']['parent'] = array(
+        '#type' => 'select',
+        '#title' => t('Parent item'),
+        '#default_value' => $default,
+        '#options' => $options,
+        '#attributes' => array('class' => array('menu-parent-select')),
+    );
+    $form['menu']['link']['weight'] = array(
+        '#type' => 'weight',
+        '#title' => t('Weight'),
+        '#delta' => 50,
+        '#default_value' => $link['weight'],
+        '#description' => t('Menu links with smaller weights are displayed before links with larger weights.'),
+    );
+  }
   _entityform_remove_fieldsets_from_tree($form['data'], array('data'));
 
   $form['actions'] = array('#type' => 'actions');
@@ -146,6 +224,35 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   return $form;
 }
 /**
+ * Prepare Entityform Type to be edited.
+ * @param EntityformType $entityform_type
+ */
+function entityform_type_prepare_edit(&$entityform_type) {
+  if (module_exists('menu') && empty($entityform_type->menu)) {
+    $item = array();
+    $mlid = db_query_range("SELECT mlid FROM {menu_links} WHERE link_path = :path AND module = 'entityform' ORDER BY mlid ASC", 0, 1, array(
+        ':path' => 'eform/submit/' . $entityform_type->type,
+    ))->fetchField();
+    if ($mlid) {
+      $item = menu_link_load($mlid);
+    }
+    // Set default values.
+    $entityform_type->menu = $item + array(
+        'link_title' => '',
+        'mlid' => 0,
+        'plid' => 0,
+        'menu_name' => '',
+        'weight' => 0,
+        'options' => array(),
+        'module' => 'entityform',
+        'expanded' => 0,
+        'hidden' => 0,
+        'has_children' => 0,
+        'customized' => 0,
+    );
+  }
+}
+/**
  * Entityform global setting form
  * @param array $form
  * @param array $form_state
@@ -156,6 +263,48 @@ function entityform_settings($form, &$form_state) {
   $defaults = entity_get_controller('entityform_type')->create();
   $form = _entityform_type_setttings_elements($defaults, 'defaults');
   $form['#entityform_type'] = $defaults;
+  $menu_options = menu_get_menus();
+  if (empty($defaults->menu)) {
+
+  }
+  $form['entityform_type_defaults']['menu'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Menu settings'),
+      '#tree' => TRUE,
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+      '#attached' => array(
+          'js' => array(drupal_get_path('module', 'menu') . '/menu.admin.js'),
+      ),
+      '#group' => 'additional_settings',
+  );
+  $form['entityform_type_defaults']['menu']['menu_options'] = array(
+      '#type' => 'checkboxes',
+      '#title' => t('Available menus'),
+      '#default_value' => isset($defaults->menu['menu_options'])?$defaults->menu['menu_options']: array('main-menu'),
+      '#options' => $menu_options,
+      '#description' => t('The menus available to place links in for Entityform Types.'),
+  );
+  // To avoid an 'illegal option' error after saving the form we have to load
+  // all available menu items.
+  // Otherwise it is not possible to dynamically add options to the list.
+  // @todo Convert menu_parent_options() into a #process callback.
+  $options = menu_parent_options(menu_get_menus(), array('mlid' => 0));
+  $form['entityform_type_defaults']['menu']['menu_parent'] = array(
+      '#type' => 'select',
+      '#title' => t('Default parent item'),
+      '#default_value' => isset($defaults->menu['menu_parent'])?$defaults->menu['menu_parent']:'main-menu:0',
+      '#options' => $options,
+      '#description' => t('Choose the menu item to be the default parent for a new link.'),
+      '#attributes' => array('class' => array('menu-title-select')),
+  );
+
+  // Call Drupal.menu_update_parent_list() to filter the list of
+  // available default parent menu items based on the selected menus.
+  drupal_add_js(
+  '(function ($) { Drupal.menu_update_parent_list(); })(jQuery);',
+  array('scope' => 'footer', 'type' => 'inline')
+  );
   $form['entityform_type_defaults']['data'] = $form['data'];
   $form['entityform_type_defaults']['#tree'] = TRUE;
   $form['entityform_type_defaults']['#type'] = 'value';

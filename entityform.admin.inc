@@ -202,11 +202,11 @@ class EntityformUIController extends EntityDefaultUIController {
  * @see entityform_edit_form()
  */
 function entityform_form_wrapper($entityform, $mode = 'submit') {
-  // Add the breadcrumb for the form's location.
-  //entityform_set_breadcrumb();
   $make_form = TRUE;
+  $entityform_type = entityform_type_load($entityform->type);
+  drupal_set_title($entityform_type->label);
   if (!empty($entityform->is_new)) {
-    $entityform_type = entityform_type_load($entityform->type);
+
     $draft = FALSE;
     if ($entityform_type->data['draftable']) {
       $draft = entityform_user_draft($entityform->type);
@@ -288,8 +288,6 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
  * @see entityform_edit_form()
  */
 function entityform_delete_form_wrapper($entityform) {
-  // Add the breadcrumb for the form's location.
-  //entityform_set_breadcrumb();
   return drupal_get_form('entityform_delete_form', $entityform);
 }
 
@@ -571,15 +569,3 @@ function theme_entityform_add_list($variables) {
   return $output;
 }
 
-/**
- * Sets the breadcrumb for administrative entityform pages.
- */
-function entityform_set_breadcrumb() {
-  $breadcrumb = array(
-    l(t('Home'), '<front>'),
-    l(t('Administration'), 'admin'),
-    l(t('Content'), 'admin/structure'),
-  );
-
-  drupal_set_breadcrumb($breadcrumb);
-}

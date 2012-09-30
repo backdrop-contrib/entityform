@@ -357,7 +357,7 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
 function entityform_type_access($op, $type = NULL, $account = NULL) {
   // If coming from EntityDrupalWrapper::entityAccess then entity type will be sent
   // This is used in EntityReferences module
-  // @see EntityDrupalWrapperm, entityAccess
+  // @see EntityDrupalWrapper->entityAccess()
   if (isset($type) && is_object($type) && get_class($type) == 'EntityformType' && $op == 'view') {
     return entityform_access('submit', $type, $account);
   }
@@ -387,11 +387,14 @@ function _entityform_get_entityform_views_options() {
  * @return EntityformType[]
  *   Depending whether $type isset, an array of entityform types or a single one.
  */
-function entityform_get_types($type_name = NULL) {
+function entityform_get_types($type_name = NULL, $reset = FALSE) {
   // entity_load will get the Entity controller for our entityform entity and call the load
   // function of that object - we are loading entities by name here.
-  $types = entity_load_multiple_by_name('entityform_type', isset($type_name) ? array($type_name) : FALSE);
-  return isset($type_name) ? reset($types) : $types;
+  $entityform_types = &drupal_static(__FUNCTION__);
+  if (empty($entityform_types)) {
+    $entityform_types = entity_load_multiple_by_name('entityform_type', isset($type_name) ? array($type_name) : FALSE);
+  }
+  return isset($type_name) ? reset($entityform_types) : $entityform_types;
 }
 
 /**
@@ -748,39 +751,73 @@ function entityform_type_page_title($entityform_type, $op) {
  * Manage path aliases for Entityform Types
  */
 function entityform_entity_presave($entity, $type) {
-  if ($type == 'entityform_type' && module_exists('path')) {
-    if (isset($entity->paths)) {
-      $original_entity = $entity->original;
-      foreach ($entity->paths as $key => $path) {
-        $original_path = isset($original_entity->paths[$key]) ? $original_entity->paths[$key] : array();
-        $path = $entity->paths[$key];
-        $path['alias'] = trim($path['alias']);
-        // Delete old alias if user erased it.
-        if (!empty($original_path['pid']) && empty($path['alias'])) {
-          path_delete($original_path['pid']);
+  if ($type == 'entityform_type') {
+    if (module_exists('path')) {
+      if (isset($entity->paths)) {
+        $original_entity = $entity->original;
+        foreach ($entity->paths as $key => $path) {
+          $original_path = isset($original_entity->paths[$key]) ? $original_entity->paths[$key] : array();
+          $path = $entity->paths[$key];
+          $path['alias'] = trim($path['alias']);
+          // Delete old alias if user erased it.
+          if (!empty($original_path['pid']) && empty($path['alias'])) {
+            path_delete($original_path['pid']);
+          }
+          if (!empty($path['alias'])) {
+            // Ensure fields for programmatic executions.
+            switch ($key) {
+              case 'submit':
+                $path['source'] = _entityform_type_get_submit_url($entity->type);
+                break;
+              case 'confirm':
+                $path['source'] = _entityform_type_get_confirm_url($entity->type);
+                break;
+            }
+            // Entityform Types aren't translateable
+            $path['language'] = LANGUAGE_NONE;
+            if (!empty($original_path['pid'])) {
+              $path['pid'] = $original_path['pid'];
+            }
+            if (_entityform_alias_is_used($path)) {
+              watchdog('entityform', "Could not create alias @alias for EntityformType entity '@type'",
+              array(
+              '@alias' => $path['alias'],
+              '@type' => $entity->type,
+              ),
+              WATCHDOG_WARNING
+              );
+            }
+            else {
+              path_save($path);
+            }
+
+          }
         }
-        if (!empty($path['alias'])) {
-          // Ensure fields for programmatic executions.
-          switch ($key) {
-            case 'submit':
-              $path['source'] = _entityform_type_get_submit_url($entity->type);
-              break;
-            case 'confirm':
-              $path['source'] = _entityform_type_get_confirm_url($entity->type);
-              break;
+      }
+    }
+    if (module_exists('menu')) {
+      if (isset($entity->menu)) {
+        $link = &$entity->menu;
+        if ($link['enabled']) {
+          $link = $entity->menu;
+          $link['link_path'] = "eform/submit/{$entity->type}";
+          list($link['menu_name'], $link['plid']) = explode(':', $link['parent']);
+          if (trim($link['description'])) {
+            $link['options']['attributes']['title'] = trim($link['description']);
           }
-          // Entityform Types aren't translateable
-          $path['language'] = LANGUAGE_NONE;
-          if (_entityform_alias_is_used($path)) {
-            watchdog('entityform', "Could not create alias @alias for EntityformType entity '@type'",
-            array(
-            '@alias' => $path['alias'],
-            '@type' => $entity->type,
-            ),
-            WATCHDOG_WARNING
-            );
+          else {
+            // If the description field was left empty, remove the title attribute
+            // from the menu link.
+            unset($link['options']['attributes']['title']);
           }
-          path_save($path);
+          if (!menu_link_save($link)) {
+            drupal_set_message(t('There was an error saving the menu link.'), 'error');
+          }
+        }
+        else {
+          if (!empty($link['mlid'])) {
+            menu_link_delete($link['mlid']);
+          }
         }
       }
     }
@@ -1157,18 +1194,18 @@ class EntityformTypeController extends EntityAPIControllerExportable {
    */
   public function load($ids = array(), $conditions = array()) {
     $entityform_types = parent::load($ids, $conditions);
-    if (module_exists('path')) {
-      foreach ($entityform_types as $entityform_type) {
-        $entityform_type->paths = array();
-        $path_types = _entityform_type_get_path_types($entityform_type->type);
-        foreach ($path_types as $key => $path_type) {
-          //check for existing alias
-          $conditions = array('source' => $path_type['default_path']);
-          $path = path_load($conditions);
-          if ($path !== FALSE) {
-            $entityform_type->paths[$key] = $path;
+    foreach ($entityform_types as $entityform_type) {
+      if (module_exists('path')) {
+          $entityform_type->paths = array();
+          $path_types = _entityform_type_get_path_types($entityform_type->type);
+          foreach ($path_types as $key => $path_type) {
+            //check for existing alias
+            $conditions = array('source' => $path_type['default_path']);
+            $path = path_load($conditions);
+            if ($path !== FALSE) {
+              $entityform_type->paths[$key] = $path;
+            }
           }
-        }
       }
     }
     return $entityform_types;
