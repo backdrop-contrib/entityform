@@ -205,8 +205,8 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
   // Add the breadcrumb for the form's location.
   //entityform_set_breadcrumb();
   $make_form = TRUE;
+  $entityform_type = entityform_type_load($entityform->type);
   if (!empty($entityform->is_new)) {
-    $entityform_type = entityform_type_load($entityform->type);
     $draft = FALSE;
     if ($entityform_type->data['draftable']) {
       $draft = entityform_user_draft($entityform->type);
