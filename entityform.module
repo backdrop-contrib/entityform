@@ -1311,12 +1311,16 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
  */
 function entityform_help($path, $arg) {
   $output = '';
+  $view_mode_text = 'This View Mode is used to controls how fields will displayed ';
   switch ($path) {
     case 'admin/structure/entityform_types/manage/%/display/download':
-      $output = t('This View Mode is used to control which fields will be included CSV and XML downloads and their order.');
+      $output = t("$view_mode_text in the CSV and XML downloads and their order.");
       break;
     case 'admin/structure/entityform_types/manage/%/display/table':
-      $output = t('This View Mode is used to control which fields will be included submissions table and their order.');
+      $output = t("$view_mode_text in submissions table.");
+      break;
+    case 'admin/structure/entityform_types/manage/%/display/confirmation':
+      $output = t("$view_mode_text on the submission conformation page.");
       break;
     case 'admin/config/content/entityform':
       $output = t('Set the default settings for new Entityform Types. This will be used for new Entityform Types.');
