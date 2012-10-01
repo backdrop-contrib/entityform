@@ -1382,6 +1382,43 @@ function entityform_forms() {
   return $forms;
 }
 /**
+ * Implements hook_mollom_form_list().
+ */
+function entityform_mollom_form_list() {
+  $forms = array();
+  $types = entityform_get_types();
+  $forms = array();
+  foreach ($types as $machine_name => $type) {
+    $forms[$machine_name . '_entityform_edit_form'] = array(
+        'title' => t('Entityform: @name form', array('@name' => $type->label)),
+        'entity' => 'entityform',
+        'bundle' => $type->type,
+        'delete form' => 'entityform_delete_form',
+        'delete form file' => array(
+            'name' => 'entityform.admin.inc',
+        ),
+        'report access' => array('administer entityform types'),
+    );
+  }
+  return $forms;
+}
+/**
+ * Implements hook_mollom_form_info().
+ */
+function entityform_mollom_form_info($form_id) {
+  // Retrieve internal type from $form_id.
+  $entityform_type = drupal_substr($form_id, 0, -21);
+
+  $type = entityform_type_load($entityform_type);
+  $form_info = array(
+      // @todo This is incompatible with entityform access.
+      'bypass access' => array('bypass entityform access'),
+      'bundle' => $type->type,
+      'bypass access' => array('edit any entityform', 'delete any entityform')
+  );
+  mollom_form_info_add_fields($form_info, 'entityform', $type->type);
+  return $form_info;
+}/**
  * Replace tokens and convert text to markup filter
  * @param string $text_value
  * @param array $token_types
