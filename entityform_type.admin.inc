@@ -263,41 +263,6 @@ function entityform_settings($form, &$form_state) {
   $defaults = entity_get_controller('entityform_type')->create();
   $form = _entityform_type_setttings_elements($defaults, 'defaults');
   $form['#entityform_type'] = $defaults;
-  $menu_options = menu_get_menus();
-  if (empty($defaults->menu)) {
-
-  }
-  $form['entityform_type_defaults']['menu'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Menu settings'),
-      '#tree' => TRUE,
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
-      '#attached' => array(
-          'js' => array(drupal_get_path('module', 'menu') . '/menu.admin.js'),
-      ),
-      '#group' => 'additional_settings',
-  );
-  $form['entityform_type_defaults']['menu']['menu_options'] = array(
-      '#type' => 'checkboxes',
-      '#title' => t('Available menus'),
-      '#default_value' => isset($defaults->menu['menu_options'])?$defaults->menu['menu_options']: array('main-menu'),
-      '#options' => $menu_options,
-      '#description' => t('The menus available to place links in for Entityform Types.'),
-  );
-  // To avoid an 'illegal option' error after saving the form we have to load
-  // all available menu items.
-  // Otherwise it is not possible to dynamically add options to the list.
-  // @todo Convert menu_parent_options() into a #process callback.
-  $options = menu_parent_options(menu_get_menus(), array('mlid' => 0));
-  $form['entityform_type_defaults']['menu']['menu_parent'] = array(
-      '#type' => 'select',
-      '#title' => t('Default parent item'),
-      '#default_value' => isset($defaults->menu['menu_parent'])?$defaults->menu['menu_parent']:'main-menu:0',
-      '#options' => $options,
-      '#description' => t('Choose the menu item to be the default parent for a new link.'),
-      '#attributes' => array('class' => array('menu-title-select')),
-  );
 
   // Call Drupal.menu_update_parent_list() to filter the list of
   // available default parent menu items based on the selected menus.
