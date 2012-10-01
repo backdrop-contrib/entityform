@@ -391,10 +391,22 @@ function entityform_get_types($type_name = NULL, $reset = FALSE) {
   // entity_load will get the Entity controller for our entityform entity and call the load
   // function of that object - we are loading entities by name here.
   $entityform_types = &drupal_static(__FUNCTION__);
-  if (empty($entityform_types)) {
-    $entityform_types = entity_load_multiple_by_name('entityform_type', isset($type_name) ? array($type_name) : FALSE);
+  if (!isset($entityform_types)) {
+    $entityform_types = array();
   }
-  return isset($type_name) ? reset($entityform_types) : $entityform_types;
+  if (empty($entityform_types) || (isset($type_name) && empty($entityform_types[$type_name]))) {
+    if (!isset($type_name)) {
+      $entityform_types = entity_load_multiple_by_name('entityform_type', FALSE);
+    }
+    else {
+      $types = entity_load_multiple_by_name('entityform_type', array($type_name));
+      if (empty($types)) {
+        return FALSE;
+      }
+      $entityform_types[$type_name] = array_shift($types);
+    }
+  }
+  return isset($type_name) ? $entityform_types[$type_name] : $entityform_types;
 }
 
 /**
