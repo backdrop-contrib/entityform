@@ -206,7 +206,6 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
   $entityform_type = entityform_type_load($entityform->type);
   drupal_set_title($entityform_type->label);
   if (!empty($entityform->is_new)) {
-
     $draft = FALSE;
     if ($entityform_type->data['draftable']) {
       $draft = entityform_user_draft($entityform->type);

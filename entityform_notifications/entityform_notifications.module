@@ -47,11 +47,11 @@ function _entityform_notifications_type_settings($form, $form_id) {
       '#title' => t('Notifications settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 30,
+      '#weight' => 80,
   );
   $notifications_set['submission_rules'] = array(
       '#type' => 'select',
-      '#title' => t('Submission Rules'),
+      '#title' => t('Submission rules'),
       '#description' => t('Select the Rules to invoke on submission'),
       '#default_value' => empty($entityform_type->data['submission_rules']) ? array() : $entityform_type->data['submission_rules'],
       '#multiple' => TRUE,
@@ -59,13 +59,13 @@ function _entityform_notifications_type_settings($form, $form_id) {
   );
   $notifications_set['notification_text'] = array(
       '#type' => 'textarea',
-      '#title' => t('Email Text'),
+      '#title' => t('Email text'),
       '#default_value' => empty($entityform_type->data['notification_text']) ? '' : $entityform_type->data['notification_text'],
       '#description' => t('Text for Confirmation Email. DO NOT put HTML in this field'),
   );
   $notifications_set['notify_emails'] = array(
       '#type' => 'textfield',
-      '#title' => t('Notification Emails'),
+      '#title' => t('Notification emails'),
       '#default_value' => empty($entityform_type->data['notify_emails']) ? '' : $entityform_type->data['notify_emails'],
       '#description' => t('Enter emails that should be notified for each form submissions.'),
       '#element_validate' => array('_entityform_form_email_list_validate'),

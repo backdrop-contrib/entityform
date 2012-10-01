@@ -1,5 +1,5 @@
 name = Entityforms Notifications
-description = Provides notifications for Entityforms
+description = Enable this module if you want Entityforms to send e-mail notifications when a form is submitted.
 core = 7.x
 package = Entityforms
 

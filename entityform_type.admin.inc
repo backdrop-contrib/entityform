@@ -51,7 +51,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   entityform_type_prepare_edit($entityform_type);
   $form['#entityform_type'] = $entityform_type;
   $form['label'] = array(
-    '#title' => t('Label'),
+    '#title' => t('Name'),
     '#type' => 'textfield',
     '#default_value' => $entityform_type->label,
     '#description' => t('The human-readable name of this Entityform Type.  This text will be displayed as part of the list in the Entityform Types page.  This name must be unqiue.'),
@@ -77,13 +77,13 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
 
   $form['data']['redirect_path'] = array(
     '#type' => 'textfield',
-    '#title' => t('Redirect Path'),
+    '#title' => t('Redirect path'),
     '#default_value' => empty($entityform_type->data['redirect_path']) ? '' : $entityform_type->data['redirect_path'],
     '#description' => t('What relative path should the user be redirected to on a correct submission?  Leave blank for default action.'),
   );
   $form['data']['instruction_pre'] = array(
     '#type' => 'text_format',
-    '#title' => t('Intro Form instructions'),
+    '#title' => t('Intro form instructions'),
     '#default_value' => empty($entityform_type->data['instruction_pre']['value']) ? '' : $entityform_type->data['instruction_pre']['value'],
     '#format' => empty($entityform_type->data['instruction_pre']['format']) ? NULL : $entityform_type->data['instruction_pre']['format'],
     '#description' => t('These user instructions will appear at the top of every page within this form.'),
@@ -184,7 +184,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
         'class' => array('path-form'),
       ),
       '#access' => user_access('create url aliases') || user_access('administer url aliases'),
-      '#weight' => 30,
+      '#weight' => 100,
       '#tree' => TRUE,
       '#element_validate' => array('_entityform_paths_form_element_validate'),
     );
@@ -334,7 +334,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Draft settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 20,
+      '#weight' => 60,
   );
   $form['data']['draft_set']['draftable'] = array(
       '#type' => 'checkbox',
@@ -344,7 +344,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   $form['data']['draft_set']['draft_button_text'] = array(
       '#type' => 'textfield',
-      '#title' => t('Override Draft Button Text'),
+      '#title' => t('Override draft button text'),
       '#default_value' => empty($entityform_type->data['draft_button_text'])?'':$entityform_type->data['draft_button_text'],
       '#description' => t('Text to use for draft save button.  If blank it will default to "Save Draft".'),
   );
@@ -358,10 +358,10 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
   $form['data']['formoverride_set'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Form Overrides'),
+      '#title' => t('Form overrides'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 25,
+      '#weight' => 120,
   );
   $form['data']['formoverride_set']['submit_button_text'] = array(
       '#type' => 'textfield',
@@ -373,28 +373,28 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
   $form['data']['submission_page_set'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Submission Page settings'),
+      '#title' => t('Submission page settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 40,
+      '#weight' => 20,
   );
   $form['data']['submission_page_set']['submission_page_title'] = array(
       '#type' => 'textfield',
-      '#title' => t('Submission Page Title'),
+      '#title' => t('Submission page title'),
       '#default_value' => empty($entityform_type->data['submission_page_title']) ? '' : $entityform_type->data['submission_page_title'],
       '#description' => t('Page title for correct submission.') . ($op != 'defaults' ? ' ' . ENTITYFORM_TYPE_DEFAULT_PROP_TEXT:''),
   );
 
   $form['data']['submission_page_set']['submission_text'] = array(
       '#type' => 'text_format',
-      '#title' => t('Submission Reply'),
+      '#title' => t('Submission reply'),
       '#default_value' => empty($entityform_type->data['submission_text']['value']) ? '' : $entityform_type->data['submission_text']['value'],
       '#format' => empty($entityform_type->data['submission_text']['format']) ? NULL : $entityform_type->data['submission_text']['format'],
       '#description' => t('This text will be displayed to the user when a correct form is submitted.'),
   );
   $form['data']['submission_page_set']['submission_show_submitted'] = array(
       '#type' => 'checkbox',
-      '#title' => t('Show Submission information'),
+      '#title' => t('Show submission information'),
       '#default_value' => !empty($entityform_type->data['submission_show_submitted']),
       '#description' => t('Show submitted data on submission page?'),
   );
@@ -402,10 +402,10 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   // Let Each entityform use a different View for viewing Submission
   $form['data']['submissions_set'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Submissions Views'),
+      '#title' => t('Submissions views'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 30,
+      '#weight' => 40,
   );
   $view_options = _entityform_get_entityform_views_options();
   if ($op != 'defaults') {
@@ -428,7 +428,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   }
   $form['data']['submissions_set']['submissions_view'] = array(
       '#type' => 'select',
-      '#title' => t('View for Submissions Reports'),
+      '#title' => t('View for submissions reports'),
       '#description' => t('Select the View that should be used Submission reports.'),
       '#default_value' => $submission_view,
       '#options' => $view_options,
@@ -437,7 +437,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   $user_view_description .= ' If "None" is selected then the users will not see a previous submissions link.';
   $form['data']['submissions_set']['user_submissions_view'] = array(
       '#type' => 'select',
-      '#title' => t('View for Current User\'s Submissions'),
+      '#title' => t('View for current user\'s submissions'),
       '#description' => t($user_view_description),
       '#default_value' => $user_submission_view,
       '#options' => $user_view_options,
@@ -449,11 +449,11 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Access settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
-      '#weight' => 10,
+      '#weight' => -50,
   );
   $form['data']['access_set']['form_status'] = array(
       '#type' => 'select',
-      '#title' => t('Form Status'),
+      '#title' => t('Form status'),
       '#options' => array(
           ENTITYFORM_STATUS_OPEN => t('Open for new submissions'),
           ENTITYFORM_STATUS_CLOSED => t('Closed form new form submissions'),
@@ -472,7 +472,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   $form['data']['access_set']['resubmit_action'] = array(
       '#type' => 'select',
-      '#title' => t('Resubmit Action'),
+      '#title' => t('Resubmit action'),
       '#options' => array(
           'new' => t('Allow new submission'),
           'old' => t('Edit old submission'),
@@ -484,7 +484,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   $form['data']['access_set']['access_rules'] = array(
     '#type' => 'select',
-    '#title' => t('Access Rules'),
+    '#title' => t('Access rules'),
     '#description' => t('Select the Rules to invoke to determine if the user will be shown the form fields. This does not control whether the user can see the form page.'),
     '#default_value' => empty($entityform_type->data['access_rules']) ? array() : $entityform_type->data['access_rules'],
     '#multiple' => TRUE,
