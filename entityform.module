@@ -29,7 +29,7 @@ function entityform_menu() {
       'title callback' => 'entityform_type_page_title',
       'title arguments' => array(1, 'submissions report'),
       'page callback' => 'entityform_submission_page',
-      'page arguments' => array($path_count - 2),
+      'page arguments' => array($path_count - 2, $path_count, 'admins'),
       'access arguments' => array('view any entityform'),
       'type' => MENU_LOCAL_TASK,
       'weight' => 100,
@@ -38,7 +38,7 @@ function entityform_menu() {
       'title callback' => 'entityform_type_page_title',
       'title arguments' => array(1, 'submissions report'),
       'page callback' => 'entityform_submission_page',
-      'page arguments' => array(4),
+      'page arguments' => array(4, 5, 'admins'),
       'access arguments' => array('view any entityform'),
       'type' => MENU_LOCAL_TASK,
   );
@@ -856,7 +856,7 @@ function _entityform_alias_is_used($path) {
  * @return string
  * 	Rendered view
  */
-function entityform_submission_page($entityform_type , $display_id = NULL, $mode = 'admins') {
+function entityform_submission_page($entityform_type , $display_id = NULL, $mode) {
   $output = array();
   if ($mode == 'admins') {
     //showing reports view for admins

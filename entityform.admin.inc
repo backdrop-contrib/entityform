@@ -70,7 +70,7 @@ class EntityformUIController extends EntityDefaultUIController {
         'title arguments' => array(1, 'view submissions'),
         'description' => '',
         'page callback' => 'entityform_submission_page',
-        'page arguments' => array(1, NULL, 'user'),
+        'page arguments' => array(1, 3, 'user'),
         'access callback' => 'entityform_access',
         'access arguments' => array('view submissions', 1),
     );
