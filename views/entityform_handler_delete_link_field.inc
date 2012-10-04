@@ -10,16 +10,12 @@
 class entityform_handler_delete_link_field extends entityform_handler_link_field {
   function construct() {
     parent::construct();
-    $this->additional_fields['type'] = 'type';
+    $this->additional_fields['uid'] = 'uid';
   }
 
 
   function render($values) {
-    $type = $values->{$this->aliases['type']};
-
-    //Creating a dummy entityform to check access against
-    $dummy_entityform = (object) array('type' => $type);
-    if (!entityform_access('delete', $dummy_entityform)) {
+    if (!entityform_access('delete', $this->create_dummyentityform($values))) {
       return;
     }
 

@@ -46,4 +46,12 @@ class entityform_handler_link_field extends views_handler_field {
 
     return l($text, 'entityform/' . $entityform_id);
   }
+  protected function create_dummyentityform($values) {
+    $dummy_entityform = new stdClass();
+    $dummy_entityform->type = $values->{$this->aliases['type']};
+    if (isset($this->additional_fields['uid'])) {
+      $dummy_entityform->uid = $values->{$this->aliases['uid']};
+    }
+    return $dummy_entityform;
+  }
 }
