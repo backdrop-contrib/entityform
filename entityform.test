@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * Test basic CRUD functionality.
+ */
+class EntityformCRUDTestCase extends DrupalWebTestCase {
+  public static function getInfo() {
+    return array(
+        'name' => 'Entityform Test',
+        'description' => 'Tests basic CRUD and editing of Entityform Types and Entityforms submissions.',
+        'group' => 'Entityform',
+    );
+  }
+  function setUp() {
+    parent::setUp('entityform', 'locale');
+
+  }
+  function testCreateEntityformType() {
+    $admin_user = $this->drupalCreateUser(array('administer entityform types'));
+    $this->drupalLogin($admin_user);
+    $this->drupalGet('admin/structure/entityform_types/add');
+    $edit['label'] = "Test Form";
+    $edit['type'] = 'test_form';
+    $edit['data[roles][2]'] = 2;
+    $edit['data[instruction_pre][value]'] = "Test Instructions";
+    $this->drupalPost('admin/structure/entityform_types/add', $edit, t('Save entityform type'));
+    $this->assertText(t('The Entityform Test Form has been created.'),t('Entityform Type created successfully'));
+    $this->drupalLogout();
+    $this->drupalGet('admin/structure/entityform_types/add');
+    $this->assertText(t('Access denied'), 'Access has been denied for adding Entityform type.');
+    $this->drupalGet('eform/submit/test-form');
+    $this->assertText(t('Access denied'), 'Access has been denied for submitting Entityform type.');
+    $normal_user = $this->drupalCreateUser();
+    $this->drupalLogin($normal_user);
+    $this->drupalGet('eform/submit/test-form');
+    $this->assertText(t('Test Instructions'), 'Authenicated user can submit Test Form.');
+  }
+}
+?>
