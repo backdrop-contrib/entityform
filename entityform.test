@@ -1,5 +1,10 @@
 <?php
-
+/*
+ * @file
+ * SimpleTest classes for Entityforms
+ */
+define('ENTITYFORM_TEST_SUBMIT_TEXT', 'Submit Form');
+define('ENTITYFORM_TEST_SUBMISSION_TITLE', 'Thank You');
 /**
  * Test basic CRUD functionality.
  */
@@ -18,22 +23,82 @@ class EntityformCRUDTestCase extends DrupalWebTestCase {
   function testCreateEntityformType() {
     $admin_user = $this->drupalCreateUser(array('administer entityform types'));
     $this->drupalLogin($admin_user);
+    // Create Entityform Type test_form
     $this->drupalGet('admin/structure/entityform_types/add');
     $edit['label'] = "Test Form";
     $edit['type'] = 'test_form';
-    $edit['data[roles][2]'] = 2;
+    $edit['data[roles][' . DRUPAL_AUTHENTICATED_RID . ']'] = DRUPAL_AUTHENTICATED_RID;
     $edit['data[instruction_pre][value]'] = "Test Instructions";
     $this->drupalPost('admin/structure/entityform_types/add', $edit, t('Save entityform type'));
-    $this->assertText(t('The Entityform Test Form has been created.'),t('Entityform Type created successfully'));
+    $this->assertText(t('The Entityform Test Form has been created.'), t('Entityform Type created successfully'));
+    // Add a field to test_form
+    $field = array(
+        'field_name' => 'field_text',
+        'type' => 'text',
+        'cardinality' => 1,
+        'translatable' => FALSE,
+    );
+    field_create_field($field);
+    $instance = array(
+        'entity_type' => 'entityform',
+        'field_name' => 'field_text',
+        'bundle' => 'test_form',
+        'label' => 'Test Field',
+        'description' => 'Fill out field.',
+        'widget' => array(
+            'type' => 'text_textfield',
+            'weight' => 0,
+        ),
+    );
+    field_create_instance($instance);
     $this->drupalLogout();
+    // Check that anonymous user cannot create an entityform_type
     $this->drupalGet('admin/structure/entityform_types/add');
     $this->assertText(t('Access denied'), 'Access has been denied for adding Entityform type.');
+    // Check that anonymous cannot submit test_form
     $this->drupalGet('eform/submit/test-form');
     $this->assertText(t('Access denied'), 'Access has been denied for submitting Entityform type.');
     $normal_user = $this->drupalCreateUser();
     $this->drupalLogin($normal_user);
+    // Check that authenicated user can submit test_form
     $this->drupalGet('eform/submit/test-form');
-    $this->assertText(t('Test Instructions'), 'Authenicated user can submit Test Form.');
+    $this->assertText(t('Test Instructions'), 'Authenicated has access to Test Form.');
+    $this->assertText(t('Test Field'), 'field_text exists on Test Form.');
+    // Post Test Form
+    $edit = array();
+    $edit['field_text[und][0][value]'] = 'Test Text';
+    $this->drupalPost('eform/submit/test-form', $edit, t(ENTITYFORM_TEST_SUBMIT_TEXT));
+    $this->assertText(t(ENTITYFORM_TEST_SUBMISSION_TITLE), 'Authenicated user can submit.');
+    $data = array(
+        'roles' => array(DRUPAL_ANONYMOUS_RID => DRUPAL_ANONYMOUS_RID),
+    );
+    $this->updateEntityformType('test_form', NULL, $data);
+    // Check that anonymous cannot submit test_form
+    $this->drupalGet('eform/submit/test-form');
+    $this->assertText(t('Access denied'), 'Access has been denied for normal user for submitting Entityform type.');
+    $this->drupalLogout();
+    $this->drupalGet('eform/submit/test-form');
+    $this->assertText(t('Test Instructions'), 'Anynomous user has access to Test Form.');
+    $this->assertText(t('Test Field'), 'field_text exists on Test Form.');
+    // Post Test Form
+    $edit = array();
+    $edit['field_text[und][0][value]'] = 'Test Text';
+    $this->drupalPost('eform/submit/test-form', $edit, t(ENTITYFORM_TEST_SUBMIT_TEXT));
+    $this->assertText(t(ENTITYFORM_TEST_SUBMISSION_TITLE), 'Anynomous user  can submit.');
+
+  }
+  private function updateEntityformType($machine_name, $properties, $data) {
+    $entityform_type = entityform_type_load($machine_name, TRUE);
+    if (!empty($properties)) {
+      foreach ($properties as $property => $value) {
+        $entityform_type->{$property} = $value;
+      }
+    }
+    if (!empty($data)) {
+      foreach ($data as $property => $value) {
+        $entityform_type->data[$property] = $value;
+      }
+    }
+    entityform_type_save($entityform_type);
   }
 }
-?>
