@@ -394,6 +394,9 @@ function entityform_get_types($type_name = NULL, $reset = FALSE) {
   if (!isset($entityform_types)) {
     $entityform_types = array();
   }
+  elseif ($reset) {
+    unset($entityform_types[$type_name]);
+  }
   if (empty($entityform_types) || (isset($type_name) && empty($entityform_types[$type_name]))) {
     if (!isset($type_name)) {
       $entityform_types = entity_load_multiple_by_name('entityform_type', FALSE);
@@ -490,9 +493,9 @@ function entityform_user_submitted($type, $uid = NULL) {
  * @return
  *   A entityform type array or FALSE if $type does not exist.
  */
-function entityform_type_load($type) {
+function entityform_type_load($type, $reset = FALSE) {
   $type = str_replace('-', '_', $type);
-  return entityform_get_types($type);
+  return entityform_get_types($type, $reset);
 }
 
 
