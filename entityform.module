@@ -335,11 +335,6 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
     }
     // return user_access("submit $type_name entityform");
   }
-  if ($op == 'view submissions'
-  && !empty($entityform_type->data['user_submissions_view'])
-  && user_access('view own entityform')) {
-    return TRUE;
-  }
   if (isset($entityform) && $type_name && is_object($entityform)) {
     if (user_access("$op any entityform", $account)) {
       return TRUE;

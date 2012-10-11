@@ -72,7 +72,7 @@ class EntityformUIController extends EntityDefaultUIController {
         'page callback' => 'entityform_submission_page',
         'page arguments' => array(1, 3, 'user'),
         'access callback' => 'entityform_access',
-        'access arguments' => array('view submissions', 1),
+        'access arguments' => array('view own entityform', 1),
     );
     $types = array_keys(entityform_get_types());
     $controller = entity_ui_controller('entityform');
@@ -237,7 +237,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
     }
   }
   $output = array();
-  if (entityform_access('view submissions', $entityform_type)) {
+  if ($mode == 'submit' && user_access('view own entityform')) {
     //Only show link if this user has submission that will show up in the selected View
     if (!empty($entityform_type->data['user_submissions_view'])) {
       $results = views_get_view_result($entityform_type->data['user_submissions_view'], NULL, $entityform_type->type);
