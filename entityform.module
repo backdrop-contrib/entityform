@@ -1323,6 +1323,19 @@ function entityform_help($path, $arg) {
     case 'admin/config/content/entityform':
       $output = t('Set the default settings for new Entityform Types. This will be used for new Entityform Types.');
       break;
+    case 'admin/structure/entityform_types/manage/%/submissions';
+      $display_id = $arg[6];
+    case 'admin/reports/entityforms/submissions/%';
+      if ($path == 'admin/reports/entityforms/submissions/%') {
+        $display_id = $arg[5];
+      }
+
+      if (user_access('administer entityform types')) {
+        if ($display_id == 'autofields_table') {
+          $output = t('The fields on this table can be controlled via the "Table" view mode under Manage Display for this Entityform Type.');
+        }
+      }
+      break;
   }
   return $output;
 }
