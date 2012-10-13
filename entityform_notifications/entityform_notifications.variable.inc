@@ -45,7 +45,7 @@ function entityform_notifications_variable_info($options) {
         'default' => 'Form submission notification: [entityform-type:label]',
       ),
       'entityform_notify_admin_body' => array(
-        'default' => '[submitted-entityform:entityform-submittd-data]',
+        'default' => '[entityform:entityform-submittd-data]',
       ),
     ),
     'group' => 'entityform',
