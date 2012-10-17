@@ -1426,7 +1426,7 @@ function entityform_forms() {
   return $forms;
 }
 function _entityform_get_rule_types() {
-  $rule_types = array('access', 'submission');
+  $rule_types = array('access', 'submission', 'validation');
   return $rule_types;
 }
 
@@ -1548,6 +1548,26 @@ function entityform_form_entityform_add_access_rule_form_alter(&$form, $form_sta
           'type' => 'boolean',
           'label' => 'Show form',
           'name'  => 'show_form',
+          'usage' =>  '01',// Provide var. Why is this not defined as constant in Rules
+          'weight' => 3,
+      );
+    }
+  }
+}
+function entityform_form_entityform_add_validation_rule_form_alter(&$form, $form_state, $form_id) {
+
+  _entityform_rules_component_change($form, array('rule', 'rule set'));
+  $form['settings']['tags'] = array(
+      '#type' => 'value',
+      '#value' => 'entityform access'
+  );
+  if (!empty($form['plugin_name']['#default_value'])) {
+    if (in_array($form['plugin_name']['#default_value'], array('rule', 'rule set'))) {
+      //If this is rule or rule set we need another vars for return value.
+      $form['settings']['vars']['#value']['items'][] = array(
+          'type' => 'boolean',
+          'label' => 'Form Validates',
+          'name'  => 'validate_form',
           'usage' =>  '01',// Provide var. Why is this not defined as constant in Rules
           'weight' => 3,
       );

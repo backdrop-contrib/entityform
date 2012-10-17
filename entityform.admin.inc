@@ -422,6 +422,13 @@ function entityform_edit_form_validate(&$form, &$form_state) {
 
   // Notify field widgets to validate their data.
   field_attach_form_validate('entityform', $entityform, $form, $form_state);
+  $errors = form_get_errors();
+  if (empty($errors)) {
+      $rule_returns = entityform_invoke_rules($entityform, 'validation_rules');
+      if (!_entityform_rules_all_pass($rule_returns)) {
+        form_error($form['actions']);
+      }
+  }
 }
 
 

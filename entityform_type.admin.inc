@@ -381,6 +381,22 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#multiple' => TRUE,
       '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform submission'),
   );
+  //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
+  $form['data']['validation_set'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Notifications settings'),
+      '#collapsible' => TRUE,
+      '#group' => 'additional_settings',
+      '#weight' => 85,
+  );
+  $form['data']['validation_set']['validation_rules'] = array(
+      '#type' => 'select',
+      '#title' => t('Validation rules'),
+      '#description' => t('Select the Rules to invoke on form validation'),
+      '#default_value' => empty($entityform_type->data['validation_rules']) ? array() : $entityform_type->data['validation_rules'],
+      '#multiple' => TRUE,
+      '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform validation'),
+  );
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
   $form['data']['formoverride_set'] = array(
       '#type' => 'fieldset',
