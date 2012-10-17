@@ -1593,3 +1593,10 @@ function entityform_entity_insert($entity, $type) {
     entityform_invoke_rules($entity, 'submission_rules');
   }
 }
+function entityform_form_entityform_add_submission_rule_form_alter(&$form, $form_state, $form_id) {
+  _entityform_rules_component_change($form, array('rule', 'rule set'));
+  $form['settings']['tags'] = array(
+      '#type' => 'value',
+      '#value' => 'entityform submission'
+  );
+}

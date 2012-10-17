@@ -48,10 +48,3 @@ function _entityform_notifications_type_settings(&$notifications_fieldset, $enti
   );
   //return $notifications_set;
 }
-function entityform_notifications_form_entityform_add_submission_rule_form_alter(&$form, $form_state, $form_id) {
-  _entityform_rules_component_change($form, array('rule', 'rule set'));
-  $form['settings']['tags'] = array(
-      '#type' => 'value',
-      '#value' => 'entityform submission'
-  );
-}
