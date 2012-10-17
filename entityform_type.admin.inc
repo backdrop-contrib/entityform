@@ -19,6 +19,34 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     $items[$this->path]['type'] = MENU_NORMAL_ITEM;
     $items[$this->path . '/manage/%entity_object/edit']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
 
+    $rule_types = _entityform_get_rule_types();
+    foreach ($rule_types as $rule_type) {
+      // Add the menu items for the various Rules forms.
+      $controller = new RulesUIController();
+      $rule_path = $this->path . "/{$rule_type}_rules";
+      $items += $controller->config_menu($rule_path);
+      $items[$rule_path] = array(
+        'title' => "$rule_type Rules",
+        'description' => '',
+        'page callback' => 'entityform_type_rules_list',
+        'page arguments' => array($rule_type),
+        'access arguments' => array('administer entityform types'),
+        'file path' => drupal_get_path('module', 'entityform'),
+        'file' => 'entityform_type.admin.inc',
+        'type' => MENU_LOCAL_TASK,
+      );
+      $items["$rule_path/add"] = array(
+        'title' => "Add a $rule_type rule",
+        'description' => "Adds an additional $rule_type rule configuration.",
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array("entityform_add_{$rule_type}_rule_form", $rule_path),
+        'access arguments' => array('administer entityform types'),
+        'file path' => drupal_get_path('module', 'rules_admin'),
+        'file' => 'rules_admin.inc',
+        'type' => MENU_LOCAL_ACTION,
+      );
+    }
+
     return $items;
   }
 
@@ -37,7 +65,24 @@ class EntityformTypeUIController extends EntityDefaultUIController {
   }
 }
 
+function entityform_type_rules_list($rule_type) {
+  //RulesPluginUI::$basePath = "admin/structure/entityform_types/{$rule_type}_rules";
+  $options = array('show plugin' => FALSE);
 
+  $content['enabled']['title']['#markup'] = '<h3>' . t("Enabled Entityform $rule_type Rules") . '</h3>';
+
+  $conditions = array('plugin' => array('and', 'or', 'rule', 'rule set'), 'active' => TRUE, 'tags' => array("entityform $rule_type"));
+  $content['enabled']['rules'] = RulesPluginUI::overviewTable($conditions, $options);
+  $content['enabled']['rules']['#empty'] = t("There are no active Entityform $rule_type rules.");
+
+  $content['disabled']['title']['#markup'] = '<h3>' . t("Disabled Entityform $rule_type rules") . '</h3>';
+
+  $conditions['active'] = FALSE;
+  $content['disabled']['rules'] = RulesPluginUI::overviewTable($conditions, $options);
+  $content['disabled']['rules']['#empty'] = t("There are no disabled Entityform $rule_type rules.");
+
+  return $content;
+}
 /**
  * Generates the entityform type editing form.
  */
@@ -319,6 +364,22 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#default_value' => empty($entityform_type->data['draft_save_text']['value']) ? '' : $entityform_type->data['draft_save_text']['value'],
       '#format' => empty($entityform_type->data['draft_save_text']['format']) ? NULL : $entityform_type->data['draft_save_text']['format'],
       '#description' => t('This text will be displayed to the user when the form is saved as a draft.'),
+  );
+  //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
+  $form['data']['notifications_set'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Notifications settings'),
+      '#collapsible' => TRUE,
+      '#group' => 'additional_settings',
+      '#weight' => 80,
+  );
+  $form['data']['notifications_set']['submission_rules'] = array(
+      '#type' => 'select',
+      '#title' => t('Submission rules'),
+      '#description' => t('Select the Rules to invoke on submission'),
+      '#default_value' => empty($entityform_type->data['submission_rules']) ? array() : $entityform_type->data['submission_rules'],
+      '#multiple' => TRUE,
+      '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform submission'),
   );
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
   $form['data']['formoverride_set'] = array(

@@ -1206,16 +1206,16 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     $entityform_types = parent::load($ids, $conditions);
     foreach ($entityform_types as $entityform_type) {
       if (module_exists('path')) {
-          $entityform_type->paths = array();
-          $path_types = _entityform_type_get_path_types($entityform_type->type);
-          foreach ($path_types as $key => $path_type) {
-            //check for existing alias
-            $conditions = array('source' => $path_type['default_path']);
-            $path = path_load($conditions);
-            if ($path !== FALSE) {
-              $entityform_type->paths[$key] = $path;
-            }
+        $entityform_type->paths = array();
+        $path_types = _entityform_type_get_path_types($entityform_type->type);
+        foreach ($path_types as $key => $path_type) {
+          //check for existing alias
+          $conditions = array('source' => $path_type['default_path']);
+          $path = path_load($conditions);
+          if ($path !== FALSE) {
+            $entityform_type->paths[$key] = $path;
           }
+        }
       }
     }
     return $entityform_types;
@@ -1325,6 +1325,7 @@ function entityform_help($path, $arg) {
       break;
     case 'admin/structure/entityform_types/manage/%/submissions';
       $display_id = $arg[6];
+      // Intentionally no "break" here. It should fall through.
     case 'admin/reports/entityforms/submissions/%';
       if ($path == 'admin/reports/entityforms/submissions/%') {
         $display_id = $arg[5];
@@ -1335,7 +1336,16 @@ function entityform_help($path, $arg) {
           $output = t('The fields on this table can be controlled via the "Table" view mode under Manage Display for this Entityform Type.');
         }
       }
-      break;
+    case 'admin/structure/entityform_types/access_rules/manage/%';
+      // Give an explanation of how the access Rule works.
+      $rule_object = menu_get_object('rules_config', 5);
+      if (is_subclass_of($rule_object, RulesActionContainer)) {
+        $output = t('This Rule must set the provided variable %var to TRUE for the Entityform to show.', array('%var' => 'show_form'));
+      }
+      elseif (is_subclass_of($rule_object, RulesConditionContainer)) {
+        $output = t('This Rule must evaluate to TRUE for the Entityform to show.', array('%var' => 'show_form'));
+      }
+    break;
   }
   return $output;
 }
@@ -1405,9 +1415,21 @@ function entityform_forms() {
         'callback' => 'entityform_edit_form'
     );
   }
+  $rule_types = _entityform_get_rule_types();
+  foreach ($rule_types as $rule_type) {
+    $forms["entityform_add_{$rule_type}_rule_form"] = array(
+        'callback' => 'rules_admin_add_component',
+    );
+  }
+
 
   return $forms;
 }
+function _entityform_get_rule_types() {
+  $rule_types = array('access', 'submission');
+  return $rule_types;
+}
+
 /**
  * Implements hook_mollom_form_list().
  */
@@ -1445,7 +1467,8 @@ function entityform_mollom_form_info($form_id) {
   );
   mollom_form_info_add_fields($form_info, 'entityform', $type->type);
   return $form_info;
-}/**
+}
+/**
  * Replace tokens and convert text to markup filter
  * @param string $text_value
  * @param array $token_types
@@ -1493,15 +1516,15 @@ function entityform_views_query_alter(&$view, &$query) {
       $uid = -1;
     }
     $query->where[] = array(
-        'conditions' => array(
-            array(
-                'field' => "$table_alias.uid",
-                'value' => $uid,
-                'operator' => '=',
-            ),
+      'conditions' => array(
+        array(
+          'field' => "$table_alias.uid",
+          'value' => $uid,
+          'operator' => '=',
         ),
-        'type' => 'AND',
-        'args' => array(),
+      ),
+      'type' => 'AND',
+      'args' => array(),
     );
   }
 }
@@ -1510,4 +1533,63 @@ function _entityform_type_get_submit_url($type) {
 }
 function _entityform_type_get_confirm_url($type) {
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
+}
+function entityform_form_entityform_add_access_rule_form_alter(&$form, $form_state, $form_id) {
+
+  _entityform_rules_component_change($form, array('and', 'or', 'rule', 'rule set'));
+  $form['settings']['tags'] = array(
+      '#type' => 'value',
+      '#value' => 'entityform access'
+  );
+  if (!empty($form['plugin_name']['#default_value'])) {
+    if (in_array($form['plugin_name']['#default_value'], array('rule', 'rule set'))) {
+      //If this is rule or rule set we need another vars for return value.
+      $form['settings']['vars']['#value']['items'][] = array(
+          'type' => 'boolean',
+          'label' => 'Show form',
+          'name'  => 'show_form',
+          'usage' =>  '01',// Provide var. Why is this not defined as constant in Rules
+          'weight' => 3,
+      );
+    }
+  }
+}
+function _entityform_rules_component_change(&$form, $component_types = NULL) {
+  if ($component_types && !empty($form['plugin_name']['#options'])) {
+    foreach ($form['plugin_name']['#options'] as $key => $value) {
+      if (!in_array($key, $component_types)) {
+        unset($form['plugin_name']['#options'][$key]);
+      }
+    }
+  }
+  $var_items[] = array(
+      'type' => 'entityform',
+      'label' => 'Submitted Entityform',
+      'name'  => 'entityform',
+      'usage' => '10', // Parameter var. Why is this not defined as constant in Rules
+      'weight' => 1,
+  );
+  $var_items[] = array(
+      'type' => 'entityform_type',
+      'label' => 'Entityform Type',
+      'name'  => 'entityform_type',
+      'usage' => '10', // Parameter var. Why is this not defined as constant in Rules
+      'weight' => 2,
+  );
+  $form['settings']['vars'] = array(
+      '#type' => 'value',
+      '#value' => array(
+          'items' => $var_items,
+      ),
+  );
+}
+function entityform_entity_update($entity, $type) {
+  if ($type == 'entityform' && empty($entity->draft)) {
+    entityform_invoke_rules($entity, 'submission_rules');
+  }
+}
+function entityform_entity_insert($entity, $type) {
+  if ($type == 'entityform' && empty($entity->draft)) {
+    entityform_invoke_rules($entity, 'submission_rules');
+  }
 }
