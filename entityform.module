@@ -1345,7 +1345,10 @@ function entityform_help($path, $arg) {
       elseif (is_subclass_of($rule_object, RulesConditionContainer)) {
         $output = t('This Rule must evaluate to TRUE for the Entityform to show.', array('%var' => 'show_form'));
       }
-    break;
+      break;
+    case 'admin/structure/entityform_types/validation_rules/manage/%';
+      $output = t('If this Rule sets the provided variable %var to FALSE then the Entityform submission will not validae.', array('%var' => 'validate_form'));
+      $output .= ' ' . t('The Rule should also display a message to the user about the validation error.');
   }
   return $output;
 }

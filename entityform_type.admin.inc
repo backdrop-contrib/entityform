@@ -381,10 +381,10 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#multiple' => TRUE,
       '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform submission'),
   );
-  //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
+  //****************VALIDATION FIELDSET SETTINGS *********************//
   $form['data']['validation_set'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Notifications settings'),
+      '#title' => t('Validation settings'),
       '#collapsible' => TRUE,
       '#group' => 'additional_settings',
       '#weight' => 85,
