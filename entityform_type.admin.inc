@@ -26,11 +26,11 @@ class EntityformTypeUIController extends EntityDefaultUIController {
       $rule_path = $this->path . "/{$rule_type}_rules";
       $items += $controller->config_menu($rule_path);
       $items[$rule_path] = array(
-        'title' => "$rule_type Rules",
+        'title' => ucfirst($rule_type) . ' Rules',
         'description' => '',
         'page callback' => 'entityform_type_rules_list',
         'page arguments' => array($rule_type),
-        'access arguments' => array('administer entityform types'),
+        'access arguments' => array('administer rules'),
         'file path' => drupal_get_path('module', 'entityform'),
         'file' => 'entityform_type.admin.inc',
         'type' => MENU_LOCAL_TASK,
@@ -40,7 +40,7 @@ class EntityformTypeUIController extends EntityDefaultUIController {
         'description' => "Adds an additional $rule_type rule configuration.",
         'page callback' => 'drupal_get_form',
         'page arguments' => array("entityform_add_{$rule_type}_rule_form", $rule_path),
-        'access arguments' => array('administer entityform types'),
+        'access arguments' => array('administer rules'),
         'file path' => drupal_get_path('module', 'rules_admin'),
         'file' => 'rules_admin.inc',
         'type' => MENU_LOCAL_ACTION,
