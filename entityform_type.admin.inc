@@ -64,7 +64,9 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     return $render;
   }
 }
-
+/*
+ * Page call back to list Rules that can invoked by Entityform Types
+ */
 function entityform_type_rules_list($rule_type) {
   //RulesPluginUI::$basePath = "admin/structure/entityform_types/{$rule_type}_rules";
   $options = array('show plugin' => FALSE);
@@ -571,6 +573,11 @@ function _entityform_paths_form_element_validate($element, &$form_state, $comple
   }
 
 }
+/*
+ * Email form validate function.
+ *
+ * Should contain either no value or emails separated by commas
+ */
 function _entityform_form_email_list_validate($element, &$form_state, $form) {
   $emails = explode(', ', $element['#value']);
   foreach ($emails as $email) {
@@ -605,6 +612,13 @@ function entityform_type_form_submit(&$form, &$form_state) {
 function entityform_type_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/entityform_types/manage/' . $form_state['entityform_type']->type . '/delete';
 }
+
+/**
+ * Get form options for Rules.
+ * @param string $plugin_types
+ * @param string $tag
+ * @return array
+ */
 function entityform_get_rule_options($plugin_types, $tag) {
   $conditions = array(
       'plugin' => $plugin_types,

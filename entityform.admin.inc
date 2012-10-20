@@ -411,6 +411,9 @@ function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
     }
   }
 }
+/*
+ * Set form elements back to required
+ */
 function entityform_set_required(&$form, &$form_state) {
   _entityform_set_all_nested_props($form, array('#required' => TRUE), TRUE);
 }

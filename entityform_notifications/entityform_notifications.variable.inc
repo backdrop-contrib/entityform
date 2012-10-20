@@ -1,5 +1,8 @@
 <?php
-
+/*
+ * @file
+ * Info hooks for variable module.
+ */
 /**
  * Variable definition
  */

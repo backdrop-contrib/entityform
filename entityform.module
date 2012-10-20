@@ -358,6 +358,9 @@ function entityform_type_access($op, $type = NULL, $account = NULL) {
   }
   return user_access('administer entityform types', $account);
 }
+/*
+ * Utitility to functoin to get opitons of Views with Entityform base table.
+ */
 function _entityform_get_entityform_views_options() {
   $views = views_get_enabled_views();
   $options = array();
@@ -669,7 +672,9 @@ function template_preprocess_entityform_submittd_data(&$variables) {
   $uri['options']['absolute'] = TRUE;
   $variables['url'] = url($uri['path'], $uri['options']);
 }
-
+/*
+ * Page callback form Draft submission
+ */
 function entityform_draft_page($entityform_type) {
   $args = func_get_args();
   array_shift($args);
@@ -737,6 +742,9 @@ function entityform_confirm_page($entityform_type) {
 
   return $render_array;
 }
+/*
+ * Get the title for an Entityform Type page.
+ */
 function entityform_type_page_title($entityform_type, $op) {
   if ($op == 'confirm') {
     if (!isset($entityform_type->data['submission_page_title']) || empty($entityform_type->data['submission_page_title'])) {
@@ -833,6 +841,9 @@ function entityform_entity_presave($entity, $type) {
     }
   }
 }
+/*
+ * Utility to test if alias is used already
+ */
 function _entityform_alias_is_used($path) {
   // Ensure that the submitted alias does not exist yet.
   $query = db_select('url_alias')
@@ -945,6 +956,9 @@ function entityform_embed_view($name, $display_id = 'default') {
 
   return $view->preview($display_id, $args);
 }
+/*
+ * Utility function to get data setting or default for Entityform Type
+ */
 function _entityform_get_type_data_setting($entityform_type, $setting, $default_value = NULL) {
   static $empty_type;
 
@@ -980,6 +994,10 @@ function entityform_menu_local_tasks_alter(&$data, $router_item, $root_path) {
     }
   }
 }
+/*
+ * Utility Function to output render array as text
+ * For another option @see http://drupal.org/sandbox/tedbow/1674042
+ */
 function entityform_render_to_text($render_array, $print_empty_title = FALSE, $indent_text = '') {
   $tab_text = "   ";
   $output = '';
@@ -1023,6 +1041,9 @@ function entityform_render_to_text($render_array, $print_empty_title = FALSE, $i
   }
   return $output;
 }
+/*
+ * Utitility function to get submitted info
+ */
 function _entityform_get_submit_info($entityform) {
   $account = user_load($entityform->uid);
   return t("Submitted by !name on !date",
@@ -1191,6 +1212,9 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     $entityform_type = parent::create($values);
     return $entityform_type;
   }
+  /*
+   * Overridden to Load file
+   */
   public function view($entities, $view_mode = 'full', $langcode = NULL, $page = NULL) {
     $view = parent::view($entities, $view_mode, $langcode, $page);
     foreach ($entities as $entity_id => $entity) {
@@ -1352,6 +1376,11 @@ function entityform_help($path, $arg) {
   }
   return $output;
 }
+/*
+ * Get Property for Entityform Type
+ *
+ * @see EntityformTypeMetadataController
+ */
 function entityformtype_metadata_get_properties($entityform_type, array $options, $name, $entity_type) {
   if (isset($entityform_type->data[$name])) {
     return $entityform_type->data[$name];
@@ -1446,6 +1475,8 @@ function entityform_forms() {
         'callback' => 'entityform_edit_form'
     );
   }
+  // Make a different form id to each Rule Add form by Entityform Types
+  // @todo Should there be 1 for editing Rules
   $rule_types = _entityform_get_rule_types();
   foreach ($rule_types as $rule_type) {
     $forms["entityform_add_{$rule_type}_rule_form"] = array(
@@ -1456,6 +1487,9 @@ function entityform_forms() {
 
   return $forms;
 }
+/*
+ * Utility function to get types of Rules used with EntityForm Types
+ */
 function _entityform_get_rule_types() {
   // Let developer remove Rules types for a site.
   $rule_types = array('access', 'submission', 'validation');
@@ -1560,12 +1594,24 @@ function entityform_views_query_alter(&$view, &$query) {
     );
   }
 }
+/*
+ * Utility function to get Submit URL
+ */
 function _entityform_type_get_submit_url($type) {
   return 'eform/submit/' . str_replace('_', '-', $type);
 }
+/*
+ * Utility function to get Confirm URL
+ */
 function _entityform_type_get_confirm_url($type) {
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * This form is defined in entityform_forms.
+ * It alters the Rules add form
+ */
 function entityform_form_entityform_add_access_rule_form_alter(&$form, $form_state, $form_id) {
 
   _entityform_add_rules_component_alter($form, 'entityform access', array('and', 'or', 'rule', 'rule set'));
@@ -1582,6 +1628,12 @@ function entityform_form_entityform_add_access_rule_form_alter(&$form, $form_sta
     }
   }
 }
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * This form is defined in entityform_forms.
+ * It alters the Rules add form
+ */
 function entityform_form_entityform_add_validation_rule_form_alter(&$form, $form_state, $form_id) {
 
   _entityform_add_rules_component_alter($form, 'entityform validation', array('rule', 'rule set'));
@@ -1660,8 +1712,8 @@ function entityform_entity_insert($entity, $type) {
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * This is form is defined in entityform_forms.
- * It
+ * This form is defined in entityform_forms.
+ * It alters the Rules add form
  */
 function entityform_form_entityform_add_submission_rule_form_alter(&$form, $form_state, $form_id) {
   _entityform_add_rules_component_alter($form, 'entityform submission', array('rule', 'rule set'));
