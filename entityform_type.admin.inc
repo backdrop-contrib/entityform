@@ -26,7 +26,7 @@ class EntityformTypeUIController extends EntityDefaultUIController {
       $rule_path = $this->path . "/{$rule_type}_rules";
       $items += $controller->config_menu($rule_path);
       $items[$rule_path] = array(
-        'title' => ucfirst($rule_type) . ' Rules',
+        'title' => drupal_ucfirst($rule_type) . ' Rules',
         'description' => '',
         'page callback' => 'entityform_type_rules_list',
         'page arguments' => array($rule_type),

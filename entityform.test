@@ -5,10 +5,7 @@
  */
 define('ENTITYFORM_TEST_SUBMIT_TEXT', 'Submit Form');
 define('ENTITYFORM_TEST_SUBMISSION_TITLE', 'Thank You');
-/**
- * Test basic CRUD functionality.
- */
-class EntityformCRUDTestCase extends DrupalWebTestCase {
+class EntityformTestCase extends DrupalWebTestCase {
   // User who can administer entityform types
   protected $admin_user;
   // User who can View, Edit, Delete own submissions
@@ -19,7 +16,42 @@ class EntityformCRUDTestCase extends DrupalWebTestCase {
   protected $user_low;
   // keep count of entityform submissions.  Should match entityform_id
   protected $entityform_submission_count;
+  protected function createUsers() {
+    $this->user_admin = $this->drupalCreateUser(array('administer entityform types'));
+    $this->user_view = $this->drupalCreateUser(array('view own entityform'));
+    $this->user_edit = $this->drupalCreateUser(array('view own entityform', 'edit own entityform', 'delete own entityform'));
+    $this->user_low = $this->drupalCreateUser();
+  }
+  function setUp($modules) {
+    parent::setUp($modules);
+    $this->createUsers();
+    $this->entityform_submission_count = 0;
 
+  }
+  protected function entityformSubmit($machine_name, $user, $submit_text = NULL) {
+    $this->drupalLogin($user);
+    if (empty($submit_text)) {
+      $submit_text = 'submitext-' . $user->name;
+    }
+    $form_url = 'eform/submit/' . str_replace('_', '-', $machine_name);
+    $this->drupalGet($form_url);
+    $this->assertText(t('Test Instructions'), 'Authenicated has access to Test Form.');
+    $this->assertText(t('Test Field'), 'field_text exists on Test Form.');
+    // Post Test Form
+    $edit = array();
+    $edit['field_text[und][0][value]'] = $submit_text;
+    $this->drupalPost($form_url, $edit, t(ENTITYFORM_TEST_SUBMIT_TEXT));
+    if ($this->assertText(t(ENTITYFORM_TEST_SUBMISSION_TITLE), 'Authenicated user can submit.')) {
+      $this->entityform_submission_count++;
+      return TRUE;
+    }
+    return FALSE;
+  }
+}
+/**
+ * Test basic CRUD functionality.
+ */
+class EntityformCRUDTestCase extends EntityformTestCase {
   public static function getInfo() {
     return array(
         'name' => 'Entityform Test',
@@ -28,13 +60,7 @@ class EntityformCRUDTestCase extends DrupalWebTestCase {
     );
   }
   function setUp() {
-    parent::setUp('entityform', 'locale');
-    $this->user_admin = $this->drupalCreateUser(array('administer entityform types'));
-    $this->user_view = $this->drupalCreateUser(array('view own entityform'));
-    $this->user_edit = $this->drupalCreateUser(array('view own entityform', 'edit own entityform', 'delete own entityform'));
-    $this->user_low = $this->drupalCreateUser();
-    $this->entityform_submission_count = 0;
-
+    parent::setUp(array('entityform', 'locale'));
   }
   function testCreateEntityformType() {
 
@@ -127,22 +153,6 @@ class EntityformCRUDTestCase extends DrupalWebTestCase {
     }
     entityform_type_save($entityform_type);
   }
-  private function entityformSubmit($machine_name, $user) {
-    $this->drupalLogin($user);
-    $form_url = 'eform/submit/' . str_replace('_', '-', $machine_name);
-    $this->drupalGet($form_url);
-    $this->assertText(t('Test Instructions'), 'Authenicated has access to Test Form.');
-    $this->assertText(t('Test Field'), 'field_text exists on Test Form.');
-    // Post Test Form
-    $edit = array();
-    $edit['field_text[und][0][value]'] = 'submitext-' . $user->name;
-    $this->drupalPost($form_url, $edit, t(ENTITYFORM_TEST_SUBMIT_TEXT));
-    if ($this->assertText(t(ENTITYFORM_TEST_SUBMISSION_TITLE), 'Authenicated user can submit.')) {
-      $this->entityform_submission_count++;
-      return TRUE;
-    }
-    return FALSE;
-  }
   /**
    * Validate permission for user on their own entityform submissions.
    *
@@ -218,5 +228,53 @@ class EntityformCRUDTestCase extends DrupalWebTestCase {
     $this->assertText(t('Access denied'), 'Access has been denied for others to edit submission page.');
     $this->drupalGet('entityform/' . $entityform_id . '/delete');
     $this->assertText(t('Access denied'), 'Access has been denied for others to submission delete page.');
+  }
+}
+class EntityformRulesTestCase extends EntityformTestCase {
+  function setUp() {
+    parent::setUp(array('entityform', 'features', 'entityform_test',  'locale'));
+  }
+  public static function getInfo() {
+    return array(
+        'name' => 'Entityform RulesTest',
+        'description' => 'Tests invoking Rules with Entityform Types and Entityforms submissions.',
+        'group' => 'Entityform',
+    );
+  }
+  /**
+   * Tests Entityforms Invoking of Rules
+   *
+   * 1. Test Submission Rule
+   * 2. Test Access Rule
+   * 3. Test Validation Rule
+   */
+  function testSubmitWithRules() {
+    // Test Submission Rule
+    $this->entityformSubmit('simpletest_entityform', $this->user_view, 'showmessage');
+    $this->assertText('Text=showmessage');
+    $user_noaccess = $this->drupalCreateUser(array('view own entityform'));
+    // This user should be block via a Rule
+    user_save($user_noaccess, array('name' => 'noaccess_user'));
+    $this->drupalLogin($user_noaccess);
+    $form_url = 'eform/submit/' . str_replace('_', '-', 'simpletest_entityform');
+    $this->drupalGet($form_url);
+    $this->assertText(t('Test Instructions'), 'User is can see form instructions - Test Form.');
+    $this->assertNoText(t('Test Field'), 'User is blocked via Rule to Test Form - field');
+    $this->assertText(t('Form Access Denied'), 'User is shown form access denied message.');
+    $this->drupalLogin($this->user_view);
+    $this->drupalGet($form_url);
+    // Test Validation Rule
+    // Post Test Form
+    $edit = array();
+    // This text value will cause Rule to fail
+    $edit['field_text[und][0][value]'] = 'testfail';
+    $this->drupalPost($form_url, $edit, t(ENTITYFORM_TEST_SUBMIT_TEXT));
+    if ($this->assertText('Test Failed', 'Showing validation message')) {
+      $this->entityform_submission_count++;
+      // Should be shown form again
+      $this->assertText(t('Test Instructions'), 'User is can see form instructions - Test Form.');
+      $this->assertText(t('Test Field'), 'User can see form again');
+
+    }
   }
 }

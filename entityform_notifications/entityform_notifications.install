@@ -1,4 +1,8 @@
 <?php
+/*
+ * @file
+ * Update functions for Entityform Notifications
+ */
 /**
  * Change email variables to use new tokens from Rules.
  */
