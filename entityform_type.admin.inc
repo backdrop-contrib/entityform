@@ -375,14 +375,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#group' => 'additional_settings',
       '#weight' => 80,
   );
-  $form['data']['notifications_set']['submission_rules'] = array(
-      '#type' => 'select',
-      '#title' => t('Submission rules'),
-      '#description' => t('Select the Rules to invoke on submission'),
-      '#default_value' => empty($entityform_type->data['submission_rules']) ? array() : $entityform_type->data['submission_rules'],
-      '#multiple' => TRUE,
-      '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform submission'),
-  );
+  $form['data']['notifications_set']['submission_rules'] = _entityform_type_rules_select_element($entityform_type, 'submission', 'Select the Rules to invoke on submission');
   //****************VALIDATION FIELDSET SETTINGS *********************//
   $form['data']['validation_set'] = array(
       '#type' => 'fieldset',
@@ -391,14 +384,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#group' => 'additional_settings',
       '#weight' => 85,
   );
-  $form['data']['validation_set']['validation_rules'] = array(
-      '#type' => 'select',
-      '#title' => t('Validation rules'),
-      '#description' => t('Select the Rules to invoke on form validation'),
-      '#default_value' => empty($entityform_type->data['validation_rules']) ? array() : $entityform_type->data['validation_rules'],
-      '#multiple' => TRUE,
-      '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform validation'),
-  );
+  $form['data']['validation_set']['validation_rules'] = _entityform_type_rules_select_element($entityform_type, 'validation', 'Select the Rules to invoke on form validation');
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
   $form['data']['formoverride_set'] = array(
       '#type' => 'fieldset',
@@ -526,15 +512,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#default_value' => empty($entityform_type->data['resubmit_action']) ? 'new' : $entityform_type->data['resubmit_action'],
       '#description' => t('Action to take if logged in user has already submitted form.'),
   );
-  $form['data']['access_set']['access_rules'] = array(
-    '#type' => 'select',
-    '#title' => t('Access rules'),
-    '#description' => t('Select the Rules to invoke to determine if the user will be shown the form fields. This does not control whether the user can see the form page.'),
-    '#default_value' => empty($entityform_type->data['access_rules']) ? array() : $entityform_type->data['access_rules'],
-    '#multiple' => TRUE,
-    '#options' => entityform_get_rule_options(array('and', 'or', 'rule', 'rule set'), 'entityform access'),
-  );
-
+  $form['data']['access_set']['access_rules'] = _entityform_type_rules_select_element($entityform_type, 'access', 'Select the Rules to invoke to determine if the user will be shown the form fields. This does not control whether the user can see the form page.');
   return $form;
 }
 /**
@@ -633,4 +611,21 @@ function entityform_get_rule_options($plugin_types, $tag) {
     }
   }
   return $rules;
+}
+/*
+ * Utiltity function to get the select element to select Rules
+ */
+function _entityform_type_rules_select_element($entityform_type, $rule_type, $description) {
+  $element =  array(
+      '#type' => 'select',
+      '#title' => t(drupal_ucfirst($rule_type) . ' rules'),
+      '#description' => t($description),
+      '#default_value' => empty($entityform_type->data[$rule_type . '_rules']) ? array() : $entityform_type->data[$rule_type . '_rules'],
+      '#multiple' => TRUE,
+      '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform ' . $rule_type),
+  );
+  if (user_access('administer rules')) {
+    $element['#description'] .= '<br />' . l(t("Add a new $rule_type Rule"), "admin/structure/entityform_types/{$rule_type}_rules/add" );
+  }
+  return $element;
 }
