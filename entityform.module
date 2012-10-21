@@ -1718,3 +1718,13 @@ function entityform_entity_insert($entity, $type) {
 function entityform_form_entityform_add_submission_rule_form_alter(&$form, $form_state, $form_id) {
   _entityform_add_rules_component_alter($form, 'entityform submission', array('rule', 'rule set'));
 }
+/*
+ * Loads files needed for showing Entityform submit form.
+ *
+ * This function is called in the #after_build phase of the form.
+ * Needed when a field is using an AJAX callback such as file upload.
+ */
+function entityform_load_required_entityform_admin($form, &$form_state) {
+  module_load_include('inc', 'entityform', 'entityform.admin');
+  return $form;
+}

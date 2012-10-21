@@ -362,6 +362,9 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   // We append the validate handler to #validate in case a form callback_wrapper
   // is used to add validate handlers earlier.
   $form['#validate'][] = 'entityform_edit_form_validate';
+  // Make sure the proper files are loaded if they is form is being called embedded with an ajax callback
+  // This happens in image field upload for instance.
+  $form['#after_build'][] = 'entityform_load_required_entityform_admin';
   $form['#after_build'][] = 'entityform_clear_required';
   $form['#validate'][] = 'entityform_set_required';
   return $form;
