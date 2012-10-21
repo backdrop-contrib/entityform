@@ -22,7 +22,11 @@ class EntityformTestCase extends DrupalWebTestCase {
     $this->user_edit = $this->drupalCreateUser(array('view own entityform', 'edit own entityform', 'delete own entityform'));
     $this->user_low = $this->drupalCreateUser();
   }
-  function setUp($modules) {
+  function setUp() {
+    $modules = func_get_args();
+    if (isset($modules[0]) && is_array($modules[0])) {
+      $modules = $modules[0];
+    }
     parent::setUp($modules);
     $this->createUsers();
     $this->entityform_submission_count = 0;
