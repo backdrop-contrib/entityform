@@ -20,7 +20,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'description' => t("The user who submitted the form."),
       'getter callback' => 'entity_property_getter_method',
       'setter callback' => 'entity_property_setter_method',
-      'setter permission' => 'administer profiles',
+      'setter permission' => 'administer entityform types',
       'required' => TRUE,
       'schema field' => 'uid',
     );
@@ -30,7 +30,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'type' => 'date',
       'description' => t("The date form was submitted."),
       'setter callback' => 'entity_property_verbatim_set',
-      'setter permission' => 'administer profiles',
+      'setter permission' => 'administer entityform types',
       'schema field' => 'created',
     );
     $properties['changed'] = array(

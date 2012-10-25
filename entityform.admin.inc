@@ -236,7 +236,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit') {
     }
   }
   $output = array();
-  if ($mode == 'submit' && user_access('view own entityform')) {
+  if ($mode == 'submit' && (user_access('view own entityform')|| user_access('view any entityform'))) {
     //Only show link if this user has submission that will show up in the selected View
     if (!empty($entityform_type->data['user_submissions_view'])) {
       $results = views_get_view_result($entityform_type->data['user_submissions_view'], NULL, $entityform_type->type);
