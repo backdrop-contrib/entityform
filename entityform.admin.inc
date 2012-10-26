@@ -197,13 +197,19 @@ class EntityformUIController extends EntityDefaultUIController {
  * @param $mode
  * 	 Current mode for this form
  * 	 Submit - user is submitting the form
- * 	 Edit - user with permission is editingfomr
+ * 	 Edit - user with permission is editingform
+ * @param $form_context
+ *   How is form being used shown?
+ *     'page' - on submit page
+ *     'embedded' - called form EntityformTypeController->view()
  * @see entityform_edit_form()
  */
-function entityform_form_wrapper($entityform, $mode = 'submit') {
+function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 'page') {
   $make_form = TRUE;
   $entityform_type = entityform_type_load($entityform->type);
-  drupal_set_title($entityform_type->label);
+  if ($form_context == 'page') {
+    drupal_set_title($entityform_type->label);
+  }
   if (!empty($entityform->is_new)) {
     $draft = FALSE;
     if ($entityform_type->data['draftable']) {
