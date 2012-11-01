@@ -47,6 +47,13 @@ function entityform_views_data_alter(&$data) {
       //'type' => 'INNER', // all nodes have an author.
     ),
   );
+  $data['entityform_type']['submit_entityform_type'] = array(
+      'field' => array(
+          'title' => t('Submit Link'),
+          'help' => t('Provide a link to the submit form for the entityform type.'),
+          'handler' => 'entityform_type_handler_submit_link_field',
+      ),
+  );
   $data['entityform']['uid']['relationship'] = array(
     'base' => 'users',
     'field' => 'uid',
