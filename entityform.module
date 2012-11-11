@@ -1071,7 +1071,14 @@ class Entityform extends Entity {
 
   protected function defaultLabel() {
     $entityform_type = entityform_type_load($this->type);
-    return $entityform_type->label;
+    $label = $entityform_type->label;
+    $submit_user = NULL;
+    if (!empty($this->uid)) {
+      $submit_user = user_load($this->uid);
+    }
+    $label .= ' - ' . format_username($submit_user);
+    $label .= ' - ' . format_date($this->created, 'short');
+    return $label;
   }
 
   protected function defaultUri() {
