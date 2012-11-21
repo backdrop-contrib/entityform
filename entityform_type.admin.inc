@@ -105,6 +105,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#required' => TRUE,
     '#size' => 30,
     '#weight' => -50,
+    '#maxlength' => 255,
   );
 
   // Machine-readable type name.
