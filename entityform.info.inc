@@ -31,7 +31,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'description' => t("The date form was submitted."),
       'setter callback' => 'entity_property_verbatim_set',
       'setter permission' => 'administer entityform types',
-        'required' => TRUE,
+      'required' => TRUE,
       'schema field' => 'created',
     );
     $properties['changed'] = array(
