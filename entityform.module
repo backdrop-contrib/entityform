@@ -1575,7 +1575,12 @@ function _entityform_format_text($text_value, $token_types = array()) {
  */
 function entityform_views_query_alter(&$view, &$query) {
   global $user;
-  if ($view->base_table == 'entityform' && !user_access('view any entityform')) {
+  // Check for 3 conditions
+  // 1. 'user_access' tag is on query
+  // 2. Base table is 'entityform'
+  // 3. User doesn't have 'view any entityform'
+  if (!empty($view->query->tags) && in_array('user_access', $view->query->tags)
+    && $view->base_table == 'entityform' && !user_access('view any entityform')) {
     // @todo user $query to make sure this is the alias
     $table_alias = 'entityform';
     if (user_access('view own entityform')) {
