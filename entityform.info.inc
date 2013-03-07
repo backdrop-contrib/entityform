@@ -40,13 +40,12 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'schema field' => 'changed',
       'description' => t("The date the form was most recently updated."),
     );
-    $properties['type'] = array(
-        'label' => t("Entityform Type"),
-        'type' => 'entityform_type',
-        'required' => TRUE,
-        'schema field' => 'type',
-        'description' => t("The Entityform Type for the Entityform Submission."),
-    );
+    // type property is created in parent::entityPropertyInfo().
+    $properties['type']['label'] = t("Entityform Type");
+    $properties['type']['schema field'] = 'type';
+    $properties['type']['description'] = t("The Entityform Type for the Entityform Submission.");
+    // @todo This line could be removed depending on this http://drupal.org/node/1931376
+    $properties['type']['required'] = TRUE;
 
     return $info;
   }
