@@ -267,6 +267,10 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
     $rule_returns = entityform_invoke_rules($entityform, 'access_rules');
     if (_entityform_rules_all_pass($rule_returns)) {
       $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
+      $form['#attributes']['class'][] = 'entityform';
+      if (!empty($entityform->type)) {
+        $form['#attributes']['class'][] = 'entitytype-'. $entityform->type . '-form';
+      }
       $output += $form;
     }
   }
