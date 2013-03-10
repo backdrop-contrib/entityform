@@ -220,24 +220,22 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
     }
     if (!$draft) {
       // @todo add logic or other resubmit action
-      $old_submission = entityform_user_previous_submission($entityform->type);
-      switch ($entityform_type->data['resubmit_action']) {
-        case 'old':
-          if ($old_submission) {
-            $entityform = $old_submission;
-          }
-          break;
-        case 'confirm':
-          $confirm_path = entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id);
-          drupal_goto($confirm_path[0], $confirm_path[1]);
-          break;
-        case 'disallow':
-          // @TODO how should this be handled
-          if ($old_submission) {
+      $old_submission = entityform_user_previous_submission($entityform_type->type);
+      if ($old_submission) {
+        switch ($entityform_type->data['resubmit_action']) {
+          case 'old':
+             $entityform = $old_submission;
+            break;
+          case 'confirm':
+            $confirm_path = entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id);
+            drupal_goto($confirm_path[0], $confirm_path[1]);
+            break;
+          case 'disallow':
+            // @TODO how should this be handled
             drupal_set_message(t('You have already submitted this form.'));
             $make_form = FALSE;
-          }
-          break;
+            break;
+        }
       }
     }
   }
