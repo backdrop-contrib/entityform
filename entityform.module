@@ -411,30 +411,34 @@ function entityform_get_types($type_name = NULL, $reset = FALSE) {
 }
 
 /**
- * Get all the submissions for a user
+ * Get all the submissions for a user.
+ *
  * @param string $type
- *   The EntityformType to restrict submissions for
+ *   The EntityformType to restrict submissions for.
  * @param int $uid
- *   uid of user to get submissions for
+ *   uid of user to get submissions for.
  * @param int $draft
  * @return array
  */
 function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
-  if ($uid) {
-    $query = new EntityFieldQuery();
-    $query->entityCondition('entity_type', "entityform");
-    if ($type) {
-      $query->propertyCondition('type', $type);
-    }
-    $query->propertyCondition('uid', $uid);
-    $query->propertyCondition('draft', $draft);
-    $result = $query->execute();
-    if (isset($result['entityform'])) {
-      return $result['entityform'];
-    }
+  $submissions = array();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', "entityform");
+  if ($type) {
+    $query->propertyCondition('type', $type);
   }
-  return array();
+  // uid = 0 for anonymous users.
+  if (isset($uid)) {
+    $query->propertyCondition('uid', $uid);
+  }
+  $query->propertyCondition('draft', $draft);
+  $result = $query->execute();
+  if (isset($result['entityform'])) {
+    $submissions = $result['entityform'];
+  }
+  return $submissions;
 }
+
 /**
  * Get the current draft submission if any for a user
  * @param string $type
