@@ -18,35 +18,6 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     $items[$this->path]['description'] = 'Manage entityform entity types, including adding and removing fields and the display of fields.';
     $items[$this->path]['type'] = MENU_NORMAL_ITEM;
     $items[$this->path . '/manage/%entity_object/edit']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
-
-    $rule_types = _entityform_get_rule_types();
-    foreach ($rule_types as $rule_type) {
-      // Add the menu items for the various Rules forms.
-      $controller = new RulesUIController();
-      $rule_path = $this->path . "/{$rule_type}_rules";
-      $items += $controller->config_menu($rule_path);
-      $items[$rule_path] = array(
-        'title' => drupal_ucfirst($rule_type) . ' Rules',
-        'description' => '',
-        'page callback' => 'entityform_type_rules_list',
-        'page arguments' => array($rule_type),
-        'access arguments' => array('administer entityform types'),
-        'file path' => drupal_get_path('module', 'entityform'),
-        'file' => 'entityform_type.admin.inc',
-        'type' => MENU_LOCAL_TASK,
-      );
-      $items["$rule_path/add"] = array(
-        'title' => "Add a $rule_type rule",
-        'description' => "Adds an additional $rule_type rule configuration.",
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array("entityform_add_{$rule_type}_rule_form", $rule_path),
-        'access arguments' => array('administer entityform types'),
-        'file path' => drupal_get_path('module', 'rules_admin'),
-        'file' => 'rules_admin.inc',
-        'type' => MENU_LOCAL_ACTION,
-      );
-    }
-
     return $items;
   }
 
@@ -63,27 +34,6 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     $render['#header'][] = t('Submit Link');
     return $render;
   }
-}
-/*
- * Page call back to list Rules that can invoked by Entityform Types
- */
-function entityform_type_rules_list($rule_type) {
-  //RulesPluginUI::$basePath = "admin/structure/entityform_types/{$rule_type}_rules";
-  $options = array('show plugin' => FALSE);
-
-  $content['enabled']['title']['#markup'] = '<h3>' . t("Enabled Entityform $rule_type Rules") . '</h3>';
-
-  $conditions = array('plugin' => array('and', 'or', 'rule', 'rule set'), 'active' => TRUE, 'tags' => array("entityform $rule_type"));
-  $content['enabled']['rules'] = RulesPluginUI::overviewTable($conditions, $options);
-  $content['enabled']['rules']['#empty'] = t("There are no active Entityform $rule_type rules.");
-
-  $content['disabled']['title']['#markup'] = '<h3>' . t("Disabled Entityform $rule_type rules") . '</h3>';
-
-  $conditions['active'] = FALSE;
-  $content['disabled']['rules'] = RulesPluginUI::overviewTable($conditions, $options);
-  $content['disabled']['rules']['#empty'] = t("There are no disabled Entityform $rule_type rules.");
-
-  return $content;
 }
 /**
  * Generates the entityform type editing form.
@@ -376,7 +326,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#group' => 'additional_settings',
       '#weight' => 80,
   );
-  $form['data']['notifications_set']['submission_rules'] = _entityform_type_rules_select_element($entityform_type, 'submission', 'Select the Rules to invoke on submission');
+  // @todo Any need for this sit now Rules removed??
   //****************VALIDATION FIELDSET SETTINGS *********************//
   $form['data']['validation_set'] = array(
       '#type' => 'fieldset',
@@ -385,7 +335,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#group' => 'additional_settings',
       '#weight' => 85,
   );
-  $form['data']['validation_set']['validation_rules'] = _entityform_type_rules_select_element($entityform_type, 'validation', 'Select the Rules to invoke on form validation');
+  // @todo Any need for this sit now Rules removed??
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
   $form['data']['formoverride_set'] = array(
       '#type' => 'fieldset',
@@ -513,7 +463,6 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#default_value' => empty($entityform_type->data['resubmit_action']) ? 'new' : $entityform_type->data['resubmit_action'],
       '#description' => t('Action to take if logged in user has already submitted form.'),
   );
-  $form['data']['access_set']['access_rules'] = _entityform_type_rules_select_element($entityform_type, 'access', 'Select the Rules to invoke to determine if the user will be shown the form fields. This does not control whether the user can see the form page.');
   return $form;
 }
 /**
@@ -590,43 +539,4 @@ function entityform_type_form_submit(&$form, &$form_state) {
  */
 function entityform_type_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/entityform_types/manage/' . $form_state['entityform_type']->type . '/delete';
-}
-
-/**
- * Get form options for Rules.
- * @param string $plugin_types
- * @param string $tag
- * @return array
- */
-function entityform_get_rule_options($plugin_types, $tag) {
-  $conditions = array(
-      'plugin' => $plugin_types,
-      'active' => TRUE,
-      );
-  $entities = entity_load('rules_config', FALSE, $conditions);
-  ksort($entities);
-  $rules = array();
-  foreach ($entities as $entity) {
-    if (in_array($tag, $entity->tags)) {
-      $rules[$entity->name] = $entity->label;
-    }
-  }
-  return $rules;
-}
-/*
- * Utiltity function to get the select element to select Rules
- */
-function _entityform_type_rules_select_element($entityform_type, $rule_type, $description) {
-  $element =  array(
-      '#type' => 'select',
-      '#title' => t(drupal_ucfirst($rule_type) . ' rules'),
-      '#description' => t($description),
-      '#default_value' => empty($entityform_type->data[$rule_type . '_rules']) ? array() : $entityform_type->data[$rule_type . '_rules'],
-      '#multiple' => TRUE,
-      '#options' => entityform_get_rule_options(array('rule', 'rule set'), 'entityform ' . $rule_type),
-  );
-  if (user_access('administer rules')) {
-    $element['#description'] .= '<br />' . l(t("Add a new $rule_type Rule"), "admin/structure/entityform_types/{$rule_type}_rules/add" );
-  }
-  return $element;
 }

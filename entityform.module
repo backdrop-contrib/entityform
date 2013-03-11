@@ -1371,19 +1371,6 @@ function entityform_help($path, $arg) {
           $output = t('The fields on this table can be controlled via the "Table" view mode under Manage Display for this Entityform Type.');
         }
       }
-    case 'admin/structure/entityform_types/access_rules/manage/%';
-      // Give an explanation of how the access Rule works.
-      $rule_object = menu_get_object('rules_config', 5);
-      if (is_subclass_of($rule_object, 'RulesActionContainer')) {
-        $output = t('This Rule must set the provided variable %var to TRUE for the Entityform to show.', array('%var' => 'show_form'));
-      }
-      elseif (is_subclass_of($rule_object, 'RulesConditionContainer')) {
-        $output = t('This Rule must evaluate to TRUE for the Entityform to show.', array('%var' => 'show_form'));
-      }
-      break;
-    case 'admin/structure/entityform_types/validation_rules/manage/%';
-      $output = t('If this Rule sets the provided variable %var to FALSE then the Entityform submission will not validae.', array('%var' => 'validate_form'));
-      $output .= ' ' . t('The Rule should also display a message to the user about the validation error.');
   }
   return $output;
 }
@@ -1397,67 +1384,6 @@ function entityformtype_metadata_get_properties($entityform_type, array $options
     return $entityform_type->data[$name];
   }
   return NULL;
-}
-/**
- * Utility function to invoke Rules components.
- *
- * @return array
- *   Return values of the invoked Rule Components
- */
-function entityform_invoke_rules($entityform, $rule_setting) {
-  $entityform_type = entityform_type_load($entityform->type);
-  $return_values = array();
-  if (isset($entityform_type->data[$rule_setting]) && is_array($entityform_type->data[$rule_setting])) {
-    foreach ($entityform_type->data[$rule_setting] as $rule_name) {
-      // Only invoke if Rules exists.
-      // rules_invoke_component will always return false if the Rule doesn't exist.
-      if (rules_get_cache('comp_' . $rule_name)) {
-        $return_values[] = rules_invoke_component($rule_name, $entityform, $entityform_type);
-      }
-      else {
-        // Warn that Rule doesn't exist
-        $msg = t('Entityform Type %form references non-existing Rule component %component',
-          array('%form' => $entityform->type, '%component' => $rule_name));
-        watchdog('entityform', $msg);
-        if (user_access('administer entityform types')) {
-          // Warn on screen if user can fix this.
-          drupal_set_message($msg, 'warning');
-        }
-      }
-    }
-  }
-  return $return_values;
-}
-/**
- * Determines if Rules invoked by entityform_invoke_rules passes.
- *
- * @param array $rule_returns
- * @return boolean
- */
-function _entityform_rules_all_pass($rule_returns) {
-  $pass = FALSE;
-  if (empty($rule_returns)) {
-    // No Returns so pass
-    return TRUE;
-  }
-  foreach ($rule_returns as $rule_return) {
-    // Components that subclass RulesConditionContainer will return a boolean.
-    if ($rule_return === FALSE) {
-      //First Rule that didn't pass
-      return FALSE;
-    }
-    // Components that subclass RulesActionContainer will array of "Provided" vars
-    if (is_array($rule_return)) {
-      //This is not a Condition Component
-      //The first value should be a returned "Truth Value"
-      if (isset($rule_return[0]) && $rule_return[0] == FALSE) {
-        //First Rule that didn't pass
-        return FALSE;
-      }
-    }
-  }
-  //All Rules passed
-  return TRUE;
 }
 /*
  * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
@@ -1483,30 +1409,11 @@ function entityform_forms() {
   $forms = array();
   foreach ($types as $machine_name => $type) {
     $forms[$machine_name . '_entityform_edit_form'] = array(
-        'callback' => 'entityform_edit_form'
+      'callback' => 'entityform_edit_form'
     );
   }
-  // Make a different form id to each Rule Add form by Entityform Types
-  // @todo Should there be 1 for editing Rules
-  $rule_types = _entityform_get_rule_types();
-  foreach ($rule_types as $rule_type) {
-    $forms["entityform_add_{$rule_type}_rule_form"] = array(
-        'callback' => 'rules_admin_add_component',
-    );
-  }
-
-
   return $forms;
 }
-/*
- * Utility function to get types of Rules used with EntityForm Types
- */
-function _entityform_get_rule_types() {
-  // Let developer remove Rules types for a site.
-  $rule_types = array('access', 'submission', 'validation');
-  return $rule_types;
-}
-
 /**
  * Implements hook_mollom_form_list().
  */
@@ -1622,118 +1529,6 @@ function _entityform_type_get_submit_url($type) {
 function _entityform_type_get_confirm_url($type) {
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * This form is defined in entityform_forms.
- * It alters the Rules add form
- */
-function entityform_form_entityform_add_access_rule_form_alter(&$form, $form_state, $form_id) {
-
-  _entityform_add_rules_component_alter($form, 'entityform access', array('and', 'or', 'rule', 'rule set'));
-  if (!empty($form['plugin_name']['#default_value'])) {
-    if (in_array($form['plugin_name']['#default_value'], array('rule', 'rule set'))) {
-      //If this is rule or rule set we need another vars for return value.
-      $form['settings']['vars']['#value']['items'][] = array(
-          'type' => 'boolean',
-          'label' => 'Show form',
-          'name'  => 'show_form',
-          'usage' =>  '01',// Provide var. Why is this not defined as constant in Rules
-          'weight' => 3,
-      );
-    }
-  }
-}
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * This form is defined in entityform_forms.
- * It alters the Rules add form
- */
-function entityform_form_entityform_add_validation_rule_form_alter(&$form, $form_state, $form_id) {
-
-  _entityform_add_rules_component_alter($form, 'entityform validation', array('rule', 'rule set'));
-  if (!empty($form['plugin_name']['#default_value'])) {
-    if (in_array($form['plugin_name']['#default_value'], array('rule', 'rule set'))) {
-      //If this is rule or rule set we need another vars for return value.
-      $form['settings']['vars']['#value']['items'][] = array(
-          'type' => 'boolean',
-          'label' => 'Form Validates',
-          'name'  => 'validate_form',
-          'usage' =>  '01',// Provide var. Why is this not defined as constant in Rules
-          'weight' => 3,
-      );
-    }
-  }
-}
-/*
- * Utility Function to alter the add Rules component form.
- *
- * This function is restrict the plugin type
- * and to add basic Variables
- */
-function _entityform_add_rules_component_alter(&$form, $tags, $component_types = NULL) {
-  $form['settings']['tags'] = array(
-      '#type' => 'value',
-      '#value' => $tags,
-  );
-  if ($component_types && !empty($form['plugin_name']['#options'])) {
-    foreach ($form['plugin_name']['#options'] as $key => $value) {
-      if (!in_array($key, $component_types)) {
-        unset($form['plugin_name']['#options'][$key]);
-      }
-    }
-  }
-  $var_items[] = array(
-      'type' => 'entityform',
-      'label' => 'Submitted Entityform',
-      'name'  => 'entityform',
-      'usage' => '10', // Parameter var. Why is this not defined as constant in Rules
-      'weight' => 1,
-  );
-  $var_items[] = array(
-      'type' => 'entityform_type',
-      'label' => 'Entityform Type',
-      'name'  => 'entityform_type',
-      'usage' => '10', // Parameter var. Why is this not defined as constant in Rules
-      'weight' => 2,
-  );
-  $form['settings']['vars'] = array(
-      '#type' => 'value',
-      '#value' => array(
-          'items' => $var_items,
-      ),
-  );
-}
-/**
- * Implements hook_entity_update().
- *
- * Invoke Rules on Entityform it is not a draft.
- */
-function entityform_entity_update($entity, $type) {
-  if ($type == 'entityform' && empty($entity->draft)) {
-    entityform_invoke_rules($entity, 'submission_rules');
-  }
-}
-/**
- * Implements hook_entity_insert().
- *
- * Invoke Rules on Entityform it is not a draft.
- */
-function entityform_entity_insert($entity, $type) {
-  if ($type == 'entityform' && empty($entity->draft)) {
-    entityform_invoke_rules($entity, 'submission_rules');
-  }
-}
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * This form is defined in entityform_forms.
- * It alters the Rules add form
- */
-function entityform_form_entityform_add_submission_rule_form_alter(&$form, $form_state, $form_id) {
-  _entityform_add_rules_component_alter($form, 'entityform submission', array('rule', 'rule set'));
-}
 /*
  * Loads files needed for showing Entityform submit form.
  *
@@ -1743,4 +1538,11 @@ function entityform_form_entityform_add_submission_rule_form_alter(&$form, $form
 function entityform_load_required_entityform_admin($form, &$form_state) {
   module_load_include('inc', 'entityform', 'entityform.admin');
   return $form;
+}
+/**
+ * Implements hook_entity_rules_info().
+ */
+function entityform_entity_rules_info(){
+  $type_info['entityform']['forms'] = array('entityform_edit_form');
+  return $type_info;
 }

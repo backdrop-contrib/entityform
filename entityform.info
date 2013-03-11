@@ -7,7 +7,6 @@ configure = admin/structure/entityform_types
 
 dependencies[] = entity
 dependencies[] = views
-dependencies[] = rules
 dependencies[] = field_ui
 
 files[] = entityform.admin.inc

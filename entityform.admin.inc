@@ -262,15 +262,8 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
     );
   }
   if ($make_form) {
-    $rule_returns = entityform_invoke_rules($entityform, 'access_rules');
-    if (_entityform_rules_all_pass($rule_returns)) {
-      $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
-      $form['#attributes']['class'][] = 'entityform';
-      if (!empty($entityform->type)) {
-        $form['#attributes']['class'][] = 'entitytype-'. $entityform->type . '-form';
-      }
-      $output += $form;
-    }
+    $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
+    $output += $form;
   }
   if (user_access('administer entityform types')) {
     //Make contextual likes if user has access
@@ -436,14 +429,6 @@ function entityform_edit_form_validate(&$form, &$form_state) {
 
   // Notify field widgets to validate their data.
   field_attach_form_validate('entityform', $entityform, $form, $form_state);
-  $errors = form_get_errors();
-  // If fields validate then run Rules validation.
-  if (empty($errors)) {
-      $rule_returns = entityform_invoke_rules($entityform, 'validation_rules');
-      if (!_entityform_rules_all_pass($rule_returns)) {
-        form_error($form['actions']);
-      }
-  }
 }
 
 
