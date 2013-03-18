@@ -263,6 +263,10 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
   }
   if ($make_form) {
     $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
+    $form['#attributes']['class'][] = 'entityform';
+    if (!empty($entityform->type)) {
+      $form['#attributes']['class'][] = 'entitytype-'. $entityform->type . '-form';
+    }
     $output += $form;
   }
   if (user_access('administer entityform types')) {
