@@ -454,7 +454,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   $entityform->changed = time();
 
   $entityform->save();
-  if ($form_state['entityform_form_mode'] == 'submit') {
+  if ($form_state['entityform_form_mode'] == 'submit' || !user_access('edit any entityform')) {
     if (empty($entityform->draft)) {
       $redirect_path = $entityform_type->get_redirect_path($entityform);
       if (!empty($redirect_path) ) {
