@@ -1241,6 +1241,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
         'submit_confirm_msg' => 'Your submission has been saved.',
         'submission_page_title' => 'Thank You.',
         'draft_button_text' => 'Save Draft',
+        'submit_button_text' => 'Submit',
         'your_submissions' => 'Your Submissions: [entityform_type:label]',
         'disallow_resubmit_msg' => 'You already submitted this form',
         'delete_confirm_msg' => 'Are you sure you want to delete this Submission for [entityform_type:label]?'
