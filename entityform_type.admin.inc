@@ -350,6 +350,30 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#default_value' => empty($entityform_type->data['submit_button_text'])?'':$entityform_type->data['submit_button_text'],
       '#description' => t('Text to use for submit button.  If blank it will default to "Submit Form".'),
   );
+  $form['data']['formoverride_set']['submit_confirm_msg'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Submission Confirmation Text'),
+      '#default_value' => empty($entityform_type->data['submit_confirm_msg'])?'':$entityform_type->data['submit_confirm_msg'],
+      '#description' => t('Text to use for Submission Conformation.'),
+  );
+  $form['data']['formoverride_set']['your_submissions'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Your Submissions Text'),
+      '#default_value' => empty($entityform_type->data['your_submissions'])?'':$entityform_type->data['your_submissions'],
+      '#description' => t('Text to use for "Your Submissions".'),
+  );
+  $form['data']['formoverride_set']['disallow_resubmit_msg'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Form Disallow Resubmit Text'),
+      '#default_value' => empty($entityform_type->data['disallow_resubmit_msg'])?'':$entityform_type->data['disallow_resubmit_msg'],
+      '#description' => t('Text to use for "Your already submitted this form".'),
+  );
+  $form['data']['formoverride_set']['delete_confirm_msg'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Submission Delete Text'),
+      '#default_value' => empty($entityform_type->data['delete_confirm_msg'])?'':$entityform_type->data['delete_confirm_msg'],
+      '#description' => t('Text to use for "Delete Conformation".'),
+  );
 
   //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
   $form['data']['submission_page_set'] = array(

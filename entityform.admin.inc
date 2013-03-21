@@ -232,7 +232,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
             break;
           case 'disallow':
             // @TODO how should this be handled
-            drupal_set_message(t('You have already submitted this form.'));
+            $entityform_type->get_prop('disallow_resubmit_msg');
             $make_form = FALSE;
             break;
         }
@@ -328,7 +328,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     if ($entityform_type->data['draftable'] && !empty($user->uid)) {
       $form['actions']['save'] = array(
         '#type' => 'submit',
-        '#value' => empty($entityform_type->data['draft_button_text'])?t('Save Draft'):t($entityform_type->data['draft_button_text']),
+        '#value' => $entityform_type->get_prop('draft_button_text'),
         //'#limit_validation_errors' => array(), //cause erros
         '#entityform_draft' => '1',
         '#submit' => $submit + array('entityform_edit_form_submit'),
@@ -336,7 +336,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     }
     $form['actions']['submit'] = array(
       '#type' => 'submit',
-      '#value' => empty($entityform_type->data['submit_button_text'])?t('Submit Form'):t($entityform_type->data['submit_button_text']),
+      '#value' => $entityform_type->get_prop('submit_button_text'),
       '#entityform_draft' => 0,
       '#submit' => $submit + array('entityform_edit_form_submit'),
     );
@@ -474,7 +474,8 @@ function entityform_edit_form_submit(&$form, &$form_state) {
         $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
         $form_state['redirect'] = array($confirm_path[0], $confirm_path[1]);
       }
-      drupal_set_message(t('Your submission has been saved.'));
+
+      drupal_set_message($entityform_type->get_prop('submit_confirm_msg', $entityform));
     }
     else {
       $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
@@ -484,7 +485,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   else {
     $info = entity_get_info('entityform_type');
     $form_state['redirect'] = $info['admin ui']['path'] . "/manage/{$entityform_type->type}/submissions";
-    drupal_set_message(t('The submission has been saved.'));
+    drupal_set_message($entityform_type->get_prop('submit_confirm_msg', $entityform));
   }
 }
 
@@ -510,13 +511,13 @@ function entityform_delete_form($form, &$form_state, $entityform) {
   $form_state['entityform'] = $entityform;
 
   $form['#submit'][] = 'entityform_delete_form_submit';
-
+  $entityform_type = entityform_type_load($entityform->type);
   $form = confirm_form($form,
-  t('Are you sure you want to delete this Submission for %type?', array('%type' => $entityform->getTypeName())),
+    $entityform_type->get_prop('delete_confirm_msg'),
     "admin/structure/entityform_types/manage/{$entityform->type}/submissions",
     '<p>' . t('This action cannot be undone.') . '</p>',
-  t('Delete'),
-  t('Cancel'),
+    t('Delete'),
+    t('Cancel'),
     'confirm'
   );
 
