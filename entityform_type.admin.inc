@@ -1,5 +1,5 @@
 <?php
-define('ENTITYFORM_TYPE_DEFAULT_PROP_TEXT', 'Leave this field blank to use default setting.');
+define('ENTITYFORM_TYPE_DEFAULT_PROP_TEXT', 'Leave this field blank to use default setting. Use &lt;none&gt; to show no text');
 /**
  * @file
  * Entityform type editing UI.
@@ -291,6 +291,7 @@ function entityform_settings($form, &$form_state) {
  *   Form elements
  */
 function _entityform_type_setttings_elements($entityform_type, $op) {
+  $default_value_message = $op != 'defaults' ? ' ' . ENTITYFORM_TYPE_DEFAULT_PROP_TEXT:'';
   //****************DRAFT FIELDSET SETTINGS *********************//
   $form['data']['draft_set'] = array(
       '#type' => 'fieldset',
@@ -309,31 +310,14 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#type' => 'textfield',
       '#title' => t('Override draft button text'),
       '#default_value' => empty($entityform_type->data['draft_button_text'])?'':$entityform_type->data['draft_button_text'],
-      '#description' => t('Text to use for draft save button.  If blank it will default to "Save Draft".'),
+      '#description' => t('Text to use for draft save button.') . $default_value_message,
   );
   $form['data']['draft_set']['draft_save_text'] = array(
       '#type' => 'text_format',
       '#title' => t('Draft save text'),
       '#default_value' => empty($entityform_type->data['draft_save_text']['value']) ? '' : $entityform_type->data['draft_save_text']['value'],
       '#format' => empty($entityform_type->data['draft_save_text']['format']) ? NULL : $entityform_type->data['draft_save_text']['format'],
-      '#description' => t('This text will be displayed to the user when the form is saved as a draft.'),
-  );
-  //****************NOTIFICATIONS FIELDSET SETTINGS *********************//
-  $form['data']['notifications_set'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Notifications settings'),
-      '#collapsible' => TRUE,
-      '#group' => 'additional_settings',
-      '#weight' => 80,
-  );
-  // @todo Any need for this sit now Rules removed??
-  //****************VALIDATION FIELDSET SETTINGS *********************//
-  $form['data']['validation_set'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Validation settings'),
-      '#collapsible' => TRUE,
-      '#group' => 'additional_settings',
-      '#weight' => 85,
+      '#description' => t('This text will be displayed to the user when the form is saved as a draft.') . $default_value_message,
   );
   // @todo Any need for this sit now Rules removed??
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
@@ -346,33 +330,33 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   $form['data']['formoverride_set']['submit_button_text'] = array(
       '#type' => 'textfield',
-      '#title' => t('Override Save Button Text'),
+      '#title' => t('Save Button Text'),
       '#default_value' => empty($entityform_type->data['submit_button_text'])?'':$entityform_type->data['submit_button_text'],
-      '#description' => t('Text to use for submit button.  If blank it will default to "Submit Form".'),
+      '#description' => t('Text to use for submit button.') . $default_value_message,
   );
   $form['data']['formoverride_set']['submit_confirm_msg'] = array(
       '#type' => 'textfield',
       '#title' => t('Submission Confirmation Text'),
       '#default_value' => empty($entityform_type->data['submit_confirm_msg'])?'':$entityform_type->data['submit_confirm_msg'],
-      '#description' => t('Text to use for Submission Conformation.'),
+      '#description' => t('Text to use for Submission Conformation.') . $default_value_message,
   );
   $form['data']['formoverride_set']['your_submissions'] = array(
       '#type' => 'textfield',
       '#title' => t('Your Submissions Text'),
       '#default_value' => empty($entityform_type->data['your_submissions'])?'':$entityform_type->data['your_submissions'],
-      '#description' => t('Text to use for "Your Submissions".'),
+      '#description' => t('Text to use for "Your Submissions".') . $default_value_message,
   );
   $form['data']['formoverride_set']['disallow_resubmit_msg'] = array(
       '#type' => 'textfield',
       '#title' => t('Form Disallow Resubmit Text'),
       '#default_value' => empty($entityform_type->data['disallow_resubmit_msg'])?'':$entityform_type->data['disallow_resubmit_msg'],
-      '#description' => t('Text to use for "Your already submitted this form".'),
+      '#description' => t('Text to use for "Your already submitted this form".') . $default_value_message,
   );
   $form['data']['formoverride_set']['delete_confirm_msg'] = array(
       '#type' => 'textfield',
       '#title' => t('Submission Delete Text'),
       '#default_value' => empty($entityform_type->data['delete_confirm_msg'])?'':$entityform_type->data['delete_confirm_msg'],
-      '#description' => t('Text to use for "Delete Conformation".'),
+      '#description' => t('Text to use for "Delete Conformation".') . $default_value_message,
   );
 
   //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
@@ -387,7 +371,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#type' => 'textfield',
       '#title' => t('Submission page title'),
       '#default_value' => empty($entityform_type->data['submission_page_title']) ? '' : $entityform_type->data['submission_page_title'],
-      '#description' => t('Page title for correct submission.') . ($op != 'defaults' ? ' ' . ENTITYFORM_TYPE_DEFAULT_PROP_TEXT:''),
+      '#description' => t('Page title for correct submission.') . $default_value_message,
   );
 
   $form['data']['submission_page_set']['submission_text'] = array(
@@ -395,7 +379,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Submission reply'),
       '#default_value' => empty($entityform_type->data['submission_text']['value']) ? '' : $entityform_type->data['submission_text']['value'],
       '#format' => empty($entityform_type->data['submission_text']['format']) ? NULL : $entityform_type->data['submission_text']['format'],
-      '#description' => t('This text will be displayed to the user when a correct form is submitted.'),
+      '#description' => t('This text will be displayed to the user when a correct form is submitted.') . $default_value_message,
   );
   $form['data']['submission_page_set']['submission_show_submitted'] = array(
       '#type' => 'checkbox',

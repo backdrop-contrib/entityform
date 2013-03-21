@@ -714,7 +714,7 @@ function entityform_confirm_page($entityform_type) {
       'submit_text' => array(
           '#type' => 'markup',
           '#prefix' => '<div class="submission-text">',
-          '#markup' => _entityform_format_text($entityform_type->data['submission_text'], array('entityform_type' => $entityform_type, 'entityform' => $entityform)),
+          '#markup' => $entityform_type->get_prop('submission_text'),
           '#suffix' => '</div>',
       ),
   );
