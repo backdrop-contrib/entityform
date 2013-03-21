@@ -330,7 +330,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   $form['data']['formoverride_set']['submit_button_text'] = array(
       '#type' => 'textfield',
-      '#title' => t('Save Button Text'),
+      '#title' => t('Submit Button Text'),
       '#default_value' => empty($entityform_type->data['submit_button_text'])?'':$entityform_type->data['submit_button_text'],
       '#description' => t('Text to use for submit button.') . $default_value_message,
   );
