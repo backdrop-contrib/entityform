@@ -44,6 +44,10 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     $entityform_type->label .= ' (cloned)';
     $entityform_type->type = '';
   }
+  if ($op == 'add') {
+    // Clear so most defaults.  Allows entityform type to use defaults.
+    $entityform_type->clear_text_props();
+  }
   $form = _entityform_type_setttings_elements($entityform_type, $op);
   entityform_type_prepare_edit($entityform_type);
   $form['#entityform_type'] = $entityform_type;
@@ -258,7 +262,7 @@ function entityform_type_prepare_edit(&$entityform_type) {
  */
 function entityform_settings($form, &$form_state) {
   //choose the default View for viewing for submissions
-  $defaults = entity_get_controller('entityform_type')->create();
+  $defaults = entity_get_controller('entityform_type')->create(array(), TRUE);
   $form = _entityform_type_setttings_elements($defaults, 'defaults');
   $form['#entityform_type'] = $defaults;
 
