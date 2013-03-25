@@ -316,7 +316,9 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
       if (!isset($entityform_type->data['form_status']) || $entityform_type->data['form_status'] != ENTITYFORM_STATUS_CLOSED) {
         $access = $can_submit;
       }
-      $access = FALSE;
+      else {
+        $access = FALSE;
+      }
     }
     else {
       //confirm page
