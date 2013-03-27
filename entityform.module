@@ -633,7 +633,7 @@ function entityform_page_title(Entityform $entityform, $op = 'view') {
     case 'submit':
       return $entityform_type->label;
     default:
-      return t('Form Submission') . ': ' . $entityform_type->label;;
+      return $entityform_type->get_prop('page_title_view');
   }
 }
 
@@ -1288,6 +1288,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
         'disallow_resubmit_msg' => 'You already submitted this form',
         'delete_confirm_msg' => 'Are you sure you want to delete this Submission for [entityform_type:label]?',
         'draft_save_text' => '',
+        'page_title_view' => 'Form Submission: [entityform_type:label]',
     );
   }
   /*

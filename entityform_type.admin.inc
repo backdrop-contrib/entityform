@@ -325,6 +325,7 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
   );
   // @todo Any need for this sit now Rules removed??
   //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
+  // New elements must also be added to EntityformTypeController->get_default_text_values().
   $form['data']['formoverride_set'] = array(
       '#type' => 'fieldset',
       '#title' => t('Form overrides'),
@@ -361,6 +362,12 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
       '#title' => t('Submission Delete Text'),
       '#default_value' => empty($entityform_type->data['delete_confirm_msg'])?'':$entityform_type->data['delete_confirm_msg'],
       '#description' => t('Text to use for "Delete Conformation".') . $default_value_message,
+  );
+  $form['data']['formoverride_set']['page_title_view'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Submission View Title'),
+      '#default_value' => empty($entityform_type->data['page_title_view'])?'':$entityform_type->data['page_title_view'],
+      '#description' => t('Text to use for page title of submission view.') . $default_value_message,
   );
 
   //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
