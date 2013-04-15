@@ -346,6 +346,8 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
             '#type' => 'markup',
             '#markup' => _entityform_get_submit_info($entityform),
             '#weight' => -200,
+            '#prefix' => '<div class="submitted">',
+            '#suffix' => '</div>',
     );
     $form['actions']['save'] = array(
           '#type' => 'submit',

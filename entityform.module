@@ -1216,6 +1216,8 @@ class EntityformController extends EntityAPIController {
     $content['info']['user'] =  array(
         '#markup' => _entityform_get_submit_info($entity),
         '#weight' => -100,
+        '#prefix' => '<div class="submitted">',
+        '#suffix' => '</div>',
     );
 
     $content['info']['#weight'] = -99;
