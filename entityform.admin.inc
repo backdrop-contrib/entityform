@@ -324,6 +324,10 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     $submit += $form['#submit'];
   }
   if ($mode == 'submit') {
+    // Determine if we are on Preview Form page
+    $entity_info = entity_get_info('entityform_type');
+    $preview_path = $entity_info['admin ui']['path'] . "/manage/{$entityform_type->type}/preview";
+    $is_preview = current_path() == $preview_path;
     //If form is draftable and user is logged in add draft button
     if ($entityform_type->data['draftable'] && !empty($user->uid)) {
       $form['actions']['save'] = array(
@@ -332,6 +336,8 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
         //'#limit_validation_errors' => array(), //cause erros
         '#entityform_draft' => '1',
         '#submit' => $submit + array('entityform_edit_form_submit'),
+        '#disabled' => $is_preview,
+        '#executes_submit_callback' => !$is_preview,
       );
     }
     $form['actions']['submit'] = array(
@@ -339,6 +345,8 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
       '#value' => $entityform_type->get_prop('submit_button_text'),
       '#entityform_draft' => 0,
       '#submit' => $submit + array('entityform_edit_form_submit'),
+      '#disabled' => $is_preview,
+      '#executes_submit_callback' => !$is_preview,
     );
   }
   else {

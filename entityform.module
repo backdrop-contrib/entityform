@@ -14,8 +14,8 @@ define('ENTITYFORM_STATUS_OPEN', 'ENTITYFORM_OPEN');
 function entityform_menu() {
   $items = array();
   $entity_info = entity_get_info('entityform_type');
-  $submissions_path = $entity_info['admin ui']['path'] . "/manage/%entityform_type/submissions";
-  $path_count = count(explode('/', $submissions_path));
+  $manage_path = $entity_info['admin ui']['path'] . "/manage/%entityform_type";
+  $path_count = count(explode('/', $manage_path));
 
   $items['admin/config/content/entityform'] = array(
       'title' => 'Entityform Settings',
@@ -25,14 +25,25 @@ function entityform_menu() {
       'access arguments' => array('administer site configuration'),
       'file' => 'entityform_type.admin.inc',
   );
-  $items[$submissions_path] = array(
+  $items["$manage_path/submissions"] = array(
       'title callback' => 'entityform_type_page_title',
       'title arguments' => array(1, 'submissions report'),
       'page callback' => 'entityform_submission_page',
-      'page arguments' => array($path_count - 2, $path_count, 'admins'),
+      'page arguments' => array($path_count - 1, $path_count + 1, 'admins'),
       'access arguments' => array('view any entityform'),
       'type' => MENU_LOCAL_TASK,
       'weight' => 100,
+  );
+  // @todo Add another config form to set whether to show preview form
+  $items["$manage_path/preview"] = array(
+    'title' => 'Form Preview',
+    'page callback' => 'entityform_form_wrapper',
+    'page arguments' => array($path_count - 1, 'submit'),
+    'access arguments' => array('administer entityform types'),
+    'file' => 'entityform.admin.inc',
+    'file path' => drupal_get_path('module', 'entityform'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 110,
   );
   $items['admin/reports/entityforms/submissions/%entityform_type'] = array(
       'title callback' => 'entityform_type_page_title',
