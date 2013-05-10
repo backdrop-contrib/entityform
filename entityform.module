@@ -457,7 +457,9 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0) {
   if (isset($uid)) {
     $query->propertyCondition('uid', $uid);
   }
-  $query->propertyCondition('draft', $draft);
+  if ($draft !== NULL) {
+    $query->propertyCondition('draft', $draft);
+  }
   $result = $query->execute();
   if (isset($result['entityform'])) {
     $submissions = $result['entityform'];
