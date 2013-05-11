@@ -1143,9 +1143,13 @@ class EntityformType extends Entity {
   }
   /*
    * Get the redirect path for this EntityformType with tokens replaced
-  */
+   */
   public function get_redirect_path($entityform = NULL) {
-    return _entityform_format_text($this->data['redirect_path'], array('entityform_type' => $this, 'entityform' => $entityform));
+    if ($this->data['redirect_path'] == '<front>') {
+      return $this->data['redirect_path'];
+    }
+    return _entityform_format_text($this->data['redirect_path'],
+      array('entityform_type' => $this, 'entityform' => $entityform));
   }
   public function get_prop($key, $entityform = NULL) {
     if (isset($this->data[$key])) {
