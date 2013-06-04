@@ -1226,10 +1226,10 @@ class EntityformController extends EntityAPIController {
   }
 
   /**
-   * Overriding the buldContent function to add entity specific fields
+   * Overriding the buildContent function to add entity specific fields
    */
   public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
-    $content['submission'] = parent::buildContent($entity, $view_mode, $langcode, $content);
+    $content = parent::buildContent($entity, $view_mode, $langcode, $content);
     $content['info']['user'] =  array(
         '#markup' => _entityform_get_submit_info($entity),
         '#weight' => -100,
