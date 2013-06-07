@@ -179,59 +179,6 @@ function entityform_entity_info_alter(&$entity_info) {
 }
 
 /**
- * Implements hook_token_info_alter().
- */
-function entityform_token_info_alter(&$data) {
-  $data['tokens']['entityform']['entityform-submittd-data'] = array(
-      'name' => t('Submitted data'),
-      'description' => t('A summary of submitted data.'),
-  );
-}
-
-/**
- * Implements hook_tokens().
- */
-function entityform_tokens($type, $tokens, array $data = array(), array $options = array()) {
-  $replacements = array();
-  if ($type == 'entityform' && !empty($data['entityform'])) {
-    $entityform = $data['entityform'];
-    foreach ($tokens as $name => $original) {
-      switch ($name) {
-        case 'entityform-submittd-data':
-          $instances = field_info_instances('entityform', $entityform->type);
-          $view_mode = 'email';
-          $autofields = array();
-          foreach ($instances as $instance) {
-            $field_display = isset($instance['display'][$view_mode]) ? $instance['display'][$view_mode] : $instance['display']['default'];
-            // don't add to autofields if this field was hidden in the view mode
-            if ($field_display['type'] != 'hidden') {
-              $items = field_get_items('entityform', $entityform, $instance['field_name']);
-              if (!empty($items)) {
-                $autofields[$field_display['weight']] = array(
-                    'field_name' => $instance['field_name'],
-                    'options' => array('type' => $field_display['type'], 'settings' => $field_display['settings']),
-                );
-
-                $autofields[$field_display['weight']] = field_view_value('entityform', $entityform, $instance['field_name'], $items[0], $field_display);
-                $autofields[$field_display['weight']]['#title'] = $instance['label'];
-              }
-            }
-          }
-          // reorder fields to match view mode
-          ksort($autofields);
-          $replacements[$original] = theme('entityform_submittd_data', array(
-              'instances' => $instances,
-              'fields' => $autofields,
-              'entityform' => $entityform,
-          ));
-          break;
-      }
-    }
-  }
-  return $replacements;
-}
-
-/**
  * Implements hook_permission().
  */
 function entityform_permission() {
