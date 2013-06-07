@@ -5,5 +5,5 @@ package = Entityforms
 
 
 dependencies[] = entityform
-dependencies[] = rules
-dependencies[] = variable_email
+dependencies[] = entity_rules
+dependencies[] = entity2text
