@@ -7,3 +7,4 @@ package = Entityforms
 dependencies[] = entityform
 dependencies[] = entity_rules
 dependencies[] = entity2text
+dependencies[] = rules
