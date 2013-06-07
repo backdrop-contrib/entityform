@@ -66,12 +66,12 @@ class EntityformUIController extends EntityDefaultUIController {
       'access arguments' => array('draft_save', 1),
     );
     $items['eform/%entityform_type/submissions'] = array(
-        'title callback' => 'entityform_type_page_title',
-        'title arguments' => array(1, 'view submissions'),
-        'description' => '',
-        'page callback' => 'entityform_submission_page',
-        'page arguments' => array(1, 3, 'user'),
-        'access arguments' => array('view own entityform'),
+      'title callback' => 'entityform_type_page_title',
+      'title arguments' => array(1, 'view submissions'),
+      'description' => '',
+      'page callback' => 'entityform_submission_page',
+      'page arguments' => array(1, 3, 'user'),
+      'access arguments' => array('view own entityform'),
     );
     $types = array_keys(entityform_get_types());
     $controller = entity_ui_controller('entityform');
@@ -124,7 +124,7 @@ class EntityformUIController extends EntityDefaultUIController {
       'access arguments' => array('view', 1),
       'type' => MENU_CALLBACK,
     );
-    $items['entityform/' . $wildcard . '/view']  = array(
+    $items['entityform/' . $wildcard . '/view'] = array(
       'title' => 'View',
       'type' => MENU_DEFAULT_LOCAL_TASK,
       'weight' => -10,
@@ -148,6 +148,7 @@ class EntityformUIController extends EntityDefaultUIController {
 
     return theme('entityform_add_list', array('content' => $content));
   }
+
   public function confirm_path($bundle, $entityform_id = NULL) {
     module_load_include('inc', 'entityform', 'entityform_type.admin');
     $entityform_type = entityform_type_load($bundle);
@@ -174,10 +175,12 @@ class EntityformUIController extends EntityDefaultUIController {
     }
     return array($path);
   }
+
   public function draft_path($bundle) {
     $bundle = str_replace('_', '-', $bundle);
     return "eform/$bundle/draft";
   }
+
   public function submit_path($bundle) {
     module_load_include('inc', 'entityform', 'entityform_type.admin');
     $path = _entityform_type_get_submit_url($bundle);
@@ -195,9 +198,9 @@ class EntityformUIController extends EntityDefaultUIController {
  * @param $entityform
  *   The entityform object being edited by this form.
  * @param $mode
- * 	 Current mode for this form
- * 	 Submit - user is submitting the form
- * 	 Edit - user with permission is editingform
+ *     Current mode for this form
+ *     Submit - user is submitting the form
+ *     Edit - user with permission is editingform
  * @param $form_context
  *   How is form being used shown?
  *     'page' - on submit page
@@ -224,7 +227,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
       if ($old_submission) {
         switch ($entityform_type->data['resubmit_action']) {
           case 'old':
-             $entityform = $old_submission;
+            $entityform = $old_submission;
             break;
           case 'confirm':
             $confirm_path = entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id);
@@ -240,7 +243,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
     }
   }
   $output = array();
-  if ($mode == 'submit' && (user_access('view own entityform')|| user_access('view any entityform'))) {
+  if ($mode == 'submit' && (user_access('view own entityform') || user_access('view any entityform'))) {
     //Only show link if this user has submission that will show up in the selected View
     if (!empty($entityform_type->data['user_submissions_view'])) {
       $results = views_get_view_result($entityform_type->data['user_submissions_view'], NULL, $entityform_type->type);
@@ -256,23 +259,23 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
   // Instructions get printed even if form is not created
   if (!empty($entityform_type->data['instruction_pre'])) {
     $output['intro'] = array(
-        '#type' => 'markup',
-        '#markup' => "<div class='pre-intructions' >" . _entityform_format_text($entityform_type->data['instruction_pre'], array('entityform_type' => $entityform_type)) . "</div>",
-        '#weight' => -100,
+      '#type' => 'markup',
+      '#markup' => "<div class='pre-intructions' >" . _entityform_format_text($entityform_type->data['instruction_pre'], array('entityform_type' => $entityform_type)) . "</div>",
+      '#weight' => -100,
     );
   }
   if ($make_form) {
     $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
     $form['#attributes']['class'][] = 'entityform';
     if (!empty($entityform->type)) {
-      $form['#attributes']['class'][] = 'entitytype-'. $entityform->type . '-form';
+      $form['#attributes']['class'][] = 'entitytype-' . $entityform->type . '-form';
     }
     $output += $form;
   }
   if (user_access('administer entityform types')) {
     //Make contextual likes if user has access
     $contextual_links = array();
-    $contextual_links['entityform_edit']= array(
+    $contextual_links['entityform_edit'] = array(
       'admin/structure/entityform_types/manage',
       array($entityform_type->type),
     );
@@ -305,10 +308,25 @@ function entityform_delete_form_wrapper($entityform) {
 function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit') {
   global $user;
   $entityform_type = entityform_type_load($entityform->type);
+  $is_review = FALSE;
+  if (!empty($form_state['values']['op']) && $form_state['values']['op'] == t('Change')) {
+    $entityform = $form_state['entityform_preview_entity'];
+  }
+  else {
+    if ($entityform_type->data['preview_page'] && !empty($form_state['entityform_preview_entity'])) {
+      $entityform = $form_state['entityform_preview_entity'];
+      $entityform->uid = $user->uid;
+      $is_review = TRUE;
+      $form['review'] = entity_get_controller('entityform')->view(array($entityform->entityform_id => $entityform), 'review', NULL, TRUE);
+      drupal_set_message('Please review your submission');
+    }
+  }
   // Add the field related form elements.
   $form_state['entityform'] = $entityform;
   $form_state['entityform_form_mode'] = $mode;
-  field_attach_form('entityform', $entityform, $form, $form_state);
+  if (!$is_review) {
+    field_attach_form('entityform', $entityform, $form, $form_state);
+  }
 
   $form['actions'] = array(
     '#type' => 'container',
@@ -316,8 +334,8 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     '#weight' => 400,
   );
 
-  // We add the form's #submit array to this button along with the actual submit
-  // handler to preserve any submit handlers added by a form callback_wrapper.
+// We add the form's #submit array to this button along with the actual submit
+// handler to preserve any submit handlers added by a form callback_wrapper.
   $submit = array();
 
   if (!empty($form['#submit'])) {
@@ -330,14 +348,26 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     $is_preview = current_path() == $preview_path;
     //If form is draftable and user is logged in add draft button
     if ($entityform_type->data['draftable'] && !empty($user->uid)) {
-      $form['actions']['save'] = array(
+      if (!$is_review) {
+        //If form is draftable and user is logged in add draft button
+        if ($entityform_type->data['draftable'] && !empty($user->uid)) {
+          $form['actions']['save'] = array(
+            '#type' => 'submit',
+            '#value' => $entityform_type->get_prop('draft_button_text'),
+            //'#limit_validation_errors' => array(), //cause erros
+            '#entityform_draft' => '1',
+            '#submit' => $submit + array('entityform_edit_form_submit'),
+          );
+        }
+      }
+    }
+    if ($is_review) {
+      $form['actions']['change'] = array(
         '#type' => 'submit',
-        '#value' => $entityform_type->get_prop('draft_button_text'),
-        //'#limit_validation_errors' => array(), //cause erros
-        '#entityform_draft' => '1',
+        '#value' => t('Change'),
+        '#entityform_draft' => 0,
+        '#entityform_change' => 1,
         '#submit' => $submit + array('entityform_edit_form_submit'),
-        '#disabled' => $is_preview,
-        '#executes_submit_callback' => !$is_preview,
       );
     }
     $form['actions']['submit'] = array(
@@ -346,22 +376,23 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
       '#entityform_draft' => 0,
       '#submit' => $submit + array('entityform_edit_form_submit'),
       '#disabled' => $is_preview,
+      '#entityform_after_review' => $is_review,
       '#executes_submit_callback' => !$is_preview,
     );
   }
   else {
-    $form['user_info'] =  array(
-            '#type' => 'markup',
-            '#markup' => _entityform_get_submit_info($entityform),
-            '#weight' => -200,
-            '#prefix' => '<div class="submitted">',
-            '#suffix' => '</div>',
+    $form['user_info'] = array(
+      '#type' => 'markup',
+      '#markup' => _entityform_get_submit_info($entityform),
+      '#weight' => -200,
+      '#prefix' => '<div class="submitted">',
+      '#suffix' => '</div>',
     );
     $form['actions']['save'] = array(
-          '#type' => 'submit',
-          '#value' => t('Save Changes'),
-          '#entityform_draft' => '0',
-          '#submit' => $submit + array('entityform_edit_form_submit'),
+      '#type' => 'submit',
+      '#value' => t('Save Changes'),
+      '#entityform_draft' => '0',
+      '#submit' => $submit + array('entityform_edit_form_submit'),
     );
   }
   if (!empty($entityform->name)) {
@@ -374,16 +405,17 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     );
   }
 
-  // We append the validate handler to #validate in case a form callback_wrapper
-  // is used to add validate handlers earlier.
+// We append the validate handler to #validate in case a form callback_wrapper
+// is used to add validate handlers earlier.
   $form['#validate'][] = 'entityform_edit_form_validate';
-  // Make sure the proper files are loaded if they is form is being called embedded with an ajax callback
-  // This happens in image field upload for instance.
+// Make sure the proper files are loaded if they is form is being called embedded with an ajax callback
+// This happens in image field upload for instance.
   $form['#after_build'][] = 'entityform_load_required_entityform_admin';
   $form['#after_build'][] = 'entityform_clear_required';
   $form['#validate'][] = 'entityform_set_required';
   return $form;
 }
+
 /**
  * Called after_build on entityforms
  * This makes sure that required fields aren't require when saving a Draft.
@@ -393,11 +425,12 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
  * @return array
  */
 function entityform_clear_required($form, &$form_state) {
-  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 && isset($form_state['input']['op']) && $form_state['values']['save'] == $form_state['input']['op']  ) {
+  if (!empty($form_state['input']) && isset($form_state['values']['save']) && count($form_state['input']) > 1 && isset($form_state['input']['op']) && $form_state['values']['save'] == $form_state['input']['op']) {
     _entityform_set_all_nested_props($form, array('#required' => FALSE));
   }
   return $form;
 }
+
 /**
  * @param array $form
  * @param array $props
@@ -429,12 +462,14 @@ function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
     }
   }
 }
+
 /*
  * Set form elements back to required
  */
 function entityform_set_required(&$form, &$form_state) {
   _entityform_set_all_nested_props($form, array('#required' => TRUE), TRUE);
 }
+
 /**
  * Form API validate callback for the entityform form
  */
@@ -457,6 +492,19 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   $entityform->draft = $form_state['clicked_button']['#entityform_draft'];
   // Save the entityform and go back to the list of entityforms
   $entityform_type = entityform_type_load($entityform->type);
+  if (!empty($form_state['clicked_button']['#entityform_change'])) {
+    $form_state['entityform_preview_entity'] = $entityform;
+    $form_state['rebuild'] = TRUE;
+    drupal_set_message('Re-enter');
+    return;
+  }
+  else {
+    if (empty($form_state['clicked_button']['#entityform_after_review']) && !$entityform->draft && $entityform_type->data['preview_page']) {
+      $form_state['entityform_preview_entity'] = $entityform;
+      $form_state['rebuild'] = TRUE;
+      return;
+    }
+  }
   // Add in created and changed times.
   if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0) {
     global $user;
@@ -471,7 +519,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   if ($form_state['entityform_form_mode'] == 'submit' || !user_access('edit any entityform')) {
     if (empty($entityform->draft)) {
       $redirect_path = $entityform_type->get_redirect_path($entityform);
-      if (!empty($redirect_path) ) {
+      if (!empty($redirect_path)) {
         $form_state['redirect'] = $redirect_path;
       }
       else {
@@ -550,7 +598,6 @@ function entityform_delete_form_submit($form, &$form_state) {
 }
 
 
-
 /**
  * Page to add Entityform Entities.
  *
@@ -589,4 +636,3 @@ function theme_entityform_add_list($variables) {
 
   return $output;
 }
-
