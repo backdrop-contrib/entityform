@@ -228,6 +228,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     $form['tokens']['token_tree'] = array(
       '#theme' => 'token_tree',
       '#token_types' => array('global_types', 'entityform_type', 'entityform'),
+      '#dialog' => TRUE,
     );
   }
   else {
