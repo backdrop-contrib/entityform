@@ -9,27 +9,25 @@
 function entityform_notifications_default_rules_configuration() {
   $exported_rules = array();
   $exported_rules['rules_entityform_notification_add_submission'] = '{ "rules_entityform_notification_add_submission" : {
-      "LABEL" : "Entityform Notification Add Submission",
-      "PLUGIN" : "rule",
-      "REQUIRES" : [ "rules" ],
-      "USES VARIABLES" : {
-        "entityform" : { "label" : "Entityform", "type" : "entityform" },
-        "email_body" : { "label" : "Email Body", "type" : "text" },
-        "show_submission" : { "label" : "Show Submission", "type" : "boolean" }
-      },
-      "IF" : [ { "NOT data_is_empty" : { "data" : [ "show-submission" ] } } ],
-      "DO" : [
-        { "data_set" : {
-            "data" : [ "email-body" ],
-            "value" : "[email-body:value]\\u000D\\u000A\\u000D\\u000ASubmission:\\u000D\\u000A[entityform:textexport-email]"
-          }
-        },
-        { "drupal_message" : { "message" : "update: [email-body:value]" } },
-        { "drupal_message" : { "message" : "data [entityform:textexport-email]" } }
-      ],
-      "PROVIDES VARIABLES" : [ "email_body" ]
-    }
-  }';
+    "LABEL" : "Entityform Notification Add Submission",
+    "PLUGIN" : "rule",
+    "REQUIRES" : [ "rules" ],
+    "USES VARIABLES" : {
+      "entityform" : { "label" : "Entityform", "type" : "entityform" },
+      "email_body" : { "label" : "Email Body", "type" : "text" },
+      "show_submission" : { "label" : "Show Submission", "type" : "boolean" }
+    },
+    "IF" : [ { "NOT data_is_empty" : { "data" : [ "show-submission" ] } } ],
+    "DO" : [
+      { "data_set" : {
+          "data" : [ "email-body" ],
+          "value" : "[email-body:value]\r\n\r\nSubmission:\r\n[entityform:textexport-email]"
+        }
+      }
+    ],
+    "PROVIDES VARIABLES" : [ "email_body" ]
+  }
+}';
   $exported_rules['rules_entityform_notification_email_admin'] = '{ "rules_entityform_notification_email_admin" : {
       "LABEL" : "Entityform Notification Email Admin",
       "PLUGIN" : "rule",
