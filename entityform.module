@@ -615,7 +615,7 @@ function entityform_page_title(Entityform $entityform, $op = 'view') {
  */
 function entityform_page_view($entityform, $view_mode = 'full') {
   $controller = entity_get_controller('entityform');
-  $content = $controller->view(array($entityform->entityform_id => $entityform));
+  $content = $controller->view(array($entityform->entityform_id => $entityform), $view_mode);
   //drupal_set_title($entityform->name);
   return $content;
 }
