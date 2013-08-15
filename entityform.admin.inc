@@ -313,7 +313,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     $entityform = $form_state['entityform_preview_entity'];
   }
   else {
-    if ($entityform_type->data['preview_page'] && !empty($form_state['entityform_preview_entity'])) {
+    if (!empty($entityform_type->data['preview_page']) && !empty($form_state['entityform_preview_entity'])) {
       $entityform = $form_state['entityform_preview_entity'];
       $entityform->uid = $user->uid;
       $is_review = TRUE;
