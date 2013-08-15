@@ -247,7 +247,7 @@ function entityform_type_prepare_edit(&$entityform_type) {
   if (module_exists('menu') && empty($entityform_type->menu)) {
     $item = array();
     $mlid = db_query_range("SELECT mlid FROM {menu_links} WHERE link_path = :path AND module = 'entityform' ORDER BY mlid ASC", 0, 1, array(
-      ':path' => 'eform/submit/' . $entityform_type->type,
+      ':path' => _entityform_type_get_submit_url($entityform_type->type),
     ))->fetchField();
     if ($mlid) {
       $item = menu_link_load($mlid);

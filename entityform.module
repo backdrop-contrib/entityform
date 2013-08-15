@@ -797,7 +797,7 @@ function entityform_entity_presave($entity, $type) {
         $link = & $entity->menu;
         if ($link['enabled']) {
           $link = $entity->menu;
-          $link['link_path'] = "eform/submit/{$entity->type}";
+          $link['link_path'] = _entityform_type_get_submit_url($entity->type);
           list($link['menu_name'], $link['plid']) = explode(':', $link['parent']);
           if (trim($link['description'])) {
             $link['options']['attributes']['title'] = trim($link['description']);
