@@ -754,12 +754,14 @@ function entityform_entity_presave($entity, $type) {
       if (isset($entity->paths)) {
         $original_entity = $entity->original;
         foreach ($entity->paths as $key => $path) {
-          $original_path = isset($original_entity->paths[$key]) ? $original_entity->paths[$key] : array();
           $path = $entity->paths[$key];
           $path['alias'] = trim($path['alias']);
-          // Delete old alias if user erased it.
-          if (!empty($original_path['pid']) && empty($path['alias'])) {
-            path_delete($original_path['pid']);
+          // Delete old alias if user erased or changed it.
+          if (isset($original_entity->paths[$key])) {
+            $original_path = $original_entity->paths[$key];
+            if (!empty($original_path['alias']) && empty($path['alias']) || ($path['alias'] != $original_path['alias'])) {
+              path_delete($original_path);
+            }
           }
           if (!empty($path['alias'])) {
             // Ensure fields for programmatic executions.
@@ -773,9 +775,6 @@ function entityform_entity_presave($entity, $type) {
             }
             // Entityform Types aren't translateable
             $path['language'] = LANGUAGE_NONE;
-            if (!empty($original_path['pid'])) {
-              $path['pid'] = $original_path['pid'];
-            }
             if (_entityform_alias_is_used($path)) {
               watchdog('entityform', "Could not create alias @alias for EntityformType entity '@type'",
                 array(
@@ -830,8 +829,8 @@ function _entityform_alias_is_used($path) {
   $query = db_select('url_alias')
     ->condition('alias', $path['alias'])
     ->condition('language', $path['language']);
-  if (!empty($path['pid'])) {
-    $query->condition('pid', $path['pid'], '<>');
+  if (!empty($path['source'])) {
+    $query->condition('source', $path['source'], '<>');
   }
   $query->addExpression('1');
   $query->range(0, 1);
