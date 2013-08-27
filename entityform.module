@@ -846,7 +846,7 @@ function _entityform_alias_is_used($path) {
  * @return string
  *    Rendered view
  */
-function entityform_submission_page($entityform_type, $display_id = NULL, $mode) {
+function entityform_submission_page($entityform_type, $show_display_id = NULL, $mode) {
   $output = array();
   if ($mode == 'admins') {
     //showing reports view for admins
@@ -862,39 +862,45 @@ function entityform_submission_page($entityform_type, $display_id = NULL, $mode)
       '#options' => array('attributes' => array(), 'html' => FALSE),
     );
   }
-  // Previous setting used "view_name:display_id" - handle that condition.
+  // Previous setting used "view_name:show_display_id" - handle that condition.
   $parts = explode(':', $submission_view);
   $view_name = $parts[0];
   $view = views_get_view($view_name);
 
   $display_ids = array_keys($view->display);
-  if (empty($display_id)) {
-    // if more than 1 display then get 2nd(non-default)
-    $display_id = count($display_ids) > 1 ? $display_ids[1] : $display_ids[0];
-  }
+
   // Remove master display.
   array_shift($display_ids);
   $links = '';
   if (count($display_ids) > 1) {
     // Create links to other displays
-    foreach ($display_ids as $display) {
+    foreach ($display_ids as $display_id) {
+      // Make sure this display is enabled
+      $enabled = !(isset($view->display[$display_id]->display_options['enabled']) && $view->display[$display_id]->display_options['enabled'] === FALSE);
       // Don't provide direct links to export displays. These will be attached other displays.
-      if ($view->display[$display]->display_plugin != 'views_data_export') {
+      if ($enabled && $view->display[$display_id]->display_plugin != 'views_data_export') {
         $links[] = array(
-          'href' => _entityform_get_submissions_view_path($display),
-          'title' => $view->display[$display]->display_title,
+          'href' => _entityform_get_submissions_view_path($display_id),
+          'title' => $view->display[$display_id]->display_title,
         );
+        if (empty($show_display_id)) {
+          // If $show_display_id was not provided us the first of the linked displays
+          $show_display_id = $display_id;
+        }
       }
     }
-    $output['links'] = array(
-      '#theme' => 'links',
-      '#links' => $links,
-      '#attributes' => array('class' => 'tabs secondary'),
-    );
+    // Only need to show links if there is more than 1 display.
+    if (count($links) > 1) {
+      $output['links'] = array(
+        '#theme' => 'links',
+        '#links' => $links,
+        '#attributes' => array('class' => 'tabs secondary'),
+      );
+    }
   }
   $output['view'] = array(
     '#type' => 'markup',
-    '#markup' => entityform_embed_view($view_name, $display_id, $entityform_type->type),
+    '#markup' => entityform_embed_view($view_name, $show_display_id, $entityform_type->type),
   );
   return $output;
 }
@@ -1371,7 +1377,7 @@ function _entityform_type_get_path_types($type) {
  * This add all Fields for the Bundle to the View at runtime
  * View Requirements
  *   1. First argument must bundle machine name
- *   2. All Fields will added if the if the display_id starts with "autofields_
+ *   2. All Fields will added if the if the show_display_id starts with "autofields_
  */
 function entityform_views_pre_view(&$view, &$display_id, &$args) {
   if ($view->base_table == 'entityform' && strpos($display_id, 'autofields_') === 0) {
