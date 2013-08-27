@@ -1409,17 +1409,18 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
     $field_display = isset($instance['display'][$view_mode]) ? $instance['display'][$view_mode] : $instance['display']['default'];
     // don't add to autofields if this field was hidden in the view mode
     if ($field_display['type'] != 'hidden') {
-      $autofields[$field_display['weight']] = array(
+      $autofields[] = array(
         'field_name' => $instance['field_name'],
         'options' => array(
           'type' => $field_display['type'],
           'settings' => $field_display['settings']
         ),
+        'weight' => $field_display['weight'],
       );
     }
   }
   // reorder fields to match view mode
-  ksort($autofields);
+  uasort($autofields, 'drupal_sort_weight');
   foreach ($autofields as $field) {
     $view->add_item($display_id, 'field', "field_data_{$field['field_name']}", $field['field_name'], $field['options']);
   }
