@@ -3,7 +3,7 @@
  * @file
  * SimpleTest classes for Entityforms
  */
-define('ENTITYFORM_TEST_SUBMIT_TEXT', 'Submit Form');
+define('ENTITYFORM_TEST_SUBMIT_TEXT', 'Submit');
 define('ENTITYFORM_TEST_SUBMISSION_TITLE', 'Thank You');
 class EntityformTestCase extends DrupalWebTestCase {
   // User who can administer entityform types

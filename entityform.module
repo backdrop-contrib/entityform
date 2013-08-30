@@ -872,31 +872,29 @@ function entityform_submission_page($entityform_type, $show_display_id = NULL, $
   // Remove master display.
   array_shift($display_ids);
   $links = '';
-  if (count($display_ids) > 1) {
     // Create links to other displays
-    foreach ($display_ids as $display_id) {
-      // Make sure this display is enabled
-      $enabled = !(isset($view->display[$display_id]->display_options['enabled']) && $view->display[$display_id]->display_options['enabled'] === FALSE);
-      // Don't provide direct links to export displays. These will be attached other displays.
-      if ($enabled && $view->display[$display_id]->display_plugin != 'views_data_export') {
-        $links[] = array(
-          'href' => _entityform_get_submissions_view_path($display_id),
-          'title' => $view->display[$display_id]->display_title,
-        );
-        if (empty($show_display_id)) {
-          // If $show_display_id was not provided us the first of the linked displays
-          $show_display_id = $display_id;
-        }
+  foreach ($display_ids as $display_id) {
+    // Make sure this display is enabled
+    $enabled = !(isset($view->display[$display_id]->display_options['enabled']) && $view->display[$display_id]->display_options['enabled'] === FALSE);
+    // Don't provide direct links to export displays. These will be attached other displays.
+    if ($enabled && $view->display[$display_id]->display_plugin != 'views_data_export') {
+      $links[] = array(
+        'href' => _entityform_get_submissions_view_path($display_id),
+        'title' => $view->display[$display_id]->display_title,
+      );
+      if (empty($show_display_id)) {
+        // If $show_display_id was not provided us the first of the linked displays
+        $show_display_id = $display_id;
       }
     }
-    // Only need to show links if there is more than 1 display.
-    if (count($links) > 1) {
-      $output['links'] = array(
-        '#theme' => 'links',
-        '#links' => $links,
-        '#attributes' => array('class' => 'tabs secondary'),
-      );
-    }
+  }
+  // Only need to show links if there is more than 1 display.
+  if (count($links) > 1) {
+    $output['links'] = array(
+      '#theme' => 'links',
+      '#links' => $links,
+      '#attributes' => array('class' => 'tabs secondary'),
+    );
   }
   $output['view'] = array(
     '#type' => 'markup',
