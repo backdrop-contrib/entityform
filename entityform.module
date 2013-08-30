@@ -298,9 +298,14 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
         }
       }
       else {
-        $entityform = entityform_load($entityform_id);
-        //only grant access if this is the user who made the submission
-        $access = $entityform->uid == $user->uid;
+        if (!$entityform = entityform_load($entityform_id)) {
+          // entityform didn't load. It may have been deleted.
+          $access = FALSE;
+        }
+        else {
+          //only grant access if this is the user who made the submission
+          $access = $entityform->uid == $user->uid;
+        }
       }
     }
   }
