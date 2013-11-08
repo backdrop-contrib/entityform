@@ -1651,3 +1651,18 @@ function entityform_entity_rules_info() {
   $type_info['entityform']['forms'] = array('entityform_edit_form');
   return $type_info;
 }
+/**
+ * Implements hook_entity_rules_event_info().
+ *
+ * Define basic CRUD rules
+ */
+function entityform_entity_rules_event_info() {
+  return array(
+    'submission' => array(
+      'label' => t('Submission'),
+      'needs_form' => FALSE,
+      'entity_types' => array('entityform'),
+      'component_types' => array('rule', 'rule set'),
+    ),
+  );
+}
