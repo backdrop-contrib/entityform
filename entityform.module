@@ -66,7 +66,7 @@ function entityform_menu() {
  */
 function entityform_entity_info() {
   $return['entityform'] = array(
-    'label' => t('Entityform'),
+    'label' => t('Entityform Submission'),
     // The entity class and controller class extend the classes provided by the
     // Entity API
     'entity class' => 'Entityform',
@@ -126,6 +126,24 @@ function entityform_entity_info() {
     'metadata controller class' => 'EntityformMetadataController',
     'metatags' => FALSE,
   );
+
+  // Add bundle info but bypass entity_load() as we cannot use it here.
+  $types = db_select('entityform_type', 'e')
+    ->fields('e')
+    ->execute()
+    ->fetchAllAssoc('type');
+  foreach ($types as $type => $info) {
+    $return['entityform']['bundles'][$type] = array(
+      'label' => $info->label,
+      'admin' => array(
+        'path' => 'admin/structure/entityform_types/manage/%entityform_type',
+        'real path' => 'admin/structure/entityform_types/manage/' . $type,
+        'bundle argument' => 4,
+        'access arguments' => array('administer entityform types'),
+      ),
+    );
+  }
+
   // The entity that holds information about the entity types
   $return['entityform_type'] = array(
     'label' => t('Entityform Type'),
@@ -157,29 +175,6 @@ function entityform_entity_info() {
     'metadata controller class' => 'EntityformTypeMetadataController',
   );
   return $return;
-}
-
-
-/**
- * Implements hook_entity_info_alter().
- *
- * We are adding the info about the entityform types via a hook to avoid a recursion
- * issue as loading the entityform types requires the entity info as well.
- *
- * @todo This needs to be improved
- */
-function entityform_entity_info_alter(&$entity_info) {
-  foreach (entityform_get_types() as $type => $info) {
-    $entity_info['entityform']['bundles'][$type] = array(
-      'label' => $info->label,
-      'admin' => array(
-        'path' => 'admin/structure/entityform_types/manage/%entityform_type',
-        'real path' => 'admin/structure/entityform_types/manage/' . $type,
-        'bundle argument' => 4,
-        'access arguments' => array('administer entityform types'),
-      ),
-    );
-  }
 }
 
 /**
