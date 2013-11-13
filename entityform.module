@@ -1681,7 +1681,7 @@ function entityform_entity_rules_event_info() {
  *
  * For entityform inserts if not draft than is a submission
  */
-function entityform_entityform_insert($entityform, $type) {
+function entityform_entityform_insert($entityform) {
   if (empty($entityform->draft)) {
     if (module_exists('entity_rules')) {
       _entity_rules_invoke_rules($entityform, 'entityform', 'entityform_submission');
@@ -1691,7 +1691,7 @@ function entityform_entityform_insert($entityform, $type) {
 /**
  * Implements hook_ENTITY_TYPE_update().
  */
-function entityform_entityform_update($entityform, $type) {
+function entityform_entityform_update($entityform) {
   global $user;
   if (empty($entityform->draft) && $entityform->uid == $user->uid) {
     if (module_exists('entity_rules')) {
