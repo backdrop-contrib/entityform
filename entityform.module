@@ -1649,15 +1649,53 @@ function entityform_entity_rules_info() {
 /**
  * Implements hook_entity_rules_event_info().
  *
- * Define basic CRUD rules
+ * Define Entityform Submission Rule.
+ * This is defined so that each Rule doesn't have to check if the create or
+ * update is a "submission"
  */
 function entityform_entity_rules_event_info() {
   return array(
-    'submission' => array(
-      'label' => t('Submission'),
+    'entityform_submission' => array(
+      'label' => t('Entityform Submission'),
+      'description' => t('User is submitting their own non-draft submission.'),
       'needs_form' => FALSE,
       'entity_types' => array('entityform'),
       'component_types' => array('rule', 'rule set'),
+      'vars' => array(
+        array(
+          'type' => 'boolean',
+          'label' => 'Continue Rules',
+          'name' => 'continue',
+          'usage' => '11', // Parameter var. Why is this not defined as constant in Rules
+          'weight' => 1,
+          'description' => t('If set to FALSE no rules after the current will be invoked.'),
+          'entity_rules_settings' => array('default_value' => TRUE),
+        ),
+      )
     ),
   );
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ *
+ * For entityform inserts if not draft than is a submission
+ */
+function entityform_entityform_insert($entityform, $type) {
+  if (empty($entityform->draft)) {
+    if (module_exists('entity_rules')) {
+      _entity_rules_invoke_rules($entityform, 'entityform', 'entityform_submission');
+    }
+  }
+}
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function entityform_entityform_update($entityform, $type) {
+  global $user;
+  if (empty($entityform->draft) && $entityform->uid == $user->uid) {
+    if (module_exists('entity_rules')) {
+      _entity_rules_invoke_rules($entityform, 'entityform', 'entityform_submission');
+    }
+  }
 }
