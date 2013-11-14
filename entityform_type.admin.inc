@@ -70,7 +70,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#maxlength' => 32,
     //    '#disabled' => $entityform_type->isLocked() && $op != 'clone',
     '#machine_name' => array(
-      'exists' => 'entityform_get_types',
+      'exists' => 'entityform_type_load',
       'source' => array('label'),
     ),
     '#weight' => -49,

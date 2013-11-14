@@ -205,6 +205,7 @@ class EntityformUIController extends EntityDefaultUIController {
  *   How is form being used shown?
  *     'page' - on submit page
  *     'embedded' - called form EntityformTypeController->view()
+ *     'preview' - Preview on Entityform type management
  * @see entityform_edit_form()
  */
 function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 'page') {
@@ -265,7 +266,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
     );
   }
   if ($make_form) {
-    $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode);
+    $form = drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode, $form_context);
     $form['#attributes']['class'][] = 'entityform';
     if (!empty($entityform->type)) {
       $form['#attributes']['class'][] = 'entitytype-' . $entityform->type . '-form';
@@ -305,7 +306,7 @@ function entityform_delete_form_wrapper($entityform) {
  *   The entityform object to edit or for a create form an empty entityform object
  *     with only a entityform type defined.
  */
-function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit') {
+function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit', $form_context = 'page') {
   global $user;
   $entityform_type = entityform_type_load($entityform->type);
   $is_review = FALSE;
@@ -344,8 +345,6 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   if ($mode == 'submit') {
     // Determine if we are on Preview Form page
     $entity_info = entity_get_info('entityform_type');
-    $preview_path = $entity_info['admin ui']['path'] . "/manage/{$entityform_type->type}/preview";
-    $is_preview = current_path() == $preview_path;
     //If form is draftable and user is logged in add draft button
     if ($entityform_type->data['draftable'] && !empty($user->uid)) {
       if (!$is_review) {
@@ -375,9 +374,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
       '#value' => $entityform_type->get_prop('submit_button_text'),
       '#entityform_draft' => 0,
       '#submit' => $submit + array('entityform_edit_form_submit'),
-      '#disabled' => $is_preview,
       '#entityform_after_review' => $is_review,
-      '#executes_submit_callback' => !$is_preview,
     );
   }
   else {
@@ -413,7 +410,25 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   $form['#after_build'][] = 'entityform_load_required_entityform_admin';
   $form['#after_build'][] = 'entityform_clear_required';
   $form['#validate'][] = 'entityform_set_required';
+  if ($form_context == 'preview') {
+    _entityform_type_modify_preview_form($form);
+  }
+
   return $form;
+}
+
+/**
+ * Modify an Entityform add/edit form to use as a preview.
+ * @param $form
+ */
+function _entityform_type_modify_preview_form(&$form) {
+  foreach (element_children($form['actions']) as $child_key) {
+    if ($form['actions'][$child_key]['#type'] == 'submit') {
+      $form['actions'][$child_key]['#disabled'] = TRUE;
+      $form['actions'][$child_key]['#executes_submit_callback'] = FALSE;
+      unset($form['actions'][$child_key]['#submit']);
+    }
+  }
 }
 
 /**
