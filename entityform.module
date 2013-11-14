@@ -38,7 +38,7 @@ function entityform_menu() {
   $items["$manage_path/preview"] = array(
     'title' => 'Form Preview',
     'page callback' => 'entityform_form_wrapper',
-    'page arguments' => array($path_count - 1, 'submit'),
+    'page arguments' => array($path_count - 1, 'submit', 'preview'),
     'access arguments' => array('administer entityform types'),
     'file' => 'entityform.admin.inc',
     'file path' => drupal_get_path('module', 'entityform'),
