@@ -406,7 +406,11 @@ function entityform_get_types($type_name = NULL) {
     }
     cache_set($cache_key, $entityform_types);
   }
-  return isset($type_name) ? $entityform_types[$type_name] : $entityform_types;
+  if (isset($type_name)) {
+    // Even though $type_name was set it might not be valid
+    return isset($entityform_types[$type_name]) ? $entityform_types[$type_name] : NULL;
+  }
+  return $entityform_types;
 }
 
 /**
@@ -593,8 +597,23 @@ function entityform_save(Entityform $entityform) {
  * to be used in page arguments load function
  */
 function entityform_empty_load($type) {
+  $submit_404 = &drupal_static(__FUNCTION__);
   $type = str_replace("-", "_", $type);
-  return entityform_create(array('type' => $type));
+  $empty_entityform = entityform_create(array('type' => $type));
+  if (empty($empty_entityform)) {
+    // Entityform didn't load correctly. Probably because of mistyped url
+    if (strpos(current_path(), 'eform/submit/') === 0) {
+      /* Have to keep track of whether we have already been here because
+      * drupal_not_found() will load menu item again(infinite loop!!).
+      */
+      if ($submit_404) {
+        return NULL;
+      }
+      $submit_404 = TRUE;
+      drupal_not_found();
+    }
+  }
+  return $empty_entityform;
 }
 
 /**
@@ -626,13 +645,15 @@ function entityform_uri(Entityform $entityform) {
 /**
  * Menu title callback for showing individual entities
  */
-function entityform_page_title(Entityform $entityform, $op = 'view') {
-  $entityform_type = entityform_get_types($entityform->type);
-  switch ($op) {
-    case 'submit':
-      return $entityform_type->label;
-    default:
-      return $entityform_type->get_prop('page_title_view');
+function entityform_page_title($entityform, $op = 'view') {
+  if (!empty($entityform)) {
+    $entityform_type = entityform_get_types($entityform->type);
+    switch ($op) {
+      case 'submit':
+        return $entityform_type->label;
+      default:
+        return t('Form Submission') . ': ' . $entityform_type->label;;
+    }
   }
 }
 
@@ -1221,6 +1242,13 @@ class EntityformController extends EntityAPIController {
    *   A entityform object with all default fields initialized.
    */
   public function create(array $values = array()) {
+    // We need a type for the bundle but it may not be valid.
+    if (isset($values['type'])) {
+      $type = entityform_get_types($values['type']);
+    }
+    if (empty($type)) {
+      return NULL;
+    }
     // Add values that are specific to our Entityform
     $values += array(
       'entityform_id' => '',
