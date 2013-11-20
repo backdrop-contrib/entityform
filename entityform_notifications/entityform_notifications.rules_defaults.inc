@@ -31,7 +31,7 @@ function entityform_notifications_default_rules_configuration() {
   $exported_rules['rules_entityform_notification_email_admin'] = '{ "rules_entityform_notification_email_admin" : {
       "LABEL" : "Entityform Notification Email Admin",
       "PLUGIN" : "rule",
-      "TAGS" : [ "entity_rules_create" ],
+      "TAGS" : [ "entity_rules_entityform_submission" ],
       "REQUIRES" : [ "rules" ],
       "USES VARIABLES" : {
         "entity" : { "label" : "Entity", "type" : "entityform" },
@@ -57,7 +57,7 @@ function entityform_notifications_default_rules_configuration() {
   $exported_rules['rules_entityform_notification_email_submitter'] = '{ "rules_entityform_notification_email_submitter" : {
       "LABEL" : "Entityform Notification Email Submitter",
       "PLUGIN" : "rule",
-      "TAGS" : [ "entity_rules_create" ],
+      "TAGS" : [ "entity_rules_entityform_submission" ],
       "REQUIRES" : [ "rules" ],
       "USES VARIABLES" : {
         "entity" : { "label" : "Entity", "type" : "entityform" },
