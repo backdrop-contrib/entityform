@@ -1320,6 +1320,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
       $values['data'] += array(
         'submissions_view' => 'entityforms',
         'user_submissions_view' => 'user_entityforms',
+        'preview_page' => 0,
       );
       $values['data'] += $this->get_default_text_values();
     }
