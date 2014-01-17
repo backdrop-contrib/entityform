@@ -1440,15 +1440,22 @@ class EntityformTypeController extends EntityAPIControllerExportable {
   }
 }
 
+/**
+ * Utility function to get path types for an Entityform Type
+ * @param $type
+ * @return array
+ */
 function _entityform_type_get_path_types($type) {
   return array(
     'submit' => array(
       'default_path' => _entityform_type_get_submit_url($type),
       'title' => 'Submit URL alias',
+      'description' => 'Optionally specify an alternative URL by which the form submit page can be accessed.',
     ),
     'confirm' => array(
       'default_path' => _entityform_type_get_confirm_url($type),
       'title' => 'Confirm URL alias',
+      'description' => 'Optionally specify an alternative URL by which the form conformation page(after the form has been submitted) can be accessed.',
     ),
   );
 }

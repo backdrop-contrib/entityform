@@ -210,7 +210,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
         '#title' => check_plain($path_type['title']),
         '#default_value' => isset($entityform_type->paths[$key]) ? $entityform_type->paths[$key]['alias'] : '',
         '#maxlength' => 255,
-        '#description' => t('Optionally specify an alternative URL by which this content can be accessed. For example, type "about" when writing an about page. Use a relative path and don\'t add a trailing slash or the URL alias won\'t work.'),
+        '#description' => t($path_type['description']),
       );
     }
     $form['additional_settings'] = array(
