@@ -345,19 +345,19 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   if ($mode == 'submit') {
     // Determine if we are on Preview Form page
     $entity_info = entity_get_info('entityform_type');
+    // Create Draft button so that other modules can activate but don't give access by default
+    $form['actions']['save'] = array(
+      '#type' => 'submit',
+      '#value' => $entityform_type->get_prop('draft_button_text'),
+      //'#limit_validation_errors' => array(), //cause erros
+      '#entityform_draft' => '1',
+      '#submit' => $submit + array('entityform_edit_form_submit'),
+      '#access' => FALSE,
+    );
     //If form is draftable and user is logged in add draft button
     if ($entityform_type->data['draftable'] && !empty($user->uid)) {
       if (!$is_review) {
-        //If form is draftable and user is logged in add draft button
-        if ($entityform_type->data['draftable'] && !empty($user->uid)) {
-          $form['actions']['save'] = array(
-            '#type' => 'submit',
-            '#value' => $entityform_type->get_prop('draft_button_text'),
-            //'#limit_validation_errors' => array(), //cause erros
-            '#entityform_draft' => '1',
-            '#submit' => $submit + array('entityform_edit_form_submit'),
-          );
-        }
+        $form['actions']['save']['#access'] = TRUE;
       }
     }
     if ($is_review) {

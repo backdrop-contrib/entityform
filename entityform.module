@@ -463,6 +463,7 @@ function entityform_user_draft($type, $uid = NULL) {
  * @return NULL|Ambigous <A, mixed>
  */
 function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
+  $submission = NULL;
   if (!$uid) {
     global $user;
     $uid = $user->uid;
@@ -470,14 +471,16 @@ function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
   if ($uid) {
     $submissions = entityform_get_submissions($type, $uid, $draft);
     $submission = array_shift($submissions);
-    if (!$submission) {
-      return NULL;
-    }
-    else {
-      return entityform_load($submission->entityform_id);
+    if ($submission) {
+      $submission = entityform_load($submission->entityform_id);
     }
   }
-  return NULL;
+  $context = array(
+    'draft' => $draft,
+    'uid' => $uid,
+  );
+  drupal_alter('entityform_previous_submission', $submission, $type, $context);
+  return $submission;
 }
 
 /**
@@ -1566,8 +1569,13 @@ function entityformtype_metadata_get_properties($entityform_type, array $options
 /*
  * Given a form tree remove the fieldsets from parents so they don't show up in submitted values
  * Fieldset elements must end with '_set'
+ *
  */
-function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
+function _entityform_remove_fieldsets_from_tree(&$elements, $parents = NULL) {
+  if (isset($elements['#force_parents'])) {
+    $parents = $elements['#force_parents'];
+    unset($elements['#force_parents']);
+  }
   //set #parents to skip sets in form values
   foreach (element_children($elements) as $key) {
     if (strrpos($key, '_set') === drupal_strlen($key) - drupal_strlen('_set')) {
@@ -1578,6 +1586,7 @@ function _entityform_remove_fieldsets_from_tree(&$elements, $parents) {
       }
     }
   }
+  return $elements;
 }
 
 /**

@@ -180,7 +180,9 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#description' => t('Menu links with smaller weights are displayed before links with larger weights.'),
     );
   }
-  _entityform_remove_fieldsets_from_tree($form['data'], array('data'));
+  // Register #process function so the fieldsets aren't save in form values.
+  $form['data']['#force_parents'] = array('data');
+  $form['data']['#process'][] = '_entityform_remove_fieldsets_from_tree';
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['submit'] = array(
@@ -236,6 +238,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'http://drupal.org/project/token')) . '</p>',
     );
   }
+
   return $form;
 }
 
@@ -291,10 +294,13 @@ function entityform_settings($form, &$form_state) {
   $form['entityform_type_defaults']['#tree'] = TRUE;
   $form['entityform_type_defaults']['#type'] = 'value';
   unset($form['data']);
-  _entityform_remove_fieldsets_from_tree($form['entityform_type_defaults']['data'], array(
+
+  // Register #process function so the fieldsets aren't save in form values.
+  $form['entityform_type_defaults']['data']['#process'][] = '_entityform_remove_fieldsets_from_tree';
+  $form['entityform_type_defaults']['data']['#force_parents'] = array(
     'entityform_type_defaults',
-    'data'
-  ));
+    'data',
+  );
   //collaspe all fieldsets
   foreach (element_children($form['entityform_type_defaults']['data']) as $key) {
     if (isset($form['entityform_type_defaults']['data'][$key]['#type']) && $form['entityform_type_defaults']['data'][$key]['#type'] == 'fieldset') {
