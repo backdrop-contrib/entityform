@@ -15,6 +15,8 @@ function entityform_anonymous_token_info() {
 }
 
 /**
+ * Utility function to get array of tokens provide by this module.
+ *
  * @param $tokens
  * @return array
  */
@@ -42,7 +44,6 @@ function _entityform_anonymous_get_provided_tokens() {
  * Implements hook_tokens().
  */
 function entityform_anonymous_tokens($type, $tokens, array $data = array(), array $options = array()) {
-  drupal_set_message('bobo');
   $return = array();
   if ($type == 'entityform' && !empty($data['entityform'])) {
     $entityform = $data['entityform'];
@@ -85,10 +86,20 @@ function entityform_anonymous_tokens($type, $tokens, array $data = array(), arra
   return $return;
 }
 
+/**
+ * Return hashed secure token for an entityform_id
+ * @param $entityform_id
+ * @return string
+ */
 function _entityform_anonymous_get_token($entityform_id) {
   return md5(drupal_get_private_key() . $entityform_id);
 }
 
+/**
+ * Implements hook_entityform_access_alter().
+ *
+ * If user is anonymous determine if they should have access to submission
+ */
 function entityform_anonymous_entityform_access_alter(&$access, $op, $context) {
   // Only alter if $access not TRUE
 
@@ -108,19 +119,32 @@ function entityform_anonymous_entityform_access_alter(&$access, $op, $context) {
       }
     }
   }
-  drupal_set_message("$op access = $access");
 }
 
+/**
+ * Utility function to determine if current user submitted the form.
+ *
+ * Currently only supports query string token
+ * @param $entityform
+ * @return bool
+ */
 function _entityform_anonymous_user_submitted_form($entityform) {
-  $entityform_type = entityform_type_load($entityform->type);
-  if (!empty($entityform_type->data['anonymous_links']) && !empty($_GET['token'])) {
-    if ($_GET['token'] == _entityform_anonymous_get_token($entityform->entityform_id)) {
-      return TRUE;
+  if (user_is_anonymous()) {
+    $entityform_type = entityform_type_load($entityform->type);
+    if (!empty($entityform_type->data['anonymous_links']) && !empty($_GET['token'])) {
+      if ($_GET['token'] == _entityform_anonymous_get_token($entityform->entityform_id)) {
+        return TRUE;
+      }
+      // @todo Message about bad token/link
     }
-    // @todo Message about bad token/link
   }
 }
 
+/**
+ * Implements hook_entityform_previous_submission_alter().
+ *
+ * Replace with anonymous submission if any matching.
+ */
 function entityform_anonymous_entityform_previous_submission_alter(&$submission, $type, $context) {
   $uid = $context['uid'];
   if (!$uid && empty($submission)) {
@@ -139,6 +163,8 @@ function entityform_anonymous_entityform_previous_submission_alter(&$submission,
 
 /**
  * Implements hook_form_FORM_ID_alter(): entityform_type_form.
+ *
+ * Add Anonymous Tracking field set.
  */
 function entityform_anonymous_form_entityform_type_form_alter(&$form, &$form_state, $form_id) {
   $entityform_type = $form['#entityform_type'];
@@ -170,7 +196,7 @@ function entityform_anonymous_form_entityform_edit_form_alter(&$form, &$form_sta
     if (!isset($form['review'])) {
       $entityform_type = entityform_type_load($form['#bundle']);
       // Make sure for is draftable and not in Review mode
-      if ($entityform_type->data['anonymous_links'] && $entityform_type->data['draftable']) {
+      if (!empty($entityform_type->data['anonymous_links']) && $entityform_type->data['draftable']) {
         $form['actions']['save']['#access'] = TRUE;
       }
     }
