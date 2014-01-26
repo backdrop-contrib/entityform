@@ -149,13 +149,21 @@ function entityform_anonymous_entityform_previous_submission_alter(&$submission,
   $uid = $context['uid'];
   if (!$uid && empty($submission)) {
     $draft = $context['draft'];
-    if (!empty($_GET['token']) && !empty($_GET['id'])) {
+    $entityform_type = entityform_type_load($type);
+    if (!empty($entityform_type->data['anonymous_links']) && !empty($_GET['token']) && !empty($_GET['id'])) {
       if ($_GET['token'] == _entityform_anonymous_get_token($_GET['id'])) {
         // Correct token. Load the full entityform
         $entityform = entityform_load($_GET['id']);
         if ($entityform->draft == $draft && $entityform->type == $type) {
           $submission = $entityform;
         }
+      }
+    }
+    elseif (!empty($entityform_type->data['session_save'])) {
+      $submissions = entityform_anonymous_get_submissions($type, $draft, 1);
+      $submission = array_shift($submissions);
+      if ($submission) {
+        $submission = entityform_load($submission->entityform_id);
       }
     }
   }
@@ -182,6 +190,12 @@ function entityform_anonymous_form_entityform_type_form_alter(&$form, &$form_sta
     '#default_value' => !empty($entityform_type->data['anonymous_links']),
     '#description' => t('Allow entityform submissions to be accessible via anonymous links. These links will be available as tokens.'),
   );
+  $form['data']['anonymous_set']['session_save'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Save session id with Submission'),
+    '#default_value' => !empty($entityform_type->data['session_save']),
+    '#description' => t('Save the session id with the Entityform Submission. This will allow anonymous users to edit their submissions.'),
+  );
 }
 
 /**
@@ -201,4 +215,37 @@ function entityform_anonymous_form_entityform_edit_form_alter(&$form, &$form_sta
       }
     }
   }
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function entityform_anonymous_entityform_presave($entityform) {
+  if (user_is_anonymous() && $entityform->uid == 0) {
+    $entityform_type = entityform_type_load($entityform->type);
+    if (!empty($entityform_type->data['session_save'])) {
+      $entityform->sid = session_api_get_sid();
+    }
+  }
+ }
+function entityform_anonymous_get_submissions($type = NULL, $draft = 0, $limit = NULL) {
+  $submissions = array();
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', "entityform");
+  if ($type) {
+    $query->propertyCondition('type', $type);
+  }
+  if ($draft !== NULL) {
+    $query->propertyCondition('draft', $draft);
+  }
+  // Add session id
+  $query->propertyCondition('sid', session_api_get_sid());
+  if ($limit === NULL) {
+    $query->range(0, $limit);
+  }
+  $result = $query->execute();
+  if (isset($result['entityform'])) {
+    $submissions = $result['entityform'];
+  }
+  return $submissions;
 }
