@@ -504,6 +504,15 @@ function entityform_edit_form_validate(&$form, &$form_state) {
 function entityform_edit_form_submit(&$form, &$form_state) {
 
   $entityform = entity_ui_controller('entityform')->entityFormSubmitBuildEntity($form, $form_state);
+  // Add in created and changed times. This must be added before preview to get time.
+  if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0) {
+    global $user;
+    $entityform->created = time();
+
+    $entityform->uid = !empty($user->uid) ? $user->uid : 0;
+  }
+
+  $entityform->changed = time();
   $entityform->draft = $form_state['clicked_button']['#entityform_draft'];
   // Save the entityform and go back to the list of entityforms
   $entityform_type = entityform_type_load($entityform->type);
@@ -520,15 +529,6 @@ function entityform_edit_form_submit(&$form, &$form_state) {
       return;
     }
   }
-  // Add in created and changed times.
-  if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0) {
-    global $user;
-    $entityform->created = time();
-
-    $entityform->uid = !empty($user->uid) ? $user->uid : 0;
-  }
-
-  $entityform->changed = time();
 
   $entityform->save();
   if ($form_state['entityform_form_mode'] == 'submit' || !user_access('edit any entityform')) {
