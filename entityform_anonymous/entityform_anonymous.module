@@ -180,6 +180,7 @@ function entityform_anonymous_form_entityform_type_form_alter(&$form, &$form_sta
   $form['data']['anonymous_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Anonymous Tracking'),
+    '#description' => t('<strong>Warning</strong>: these features are still experimental and should be throughly tested.'),
     '#collapsible' => TRUE,
     '#group' => 'additional_settings',
     '#weight' => 150,
