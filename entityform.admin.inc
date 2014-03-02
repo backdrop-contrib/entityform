@@ -591,7 +591,7 @@ function entityform_delete_form($form, &$form_state, $entityform) {
   $entityform_type = entityform_type_load($entityform->type);
   // @todo Where should a non-admin go when canceling?
   $form = confirm_form($form,
-    $entityform_type->get_prop('delete_confirm_msg'),
+    $entityform_type->get_prop('delete_confirm_msg', $entityform),
     "admin/structure/entityform_types/manage/{$entityform->type}/submissions",
     '<p>' . t('This action cannot be undone.') . '</p>',
     t('Delete'),

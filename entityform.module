@@ -756,7 +756,7 @@ function entityform_confirm_page($entityform_type) {
     'submit_text' => array(
       '#type' => 'markup',
       '#prefix' => '<div class="submission-text">',
-      '#markup' => $entityform_type->get_prop('submission_text'),
+      '#markup' => $entityform_type->get_prop('submission_text', $entityform),
       '#suffix' => '</div>',
     ),
   );
@@ -788,7 +788,12 @@ function entityform_confirm_page($entityform_type) {
  */
 function entityform_type_page_title($entityform_type, $op) {
   if ($op == 'confirm') {
-    return $entityform_type->get_prop('submission_page_title');
+    $entityform = NULL;
+    if (!empty($_GET['entityform_id'])) {
+      $entityform_id = $_GET['entityform_id'];
+      $entityform = entityform_load($entityform_id);
+    }
+    return $entityform_type->get_prop('submission_page_title', $entityform);
   }
   if ($op == 'submissions report') {
     return t('Form Submissions') . (is_object($entityform_type) ? ': ' . $entityform_type->label : '');
@@ -1203,7 +1208,7 @@ class EntityformType extends Entity {
       return '';
     }
     $token_types['entityform_type'] = $this;
-    if ($entityform == NULL) {
+    if (!empty($entityform)) {
       $token_types['entityform'] = $entityform;
     }
     if (empty($text_value)) {
