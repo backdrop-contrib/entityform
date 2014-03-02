@@ -23,19 +23,19 @@ function entityform_anonymous_token_info() {
 function _entityform_anonymous_get_provided_tokens() {
   $tokens['anonymous_submission_token'] = array(
     'name' => t('Submission Token'),
-    'description' => 'Raw Secure token for anonymous submissions',
+    'description' => t('Raw Secure token for anonymous submissions.'),
   );
   $tokens['anonymous_submission_view_link'] = array(
     'name' => t('Anonymous Submission View Link'),
-    'description' => 'views anonymous submissions',
+    'description' => t('Link to allow viewing anonymous submission.'),
   );
   $tokens['anonymous_submission_edit_link'] = array(
     'name' => t('Anonymous Submission Edit Link'),
-    'description' => 'views anonymous submissions',
+    'description' => t('Link to allow editing anonymous submission.'),
   );
   $tokens['anonymous_submission_submit_link'] = array(
     'name' => t('Anonymous Submission Submit Link'),
-    'description' => 'views anonymous submissions',
+    'description' => t('Link to allow resubmitting anonymous submission, used when resubmit action is edit old submission.'),
   );
   return $tokens;
 }
