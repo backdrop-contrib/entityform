@@ -42,6 +42,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
     );
     // type property is created in parent::entityPropertyInfo().
     $properties['type']['label'] = t("Entityform Type");
+    $properties['type']['type'] = 'entityform_type';
     $properties['type']['schema field'] = 'type';
     $properties['type']['description'] = t("The Entityform Type for the Entityform Submission.");
     // @todo This line could be removed depending on this http://drupal.org/node/1931376
