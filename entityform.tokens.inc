@@ -5,8 +5,8 @@
 function entityform_token_info() {
 
   $tokens['submit_url'] = array(
-    'name' => t('Submission Token'),
-    'description' => t('Raw Secure token for anonymous submissions.'),
+    'name' => t('Submission URL'),
+    'description' => t('Submit URL for Entityform type.'),
   );
   return array(
     'tokens' => array('entityform_type' => $tokens),
