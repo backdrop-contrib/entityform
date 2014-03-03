@@ -334,6 +334,12 @@ function _entityform_type_setttings_elements($entityform_type, $op) {
     '#default_value' => !empty($entityform_type->data['draftable']),
     '#description' => t('Should users be able to save a draft of this form?'),
   );
+  $form['data']['draft_set']['draft_redirect_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Draft Redirect path'),
+    '#default_value' => empty($entityform_type->data['draft_redirect_path']) ? '' : $entityform_type->data['draft_redirect_path'],
+    '#description' => t('What relative path should the user be redirected to on draft submission?  Leave blank for default action.'),
+  );
   $form['data']['draft_set']['draft_button_text'] = array(
     '#type' => 'textfield',
     '#title' => t('Override draft button text'),

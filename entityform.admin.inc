@@ -153,10 +153,10 @@ class EntityformUIController extends EntityDefaultUIController {
     module_load_include('inc', 'entityform', 'entityform_type.admin');
     $entityform_type = entityform_type_load($bundle);
     if (!empty($entityform_id)) {
-      $redirect_path = $entityform_type->get_redirect_path(entityform_load($entityform_id));
+      $redirect_path = $entityform_type->get_path_property('redirect_path', entityform_load($entityform_id));
     }
     else {
-      $redirect_path = $entityform_type->get_redirect_path();
+      $redirect_path = $entityform_type->get_path_property('redirect_path');
     }
     if (!empty($redirect_path)) {
       return $redirect_path;
@@ -537,7 +537,7 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   $entityform->save();
   if ($form_state['entityform_form_mode'] == 'submit' || !user_access('edit any entityform')) {
     if (empty($entityform->draft)) {
-      $redirect_path = $entityform_type->get_redirect_path($entityform);
+      $redirect_path = $entityform_type->get_path_property('redirect_path', $entityform);
       if (!empty($redirect_path)) {
         $form_state['redirect'] = $redirect_path;
       }
@@ -555,8 +555,17 @@ function entityform_edit_form_submit(&$form, &$form_state) {
       drupal_set_message($entityform_type->get_prop('submit_confirm_msg', $entityform));
     }
     else {
-      $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
-      drupal_set_message(t('Your draft submission has been saved.'));
+      // Saving a Draft.
+      $form_state['redirect'] = $entityform_type->get_path_property('draft_redirect_path', $entityform);
+      if (empty($form_state['redirect'])) {
+        // Redirect to standard draft page.
+        drupal_set_message(t('Your draft submission has been saved.'));
+        $form_state['redirect'] = entity_ui_controller('entityform')->draft_path($entityform->type);
+      }
+      else {
+        // Redirecting away from standard draft page. Show text as message.
+        drupal_set_message($entityform_type->get_prop('draft_save_text', $entityform));
+      }
     }
   }
   else {
