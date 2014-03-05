@@ -404,7 +404,10 @@ function entityform_get_types($type_name = NULL) {
       }
       $entityform_types[$type_name] = array_shift($types);
     }
-    cache_set($cache_key, $entityform_types);
+    if (!isset($type_name)) {
+      // Only set the cache if retrieved all entityform types.
+      cache_set($cache_key, $entityform_types);
+    }
   }
   if (isset($type_name)) {
     // Even though $type_name was set it might not be valid
