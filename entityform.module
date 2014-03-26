@@ -1172,11 +1172,17 @@ class EntityformType extends Entity {
    * Get A path property for this EntityformType with tokens replaced
    */
   public function get_path_property($property, $entityform = NULL) {
+    $path = $this->data[$property];
+    if (empty($path)) {
+      return '';
+    }
     if ($this->data[$property] == '<front>') {
       return $this->data[$property];
     }
-    return _entityform_format_text($this->data[$property],
+    $path = _entityform_format_text($path,
       array('entityform_type' => $this, 'entityform' => $entityform));
+    $options = drupal_parse_url($path);
+    return array($options['path'], array('query' => $options['query']));
   }
 
   public function get_prop($key, $entityform = NULL) {
