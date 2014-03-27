@@ -69,7 +69,7 @@ function entityform_anonymous_tokens($type, $tokens, array $data = array(), arra
         case 'anonymous_submission_token':
           $return[$original] = $anonymous_token;
           break;
-        case 'anonymous_submission_view_link';
+        case 'anonymous_submission_view_link':
           $return[$original] = url('entityform/' . $entityform->entityform_id, $options);
           break;
         case 'anonymous_submission_edit_link':
@@ -211,7 +211,7 @@ function entityform_anonymous_entityform_type_form_validate($form, &$form_state)
   $data = $form_state['values']['data'];
   $roles = array_filter($data['roles']);
   if (!in_array(DRUPAL_ANONYMOUS_RID, $roles) && ($data['anonymous_links'] || $data['session_save'])) {
-    form_error($form['data']['access_set']['roles'],t('You have set anonymous tracking but anonymous users don\'t have access to the form'));
+    form_error($form['data']['access_set']['roles'], t('You have set anonymous tracking but anonymous users don\'t have access to the form'));
   }
 }
 /**
@@ -243,7 +243,7 @@ function entityform_anonymous_entityform_presave($entityform) {
       $entityform->sid = session_api_get_sid();
     }
   }
- }
+}
 function entityform_anonymous_get_submissions($type = NULL, $draft = 0, $limit = NULL) {
   $submissions = array();
   $sid = session_api_get_sid(TRUE);
