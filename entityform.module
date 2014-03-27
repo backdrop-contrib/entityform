@@ -1044,54 +1044,6 @@ function entityform_menu_local_tasks_alter(&$data, $router_item, $root_path) {
 }
 
 /*
- * Utility Function to output render array as text
- * For another option @see http://drupal.org/sandbox/tedbow/1674042
- */
-function entityform_render_to_text($render_array, $print_empty_title = FALSE, $indent_text = '') {
-  $tab_text = "   ";
-  $output = '';
-  $markup = '';
-  $title = '';
-  if (!empty($render_array['#markup'])) {
-    $markup .= "$indent_text$tab_text" . htmlspecialchars_decode(strip_tags($render_array['#markup']));
-    $markup = trim($markup);
-  }
-  if (isset($render_array['#title'])) {
-    $title .= htmlspecialchars_decode($render_array['#title']) . ":";
-    $title = trim($title);
-  }
-
-  if (!empty($markup) && empty($title)) {
-    $output .= "\n" . $indent_text . $markup . "\n";
-  }
-  elseif (!empty($markup) && !empty($title)) {
-    $output .= "\n" . $indent_text . $title . "\n" . $indent_text . $tab_text . $markup;
-  }
-  elseif (empty($markup) && !empty($title)) {
-    $output .= "\n" . $indent_text . $title;
-  }
-
-  if (!empty($output)) {
-    $indent_text .= $tab_text;
-  }
-  foreach (element_children($render_array) as $child) {
-    $child_text = entityform_render_to_text($render_array[$child], $print_empty_title, $indent_text);
-    if (isset($render_array[$child]['#weight'])) {
-      $child_array[$render_array[$child]['#weight']] = $child_text;
-    }
-    else {
-      $child_array[] = $child_text;
-    }
-
-  }
-  if (!empty($child_array)) {
-    ksort($child_array);
-    $output .= implode('', $child_array);
-  }
-  return $output;
-}
-
-/*
  * Utitility function to get submitted info
  */
 function _entityform_get_submit_info($entityform) {
