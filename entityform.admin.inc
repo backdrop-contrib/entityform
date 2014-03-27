@@ -319,7 +319,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
       $entityform->uid = $user->uid;
       $is_review = TRUE;
       $form['review'] = entity_get_controller('entityform')->view(array($entityform->entityform_id => $entityform), 'review', NULL, TRUE);
-      drupal_set_message('Please review your submission');
+      drupal_set_message(t('Please review your submission'));
     }
   }
   // Add the field related form elements.
@@ -335,8 +335,8 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     '#weight' => 400,
   );
 
-// We add the form's #submit array to this button along with the actual submit
-// handler to preserve any submit handlers added by a form callback_wrapper.
+  // We add the form's #submit array to this button along with the actual submit
+  // handler to preserve any submit handlers added by a form callback_wrapper.
   $submit = array();
 
   if (!empty($form['#submit'])) {
@@ -402,11 +402,11 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     );
   }
 
-// We append the validate handler to #validate in case a form callback_wrapper
-// is used to add validate handlers earlier.
+  // We append the validate handler to #validate in case a form callback_wrapper
+  // is used to add validate handlers earlier.
   $form['#validate'][] = 'entityform_edit_form_validate';
-// Make sure the proper files are loaded if they is form is being called embedded with an ajax callback
-// This happens in image field upload for instance.
+  // Make sure the proper files are loaded if they is form is being called embedded with an ajax callback
+  // This happens in image field upload for instance.
   $form['#after_build'][] = 'entityform_load_required_entityform_admin';
   $form['#after_build'][] = 'entityform_clear_required';
   $form['#validate'][] = 'entityform_set_required';
@@ -519,15 +519,15 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   if (!empty($form_state['clicked_button']['#entityform_change'])) {
     $form_state['entityform_preview_entity'] = $entityform;
     $form_state['rebuild'] = TRUE;
-    drupal_set_message('Re-enter');
+    drupal_set_message(t('Re-enter'));
     return;
   }
   else {
     // If this entityform type has preview mode and we are in submit store preview
     if (empty($form_state['clicked_button']['#entityform_after_review'])
-        && !$entityform->draft
-        && !empty($entityform_type->data['preview_page'])
-        && $form_state['entityform_form_mode']=='submit') {
+         && !$entityform->draft
+         && !empty($entityform_type->data['preview_page'])
+         && $form_state['entityform_form_mode'] == 'submit') {
       $form_state['entityform_preview_entity'] = $entityform;
       $form_state['rebuild'] = TRUE;
       return;

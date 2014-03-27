@@ -1,5 +1,8 @@
 <?php
 /**
+ * @file Token related hooks.
+ */
+/**
  * Implements hook_token_info().
  */
 function entityform_token_info() {
