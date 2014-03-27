@@ -1139,7 +1139,7 @@ class EntityformType extends Entity {
     }
     $path = _entityform_format_text($path,
       array('entityform_type' => $this, 'entityform' => $entityform));
-    $options = drupal_parse_url($path);
+    $options = drupal_parse_url(decode_entities($path));
     return array($options['path'], array('query' => $options['query']));
   }
 
