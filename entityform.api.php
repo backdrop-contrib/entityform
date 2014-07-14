@@ -107,6 +107,6 @@ function hook_entityform_ENTITYFORM_TYPE_draft_page_alter(&$render_array, $entit
  *  - draft: whether draft submissions should be included
  *  - uid: uid of the user to find previous submissions
  */
-function hook_entityform_previous_submission($entityform_submission, $entityform_type, $context) {
+function hook_entityform_previous_submission_alter($entityform_submission, $entityform_type, $context) {
 
 }
