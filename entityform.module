@@ -187,6 +187,7 @@ function entityform_permission() {
     'administer entityform types' => array(
       'title' => t('Administer entityform types'),
       'description' => t('Create and delete fields for entityform types, and set their permissions.'),
+      'restrict access' => TRUE,
     ),
     'edit any entityform' => array(
       'title' => t('Edit any entityform submission'),
