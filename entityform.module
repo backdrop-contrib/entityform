@@ -147,12 +147,14 @@ function entityform_entity_info() {
   // The entity that holds information about the entity types
   $return['entityform_type'] = array(
     'label' => t('Entityform Type'),
+    'uri callback' => 'entity_class_uri',
     'entity class' => 'EntityformType',
     'controller class' => 'EntityformTypeController',
     'base table' => 'entityform_type',
     'fieldable' => FALSE,
     'bundle of' => 'entityform',
     'exportable' => TRUE,
+    'metatags' => TRUE,
     'entity keys' => array(
       'id' => 'id',
       'name' => 'type',
@@ -1120,6 +1122,11 @@ class Entityform extends Entity {
  * The class used for entityform type entities
  */
 class EntityformType extends Entity {
+  protected function defaultUri() {
+    return array(
+      'path' => 'eform/submit/' . str_replace('_', '-', $this->type),
+    );
+  }
 
   public $type;
   public $label;
@@ -1411,7 +1418,7 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     $view = parent::view($entities, $view_mode, $langcode, $page);
     foreach ($entities as $entity_id => $entity) {
       module_load_include('inc', 'entityform', 'entityform.admin');
-      $view[$this->entityType][$entity->type]['form'] = entityform_form_wrapper(entityform_empty_load($entity->type), 'submit', 'embedded');
+      $view[$this->entityType][$entity->type]['form'] = entityform_form_wrapper(entityform_empty_load($entity->type), 'submit', ($page ? 'page':'embedded'));
     }
     return $view;
   }
