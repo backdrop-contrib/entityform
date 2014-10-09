@@ -1461,6 +1461,7 @@ function entityform_views_pre_view(&$view, &$display_id, &$args) {
  */
 function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
   $instances = field_info_instances('entityform', $bundle_name);
+  $view_mode_settings = field_view_mode_settings('entityform', $bundle_name);
   // when adding autofields to view let view modes determine which fields should be include and in what order
   switch ($display_id) {
     case 'autofields_csv':
@@ -1475,7 +1476,12 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
   }
   $autofields = array();
   foreach ($instances as $instance) {
-    $field_display = isset($instance['display'][$view_mode]) ? $instance['display'][$view_mode] : $instance['display']['default'];
+    if ($view_mode_settings[$view_mode]['custom_settings'] && isset($instance['display'][$view_mode])) {
+      $field_display = $instance['display'][$view_mode];
+    }
+    else {
+      $field_display = $instance['display']['default'];
+    }
     // don't add to autofields if this field was hidden in the view mode
     if ($field_display['type'] != 'hidden') {
       $autofield = array(
