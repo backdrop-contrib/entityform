@@ -1476,7 +1476,7 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name) {
   }
   $autofields = array();
   foreach ($instances as $instance) {
-    if ($view_mode_settings[$view_mode]['custom_settings'] && isset($instance['display'][$view_mode])) {
+    if (!empty($view_mode_settings[$view_mode]['custom_settings']) && isset($instance['display'][$view_mode])) {
       $field_display = $instance['display'][$view_mode];
     }
     else {
