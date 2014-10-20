@@ -703,10 +703,11 @@ function template_preprocess_entityform_submittd_data(&$variables) {
 
   $variables['date'] = format_date($entityform->created);
   $variables['name'] = theme('username', array('account' => $entityform));
-
-  $uri = entity_uri('entityform', $entityform);
-  $uri['options']['absolute'] = TRUE;
-  $variables['url'] = url($uri['path'], $uri['options']);
+  if (!empty($entityform->entityform_id)) {
+    $uri = entity_uri('entityform', $entityform);
+    $uri['options']['absolute'] = TRUE;
+    $variables['url'] = url($uri['path'], $uri['options']);
+  }
 }
 
 /**
