@@ -995,11 +995,12 @@ function entityform_embed_view($name, $display_id = 'default') {
   }
 
   $view = views_get_view($name);
-  // This needed so VBO will work correctly.
-  $view->override_path = _entityform_get_submissions_view_path($display_id);
   if (!$view || !$view->access($display_id)) {
     return;
   }
+
+  // This needed so VBO will work correctly.
+  $view->override_path = _entityform_get_submissions_view_path($display_id);
 
   return $view->preview($display_id, $args);
 }
