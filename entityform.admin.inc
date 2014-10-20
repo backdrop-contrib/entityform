@@ -261,7 +261,7 @@ function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 
   if (!empty($entityform_type->data['instruction_pre'])) {
     $output['intro'] = array(
       '#type' => 'markup',
-      '#markup' => "<div class='pre-intructions' >" . _entityform_format_text($entityform_type->data['instruction_pre'], array('entityform_type' => $entityform_type)) . "</div>",
+      '#markup' => "<div class='pre-instructions' >" . _entityform_format_text($entityform_type->data['instruction_pre'], array('entityform_type' => $entityform_type)) . "</div>",
       '#weight' => -100,
     );
   }
