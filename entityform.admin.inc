@@ -312,6 +312,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   $is_review = FALSE;
   if (!empty($form_state['values']['op']) && $form_state['values']['op'] == t('Change')) {
     $entityform = $form_state['entityform_preview_entity'];
+    unset($form_state['entityform_preview_entity']);
   }
   else {
     if (!empty($entityform_type->data['preview_page']) && !empty($form_state['entityform_preview_entity'])) {
