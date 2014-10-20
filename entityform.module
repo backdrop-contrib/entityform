@@ -1669,7 +1669,7 @@ function _entityform_format_text($text_value, $token_types = array()) {
   }
   if ($token_types !== FALSE) {
     $token_types[] = 'global';
-    $text = token_replace($text, $token_types);
+    $text = token_replace($text, $token_types, array('clear' => TRUE));
   }
   if ($is_filtered) {
     $text = check_markup($text, $format);
