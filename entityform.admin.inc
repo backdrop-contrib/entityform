@@ -528,9 +528,9 @@ function entityform_edit_form_submit(&$form, &$form_state) {
   else {
     // If this entityform type has preview mode and we are in submit store preview.
     if (empty($form_state['clicked_button']['#entityform_after_review'])
-         && !$entityform->draft
-         && !empty($entityform_type->data['preview_page'])
-         && $form_state['entityform_form_mode'] == 'submit') {
+      && !$entityform->draft
+      && !empty($entityform_type->data['preview_page'])
+      && $form_state['entityform_form_mode'] == 'submit') {
       $form_state['entityform_preview_entity'] = $entityform;
       $form_state['rebuild'] = TRUE;
       return;

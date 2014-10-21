@@ -101,7 +101,7 @@ function hook_entityform_ENTITYFORM_TYPE_draft_page_alter(&$render_array, $entit
  *
  * For example:
  * @see entityform_anonymous_entityform_previous_submission_alter().
- * 
+ *
  * @param object $entityform_submission
  *  The current previous submission if any.
  * @param string $entityform_type
