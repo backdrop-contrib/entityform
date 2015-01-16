@@ -1301,8 +1301,11 @@ class EntityformTypeController extends EntityAPIControllerExportable {
     }
     else {
       if ($values['is_new']) {
-        $values['data']['submissions_view'] = 'default';
-        $values['data']['user_submissions_view'] = 'default';
+        // Don't override values even if is_new. Features will send values in for checking status.
+        $values['data'] += array(
+          'submissions_view' => 'default',
+          'user_submissions_view' => 'default',
+        );
       }
     }
     $entityform_type = parent::create($values);
