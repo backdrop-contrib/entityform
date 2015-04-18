@@ -1211,7 +1211,7 @@ class EntityformType extends Entity {
       if (!empty($property_info['field'])) {
         return field_get_items($this->entityType, $this, $property, $langcode);
       }
-      elseif (!empty($property_info['i18n string'])) {
+      elseif (module_exists('i18n_string') && !empty($property_info['i18n string'])) {
         $name = $this->entityInfo['module'] . ':' . $this->entityType . ':' . $this->identifier() . ':' . $property;
 
         $options = array(
