@@ -85,6 +85,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#title' => $labels['redirect_path'],
     '#default_value' => empty($entityform_type->data['redirect_path']) ? '' : $entityform_type->data['redirect_path'],
     '#description' => t('What relative path should the user be redirected to on a correct submission?  Leave blank for default action.'),
+    '#maxlength' => 500,
   );
   $form['data']['instruction_pre'] = array(
     '#type' => 'text_format',
