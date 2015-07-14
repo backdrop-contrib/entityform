@@ -1543,10 +1543,10 @@ function entityform_views_pre_view(&$view, &$display_id, &$args) {
     $view_mode = _entityform_get_view_mode_for_view($view, $display_id);
     if ($view_mode && empty($view->display[$display_id]->entityform_settings['autofields'])) {
       // We have to have the Entityform Type as the first argument to this View to get this to work.
-      if ($type = $view->args[0]) {
+      if (isset($view->args[0])) {
+        $type = $view->args[0];
         _entityform_view_add_all_fields($view, $display_id, $type, $view_mode);
       }
-
     }
   }
   return;
