@@ -500,15 +500,15 @@ function entityform_user_submitted($type, $uid = NULL) {
 /**
  * Menu argument loader; Load a entityform type by string.
  *
- * @param $type
+ * @param $type_name
  *   The machine-readable name of a entityform type to load.
  * @return
- *   A entityform type array or FALSE if $type does not exist.
+ *   A entityform_type entity or FALSE if $type does not exist.
  */
-function entityform_type_load($type) {
-  $type = str_replace('-', '_', $type);
-  $types = entityform_get_types();
-  return isset($types[$type]) ? $types[$type] : FALSE;
+function entityform_type_load($type_name) {
+  $type_name = str_replace('-', '_', $type_name);
+  $entityform_type = entityform_get_types($type_name);
+  return isset($entityform_type) ? $entityform_type : FALSE;
 }
 
 
