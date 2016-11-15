@@ -274,7 +274,10 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
     }
     else {
       //confirm page
-      $entityform_id = $_GET['entityform_id'];
+      $entityform_id = isset($_GET['entityform_id']) ? $_GET['entityform_id'] : NULL;
+      if (empty($entityform_id)) {
+        return FALSE;
+      }
       if (user_is_anonymous()) {
         // If this is anonymous user then entityform_id should be stored in session
         if (!isset($_SESSION['entityform_submission'])) {
@@ -744,7 +747,10 @@ function entityform_draft_page($entityform_type) {
  * Page callback
  */
 function entityform_confirm_page($entityform_type) {
-  $entityform_id = $_GET['entityform_id'];
+  $entityform_id = isset($_GET['entityform_id']) ? $_GET['entityform_id'] : NULL;
+  if (empty($entityform_id)) {
+    return array();
+  }
   $entityform = entityform_load($entityform_id);
   $render_array = array(
     'submit_text' => array(
