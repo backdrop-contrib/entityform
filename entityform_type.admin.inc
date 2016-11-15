@@ -497,7 +497,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#title' => t('Form status'),
     '#options' => array(
       ENTITYFORM_STATUS_OPEN => t('Open for new submissions'),
-      ENTITYFORM_STATUS_CLOSED => t('Closed form new form submissions'),
+      ENTITYFORM_STATUS_CLOSED => t('Closed for new form submissions'),
     ),
     '#default_value' => empty($entityform_type->data['form_status']) ? 'open' : $entityform_type->data['form_status'],
     '#description' => t('Can users submit this form?  Open means the users can submit this form.  Closed means the user can not submit the form.'),
