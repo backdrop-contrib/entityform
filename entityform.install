@@ -73,7 +73,7 @@ function entityform_schema() {
     ),
     'primary key' => array('entityform_id'),
     'indexes' => array(
-      'type' => array('type'),
+      'type_index' => array('type'),
       'uid' => array('uid'),
     ),
     'foreign keys' => array(
@@ -235,4 +235,13 @@ function entityform_update_7006(&$sandbox) {
 
   }
   return $message;
+}
+
+/**
+ * Add and drop unique index to rename to type_index.
+ */
+function entityform_update_7007(&$sandbox) {
+  db_drop_index('entityform_type', 'type');
+  db_add_index('entityform_type', 'type_index', array('type'));
+  return st('Dropping index type name to rename.');
 }
