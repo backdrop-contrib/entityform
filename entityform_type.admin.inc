@@ -378,7 +378,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'textfield',
     '#title' => $labels['submit_confirm_msg'],
     '#default_value' => empty($entityform_type->data['submit_confirm_msg']) ? '' : $entityform_type->data['submit_confirm_msg'],
-    '#description' => t('Text to use for Submission Conformation.') . $default_value_message,
+    '#description' => t('Text to use for Submission Confirmation.') . $default_value_message,
   );
   $form['data']['formoverride_set']['your_submissions'] = array(
     '#type' => 'textfield',
@@ -396,7 +396,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'textfield',
     '#title' => $labels['delete_confirm_msg'],
     '#default_value' => empty($entityform_type->data['delete_confirm_msg']) ? '' : $entityform_type->data['delete_confirm_msg'],
-    '#description' => t('Text to use for "Delete Conformation".') . $default_value_message,
+    '#description' => t('Text to use for "Delete Confirmation".') . $default_value_message,
   );
   $form['data']['formoverride_set']['page_title_view'] = array(
     '#type' => 'textfield',
