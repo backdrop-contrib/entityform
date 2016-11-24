@@ -57,7 +57,7 @@ function entityform_menu() {
 }
 
 /**
- * Implement hook_entity_info().
+ * Implements hook_entity_info().
  *
  * We define two entities here - the actual entity that will hold our domain
  * specific information and an entity that holds information about the different
@@ -684,7 +684,7 @@ function entityform_views_api() {
 
 
 /**
- * Implement hook_theme().
+ * Implements hook_theme().
  */
 function entityform_theme() {
   return array(
@@ -696,14 +696,14 @@ function entityform_theme() {
       'render element' => 'elements',
       'template' => 'entityform',
     ),
-    'entityform_submittd_data' => array(
+    'entityform_submitted_data' => array(
       'render element' => 'elements',
-      'template' => 'entityform-submittd-data',
+      'template' => 'entityform-submitted-data',
     ),
   );
 }
 
-function template_preprocess_entityform_submittd_data(&$variables) {
+function template_preprocess_entityform_submitted_data(&$variables) {
   $entityform = $variables['entityform'];
 
   $variables['date'] = format_date($entityform->created);
