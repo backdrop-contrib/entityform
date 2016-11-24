@@ -6,7 +6,6 @@
  * the entity types.
  */
 
-
 /**
  * Implements hook_schema().
  */
@@ -143,6 +142,7 @@ function entityform_update_7001(&$sandbox = NULL) {
     drupal_get_schema('entityform', TRUE);
   }
 }
+
 /**
  * Switch emails settings to Rules invoke settings.
  */
@@ -171,6 +171,7 @@ function entityform_update_7002(&$sandbox = NULL) {
   }
   return $ret;
 }
+
 /**
  * Enable entityform_notifications if necessary
  */
@@ -192,6 +193,7 @@ function entityform_update_7003(&$sandbox = NULL) {
   }
   return $ret;
 }
+
 /**
  * Change textarea values to support filters.
  */
@@ -211,6 +213,7 @@ function entityform_update_7004(&$sandbox = NULL) {
     $entityform_type->save();
   }
 }
+
 /**
  * Update 7005 is unused.
  */
@@ -218,8 +221,6 @@ function entityform_update_7005(&$sandbox = NULL) { }
 
 /**
  * Delete old Entityform menu links.
- *
- * Implements hook_update_N().
  */
 function entityform_update_7006(&$sandbox) {
   $message = NULL;
