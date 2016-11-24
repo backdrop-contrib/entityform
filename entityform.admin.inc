@@ -211,7 +211,7 @@ function entityform_type_submit_page($entityform_type) {
  *     'preview' - Preview on Entityform type management
  * @see entityform_edit_form()
  */
-function entityform_form_wrapper($entityform, $mode = 'submit', $form_context = 'page') {
+function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form_context = 'page') {
   $make_form = TRUE;
 
   $entityform_type = entityform_type_load($entityform->type);
