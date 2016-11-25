@@ -328,10 +328,9 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
     field_attach_form('entityform', $entityform, $form, $form_state);
   }
 
+  // Add CSS classes to the form for styling.
   $form['#attributes']['class'][] = 'entityform';
-  if (!empty($entityform->type)) {
-    $form['#attributes']['class'][] = 'entitytype-' . $entityform->type . '-form';
-  }
+  $form['#attributes']['class'][] = 'entitytype-' . $entityform->type . '-form';
 
   $form['actions'] = array(
     '#type' => 'container',
