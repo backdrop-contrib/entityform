@@ -195,6 +195,7 @@ function entityform_type_submit_page($entityform_type) {
   $view = entity_view('entityform_type', array($entityform_type), 'full', NULL, TRUE);
   return $view;
 }
+
 /**
  * Form callback wrapper: create or edit a entityform.
  *
@@ -283,6 +284,18 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
     $output['#contextual_links'] = $contextual_links;
   }
   return $output;
+}
+
+/**
+ * Form callback wrapper: preview an entityform.
+ *
+ * @param $entityform_type
+ *   The entityform type object being edited by this form.
+ * @see entityform_edit_form()
+ */
+function entityform_form_wrapper_preview(EntityformType $entityform_type) {
+  $entityform = entityform_empty_load($entityform_type->type);
+  return entityform_form_wrapper($entityform, 'submit', 'preview');
 }
 
 /**

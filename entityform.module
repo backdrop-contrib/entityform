@@ -34,11 +34,11 @@ function entityform_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 100,
   );
-  // @todo Add another config form to set whether to show preview form
+  // @todo Add another config form to set whether to show preview form.
   $items["$manage_path/preview"] = array(
     'title' => 'Form Preview',
-    'page callback' => 'entityform_form_wrapper',
-    'page arguments' => array($path_count - 1, 'submit', 'preview'),
+    'page callback' => 'entityform_form_wrapper_preview',
+    'page arguments' => array($path_count - 1),
     'access arguments' => array('administer entityform types'),
     'file' => 'entityform.admin.inc',
     'file path' => drupal_get_path('module', 'entityform'),
