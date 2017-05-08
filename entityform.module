@@ -1289,9 +1289,8 @@ class EntityformController extends EntityAPIController {
     if (empty($type)) {
       return NULL;
     }
-    // Add values that are specific to our Entityform
+    // Add values that are specific to our Entityform.
     $values += array(
-      'entityform_id' => '',
       'is_new' => TRUE,
       'title' => '',
       'created' => '',
