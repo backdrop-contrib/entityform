@@ -378,7 +378,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   $form['#attributes']['class'][] = 'entitytype-' . $entityform->type . '-form';
 
   $form['actions'] = array(
-    '#type' => 'container',
+    '#type' => 'actions',
     '#attributes' => array('class' => array('form-actions')),
     '#weight' => 400,
   );
