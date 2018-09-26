@@ -296,10 +296,11 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
     }
   }
   // Instructions get printed even if form is not created.
-  if (!empty($entityform_type->data['instruction_pre'])) {
+  $instructions_pre = $entityform_type->get_prop('instruction_pre');
+  if (!empty($instructions_pre)) {
     $output['intro'] = array(
       '#type' => 'markup',
-      '#markup' => "<div class='pre-instructions' >" . $entityform_type->get_prop('instruction_pre') . "</div>",
+      '#markup' => "<div class='pre-instructions' >" . $instructions_pre . "</div>",
       '#weight' => -100,
     );
   }
