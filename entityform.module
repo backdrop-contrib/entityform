@@ -1926,3 +1926,27 @@ function entityform_entityform_update($entityform) {
     }
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function entityform_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
+  if ((isset($form['locked']) && $form['locked']) || $form['#instance']['entity_type'] != 'entityform') {
+    return;
+  }
+
+  // Fieldset for Entityform settings on this field instance.
+  $form['instance']['settings']['entityform'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Entityform'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+
+  $form['instance']['settings']['entityform']['entityform_hide_form_field'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Hide this field from the form display'),
+    '#default_value' => isset($form['#instance']['settings']['entityform']['entityform_hide_form_field'])
+      ? $form['#instance']['settings']['entityform']['entityform_hide_form_field'] : 0,
+  );
+}

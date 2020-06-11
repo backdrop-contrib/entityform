@@ -306,6 +306,14 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
   }
   if ($make_form) {
     $output += drupal_get_form($entityform->type . '_entityform_edit_form', $entityform, $mode, $form_context);
+
+    // Hide fields that have been set to hide.
+    $fields = field_info_instances('entityform', $entityform->type);
+    foreach ($fields as $key => $field) {
+      if (!empty($field['settings']['entityform']['entityform_hide_form_field'])) {
+        $output[$key]['#access'] = FALSE;
+      }
+    }
   }
   if (user_access('administer entityform types')) {
     // Make contextual links if user has access.
