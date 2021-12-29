@@ -913,7 +913,7 @@ function _entityform_alias_is_used($path) {
  * @return string
  *    Rendered view
  */
-function entityform_submission_page($entityform_type, $show_display_id = NULL, $mode) {
+function entityform_submission_page($entityform_type, $show_display_id, $mode) {
   $output = array();
   if ($mode == 'admins') {
     //showing reports view for admins
