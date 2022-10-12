@@ -19,10 +19,8 @@ class EntityformUIController extends EntityDefaultUIController {
    * parent class hook_menu() is optimized for entity type administration.
    */
   public function hook_menu() {
-    //$entityform_base_path = variable_get('entityform_base_path', $)
     $items = array();
     $id_count = count(explode('/', $this->path));
-    $front_id_count = count(explode('/', $this->entityInfo['admin ui']["front path"]));
     $wildcard = isset($this->entityInfo['admin ui']['menu wildcard']) ? $this->entityInfo['admin ui']['menu wildcard'] : '%' . $this->entityType;
 
     $items[$this->path] = array(
@@ -115,7 +113,6 @@ class EntityformUIController extends EntityDefaultUIController {
 
     // Menu item for viewing entityforms.
     $items['entityform/' . $wildcard] = array(
-      //'title' => 'Title',
       'title callback' => 'entityform_page_title',
       'title arguments' => array(1),
       'page callback' => 'entityform_page_view',

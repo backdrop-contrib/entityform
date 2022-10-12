@@ -61,8 +61,8 @@ function entityform_menu() {
  *
  * We define two entities here - the actual entity that will hold our domain
  * specific information and an entity that holds information about the different
- * types of entities. See here: http://drupal.org/node/977380 for a discussion on this
- * choice.
+ * types of entities. See here: https://drupal.org/node/977380 for a discussion
+ * on this choice.
  */
 function entityform_entity_info() {
   $return['entityform'] = array(

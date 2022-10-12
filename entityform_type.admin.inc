@@ -238,7 +238,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   }
   else {
     $form['tokens'] = array(
-      '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'http://drupal.org/project/token')) . '</p>',
+      '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'https://drupal.org/project/token')) . '</p>',
     );
   }
 

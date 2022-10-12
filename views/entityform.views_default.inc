@@ -8,7 +8,7 @@
  * Implements hook_views_default_views().
  */
 function entityform_views_default_views() {
-  $view = new view;
+  $view = new view();
   $view->name = 'entityforms';
   $view->description = 'A list of all entityforms submissions to be as an admin report';
   $view->tag = 'entityforms';
@@ -820,7 +820,7 @@ function entityform_views_default_views() {
   /*
    * Views to Display Entityform types that will links to submissions
    */
-  $view = new view;
+  $view = new view();
   $view->name = 'entityform_type_list';
   $view->description = 'Provide an index of entityform types that link to submission View';
   $view->tag = 'default';
@@ -934,7 +934,7 @@ function entityform_views_default_views() {
   $handler->display->display_options['menu']['context'] = 0;
   $views[$view->name] = $view;
 
-  $view = new view;
+  $view = new view();
   $view->name = 'user_entityforms';
   $view->description = 'A list of all entityforms submissions to be displayed to the submitter.';
   $view->tag = 'entityforms';

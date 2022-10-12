@@ -26,7 +26,7 @@ http://drupal.org/documentation/modules/field-ui
  * To submit bug reports and feature suggestions, or to track changes visit:
    https://www.drupal.org/project/issues/entityform
 
- * For latest documentation visit: http://drupal.org/node/1432894
+ * For latest documentation visit: https://drupal.org/node/1432894
 
 
 REQUIREMENTS

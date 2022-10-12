@@ -45,7 +45,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
     $properties['type']['type'] = 'entityform_type';
     $properties['type']['schema field'] = 'type';
     $properties['type']['description'] = t("The Entityform Type for the Entityform Submission.");
-    // @todo This line could be removed depending on this http://drupal.org/node/1931376
+    // @todo This line could be removed depending on this https://drupal.org/node/1931376
     $properties['type']['required'] = TRUE;
 
     $properties['draft']['setter callback'] = 'entity_property_verbatim_set';
