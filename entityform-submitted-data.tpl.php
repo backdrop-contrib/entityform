@@ -19,8 +19,8 @@
  */
 ?>
 
-<p><?php print t('Submitted on !date', array('!date' => $date)) ?><br/>
-<?php print t('Submitted by user: !name', array('!name' => $name)); ?><br/>
+<p><?php print t('Submitted on @date', array('@date' => $date)) ?><br/>
+<?php print t('Submitted by user: @name', array('@name' => $name)); ?><br/>
 <?php print t('Submitted values are:'); ?></p>
 
 <?php foreach ($fields as $field): ?>

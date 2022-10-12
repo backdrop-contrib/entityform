@@ -1060,10 +1060,10 @@ function entityform_menu_local_tasks_alter(&$data, $router_item, $root_path) {
  */
 function _entityform_get_submit_info($entityform) {
   $account = user_load($entityform->uid);
-  return t("Submitted by !name on !date",
+  return t('Submitted by @name on @date',
     array(
-      '!name' => theme('username', array('account' => $account)),
-      '!date' => format_date($entityform->created),
+      '@name' => theme('username', array('account' => $account)),
+      '@date' => format_date($entityform->created),
     )
   );
 }
