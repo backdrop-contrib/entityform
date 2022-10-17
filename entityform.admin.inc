@@ -129,7 +129,6 @@ class EntityformUIController extends EntityDefaultUIController {
     return $items;
   }
 
-
   /**
    * Create the markup for the add Entityform Entities page within the class
    * so it can easily be extended/overriden.
@@ -185,11 +184,10 @@ class EntityformUIController extends EntityDefaultUIController {
     return $path;
   }
 
-
 }
 
 /**
- * Page callback: Displays the entityform submission page
+ * Page callback: Displays the entityform submission page.
  *
  * Handle the display of the entityform submission page. If the form is marked
  * as closed then display the form intro text instead with a 'submissions are
@@ -231,7 +229,7 @@ function entityform_type_submit_page($entityform_type) {
  * @param $entityform
  *   The entityform object being edited by this form.
  * @param $mode
- *     Current mode for this form
+ *   Current mode for this form
  *     Submit - user is submitting the form
  *     Edit - user with permission is editingform
  * @param $form_context
@@ -239,6 +237,7 @@ function entityform_type_submit_page($entityform_type) {
  *     'page' - on submit page
  *     'embedded' - called form EntityformTypeController->view()
  *     'preview' - Preview on Entityform type management
+ *
  * @see entityform_edit_form()
  */
 function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form_context = 'page') {
@@ -265,10 +264,12 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
           case 'old':
             $entityform = $old_submission;
             break;
+
           case 'confirm':
             $confirm_path = entity_ui_controller('entityform')->confirm_path($old_submission->type, $old_submission->entityform_id);
             drupal_goto($confirm_path[0], $confirm_path[1]);
             break;
+
           case 'disallow':
             // @todo how should this be handled.
             $entityform_type->get_prop('disallow_resubmit_msg');
@@ -329,6 +330,7 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
  *
  * @param $entityform_type
  *   The entityform type object being edited by this form.
+ *
  * @see entityform_edit_form()
  */
 function entityform_form_wrapper_preview(EntityformType $entityform_type) {
@@ -474,6 +476,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
 
 /**
  * Modify an Entityform add/edit form to use as a preview.
+ *
  * @param $form
  */
 function _entityform_type_modify_preview_form(&$form) {
@@ -493,6 +496,7 @@ function _entityform_type_modify_preview_form(&$form) {
  *
  * @param array $form
  * @param array $form_state
+ *
  * @return array
  */
 function entityform_clear_required($form, &$form_state) {
@@ -505,8 +509,8 @@ function entityform_clear_required($form, &$form_state) {
 /**
  * @param array $form
  * @param array $props
- *   properties to set
- * @param boolean $must_match
+ *   properties to set.
+ * @param bool $must_match
  */
 function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
   $matched = TRUE;
@@ -534,7 +538,7 @@ function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
   }
 }
 
-/*
+/**
  * Set form elements back to required.
  */
 function entityform_set_required(&$form, &$form_state) {
@@ -550,7 +554,6 @@ function entityform_edit_form_validate(&$form, &$form_state) {
   // Notify field widgets to validate their data.
   field_attach_form_validate('entityform', $entityform, $form, $form_state);
 }
-
 
 /**
  * Form API submit callback for the entityform form.
@@ -639,7 +642,6 @@ function entityform_form_submit_delete(&$form, &$form_state) {
   $form_state['redirect'] = 'admin/structure/entityforms/entityform/' . $form_state['entityform']->entityform_id . '/delete';
 }
 
-
 /**
  * Form callback: confirmation form for deleting a entityform.
  *
@@ -680,7 +682,6 @@ function entityform_delete_form_submit($form, &$form_state) {
   $form_state['redirect'] = "admin/structure/entityform_types/manage/{$entityform->type}/submissions";
 }
 
-
 /**
  * Page to add Entityform Entities.
  *
@@ -690,7 +691,6 @@ function entityform_add_page() {
   $controller = entity_ui_controller('entityform');
   return $controller->addPage();
 }
-
 
 /**
  * Displays the list of available entityform types for entityform creation.

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Hooks provided by the Entityform module.
@@ -56,13 +57,13 @@ function hook_entityform_ENTITYFORM_TYPE_confirm_page_alter(array &$render_array
 /**
  * Alter whether a user should have access to an operation on an entityform.
  *
- * @param boolean $access
+ * @param bool $access
  * @param string $op
  * @param array $context
  *   An associative array containing the following keys:
- *  - entityform: The entityform submission
+ *   - entityform: The entityform submission
  *    If $op == 'submit' this will be a new Entityform Submission for the type.
- *  - account: The Drupal user account that is doing the operation.
+ *   - account: The Drupal user account that is doing the operation.
  */
 function hook_entityform_access_alter(&$access, $op, array $context) {
   $entityform = $context['entityform'];
@@ -121,9 +122,9 @@ function hook_entityform_previous_submission_alter(&$entityform_submission, $ent
 /**
  * Allow altering fields automatically added to Entityform Views.
  *
- * entityform_settings will already have been added to the current view display.
+ * Entityform_settings will already have been added to the current view display.
  *
- * @see _entityform_view_add_all_fields().
+ * @see _entityform_view_add_all_fields()
  * @param array $autofields
  *   Array of fields that will be added.
  * @param $view

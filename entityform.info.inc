@@ -10,6 +10,9 @@
  */
 class EntityformMetadataController extends EntityDefaultMetadataController {
 
+  /**
+   * {@inheritdoc}
+   */
   public function entityPropertyInfo() {
     $info = parent::entityPropertyInfo();
     $properties = &$info[$this->type]['properties'];
@@ -40,7 +43,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'schema field' => 'changed',
       'description' => t("The date the form was most recently updated."),
     );
-    // type property is created in parent::entityPropertyInfo().
+    // The type property is created in parent::entityPropertyInfo().
     $properties['type']['label'] = t("Entityform Type");
     $properties['type']['type'] = 'entityform_type';
     $properties['type']['schema field'] = 'type';
@@ -52,12 +55,16 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
 
     return $info;
   }
+
 }
 /**
  * Extend the defaults.
  */
 class EntityformTypeMetadataController extends EntityDefaultMetadataController {
 
+  /**
+   * {@inheritdoc}
+   */
   public function entityPropertyInfo() {
     $info = parent::entityPropertyInfo();
     $properties = &$info[$this->type]['properties'];
@@ -84,4 +91,5 @@ class EntityformTypeMetadataController extends EntityDefaultMetadataController {
     }
     return $info;
   }
+
 }
