@@ -8,4 +8,6 @@ configure = admin/structure/entityform_types
 
 dependencies[] = entity
 dependencies[] = views
+dependencies[] = entity_plus
+dependencies[] = entity_ui
 
