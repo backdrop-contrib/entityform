@@ -11,38 +11,6 @@ define('ENTITYFORM_TYPE_DEFAULT_PROP_TEXT', 'Leave this field blank to use defau
  */
 
 /**
- * UI controller.
- */
-class EntityformTypeUIController extends EntityDefaultUIController {
-
-  /**
-   * Overrides hook_menu() defaults.
-   */
-  public function hook_menu() {
-    $items = parent::hook_menu();
-    $items[$this->path]['description'] = 'Manage entityform entity types, including adding and removing fields and the display of fields.';
-    $items[$this->path]['type'] = MENU_NORMAL_ITEM;
-    $items[$this->path . '/manage/%entity_object/edit']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
-    return $items;
-  }
-
-  protected function overviewTableRow($conditions, $id, $entity, $additional_cols = array()) {
-    $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
-    $row[] = l(t('Submissions'), $this->path . '/manage/' . $id . '/submissions');
-    $row[] = l(t('Submit Link'), entity_ui_controller('entityform')->submit_path($id));
-    return $row;
-  }
-
-  public function overviewTable($conditions = array()) {
-    $render = parent::overviewTable($conditions);
-    $render['#header'][] = t('Submissions');
-    $render['#header'][] = t('Submit Link');
-    return $render;
-  }
-
-}
-
-/**
  * Generates the entityform type editing form.
  */
 function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit') {
@@ -97,7 +65,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#type' => 'text_format',
     '#title' => $labels['instruction_pre'],
     '#default_value' => empty($entityform_type->data['instruction_pre']['value']) ? '' : $entityform_type->data['instruction_pre']['value'],
-    '#format' => empty($entityform_type->data['instruction_pre']['format']) ? NULL : $entityform_type->data['instruction_pre']['format'],
+    '#format' => empty($entityform_type->data['instruction_pre']['format'])?NULL : $entityform_type->data['instruction_pre']['format'],
     '#description' => t('These user instructions will appear at the top of every page within this form.'),
   );
   if (module_exists('menu')) {
@@ -112,7 +80,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#collapsed' => !$link['link_title'],
       '#group' => 'additional_settings',
       '#attached' => array(
-        'js' => array(drupal_get_path('module', 'menu') . '/menu.js'),
+        'js' => array(backdrop_get_path('module', 'menu') . '/menu.js'),
       ),
       '#tree' => TRUE,
       '#weight' => 80,
@@ -244,7 +212,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   }
   else {
     $form['tokens'] = array(
-      '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'https://drupal.org/project/token')) . '</p>',
+      '#markup' => '<p>' . t('Enable the <a href="@backdrop-token">Token module</a> to view the available token browser.', array('@backdrop-token' => 'https://drupal.org/project/token')) . '</p>',
     );
   }
 
@@ -293,13 +261,14 @@ function entityform_type_prepare_edit(&$entityform_type) {
 function entityform_settings($form, &$form_state) {
   // Choose the default View for viewing for submissions.
   $defaults = entity_get_controller('entityform_type')->create(array(), TRUE);
+  $form['#config'] = 'entityform.settings';
   $form = _entityform_type_settings_elements($defaults, 'defaults');
   $form['#entityform_type'] = $defaults;
 
-  // Call Drupal.menu_update_parent_list() to filter the list of
+  // Call Backdrop.menu_update_parent_list() to filter the list of
   // available default parent menu items based on the selected menus.
-  drupal_add_js(
-    '(function ($) { Drupal.menu_update_parent_list(); })(jQuery);',
+  backdrop_add_js(
+    '(function ($) { Backdrop.menu_update_parent_list(); })(jQuery);', 
     array('scope' => 'footer', 'type' => 'inline')
   );
   $form['entityform_type_defaults']['data'] = $form['data'];
@@ -366,7 +335,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'text_format',
     '#title' => $labels['draft_save_text'],
     '#default_value' => empty($entityform_type->data['draft_save_text']['value']) ? '' : $entityform_type->data['draft_save_text']['value'],
-    '#format' => empty($entityform_type->data['draft_save_text']['format']) ? NULL : $entityform_type->data['draft_save_text']['format'],
+    '#format' => empty($entityform_type->data['draft_save_text']['format'])?NULL : $entityform_type->data['draft_save_text']['format'],
     '#description' => t('This text will be displayed to the user when the form is saved as a draft.') . $default_value_message,
   );
   // @todo Any need for this sit now Rules removed??
@@ -441,7 +410,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'text_format',
     '#title' => $labels['submission_text'],
     '#default_value' => empty($entityform_type->data['submission_text']['value']) ? '' : $entityform_type->data['submission_text']['value'],
-    '#format' => empty($entityform_type->data['submission_text']['format']) ? NULL : $entityform_type->data['submission_text']['format'],
+    '#format' => empty($entityform_type->data['submission_text']['format'])?NULL : $entityform_type->data['submission_text']['format'],
     '#description' => t('This text will be displayed to the user when a correct form is submitted.') . $default_value_message,
   );
   $form['data']['submission_page_set']['submission_show_submitted'] = array(
@@ -517,7 +486,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'checkboxes',
     '#title' => t('Roles'),
     '#options' => user_roles(),
-    '#default_value' => empty($entityform_type->data['roles']) ? array() : $entityform_type->data['roles'],
+    '#default_value' => empty($entityform_type->data['roles'])?array() : $entityform_type->data['roles'],
     '#description' => t('Please select the Role(s) that can submit this form.'),
     '#required' => TRUE,
     '#multiple' => TRUE,
@@ -599,7 +568,7 @@ function entityform_type_form_submit(&$form, &$form_state) {
     $form_state['redirect'] = 'admin/structure/entityform_types';
   }
   else {
-    drupal_set_message(t('The Entityform @label has been created. Add fields to this form below', array('@label' => $entityform_type->label)));
+    backdrop_set_message(t('The Entityform @label has been created. Add fields to this form below', array('@label' => $entityform_type->label)));
     $form_state['redirect'] = "admin/structure/entityform_types/manage/{$entityform_type->type}/fields";
   }
   $entityform_type->save();

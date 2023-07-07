@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_views_data().
+ * Implements hook_views_data().().
  */
 function entityform_views_data_alter(&$data) {
   $info = entity_get_info('entityform');

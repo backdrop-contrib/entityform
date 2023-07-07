@@ -1,0 +1,497 @@
+{
+    "_config_name": "views.view.entityforms",
+    "name": "entityforms",
+    "description": "A list of all entityforms submissions to be as an admin report",
+    "tag": "entityforms",
+    "disabled": false,
+    "base_table": "entityform",
+    "human_name": "Entityforms",
+    "core": 7,
+    "display": {
+        "default": {
+            "display_title": "Master",
+            "display_plugin": "default",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": {
+                        "query_comment": false
+                    }
+                },
+                "title": "List",
+                "use_ajax": true,
+                "access": {
+                    "type": "perm",
+                    "perm": "view any entityform"
+                },
+                "cache": {
+                    "type": "none"
+                },
+                "exposed_form": {
+                    "type": "basic",
+                    "options": {
+                        "autosubmit": 0,
+                        "autosubmit_hide": 1
+                    }
+                },
+                "pager": {
+                    "type": "full",
+                    "options": {
+                        "items_per_page": "50",
+                        "offset": "0",
+                        "id": "0",
+                        "expose": {
+                            "items_per_page_options_all": 0
+                        }
+                    }
+                },
+                "style_plugin": "table",
+                "style_options": {
+                    "columns": {
+                        "name": "name",
+                        "entityform_id": "entityform_id"
+                    },
+                    "default": "-1",
+                    "info": {
+                        "name": {
+                            "sortable": 0,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": ""
+                        },
+                        "entityform_id": {
+                            "sortable": 0,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": ""
+                        }
+                    },
+                    "override": 1,
+                    "sticky": 0,
+                    "empty_table": 0
+                },
+                "empty": {
+                    "area": {
+                        "id": "area",
+                        "table": "views",
+                        "field": "area",
+                        "label": "Empty ",
+                        "empty": false,
+                        "content": "No form submissions available."
+                    }
+                },
+                "relationships": {
+                    "uid": {
+                        "id": "uid",
+                        "table": "entityform",
+                        "field": "uid",
+                        "required": 0
+                    }
+                },
+                "fields": {
+                    "name": {
+                        "id": "name",
+                        "table": "users",
+                        "field": "name",
+                        "relationship": "uid",
+                        "label": "Submitter",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "link_to_user": 1,
+                        "overwrite_anonymous": 0
+                    },
+                    "link_entityform": {
+                        "id": "link_entityform",
+                        "table": "entityform",
+                        "field": "link_entityform",
+                        "label": "View",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0
+                    },
+                    "edit_entityform": {
+                        "id": "edit_entityform",
+                        "table": "entityform",
+                        "field": "edit_entityform",
+                        "label": "Edit",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 1
+                    },
+                    "delete_entityform": {
+                        "id": "delete_entityform",
+                        "table": "entityform",
+                        "field": "delete_entityform",
+                        "label": "Delete",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 0
+                    },
+                    "label_1": {
+                        "id": "label_1",
+                        "table": "entityform_type",
+                        "field": "label",
+                        "label": "Form Type",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0
+                    },
+                    "created": {
+                        "id": "created",
+                        "table": "entityform",
+                        "field": "created",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 1,
+                        "date_format": "medium"
+                    },
+                    "changed": {
+                        "id": "changed",
+                        "table": "entityform",
+                        "field": "changed",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 0
+                    }
+                },
+                "sorts": {
+                    "created": {
+                        "id": "created",
+                        "table": "entityform",
+                        "field": "created",
+                        "order": "DESC"
+                    }
+                },
+                "arguments": {
+                    "type": {
+                        "id": "type",
+                        "table": "entityform",
+                        "field": "type",
+                        "default_action": "not found",
+                        "title_enable": 1,
+                        "title": "Submissions for %1",
+                        "default_argument_type": "fixed",
+                        "default_argument_skip_url": 0,
+                        "summary": {
+                            "number_of_records": "0",
+                            "format": "default_summary"
+                        },
+                        "summary_options": {
+                            "items_per_page": "25"
+                        },
+                        "glossary": 0,
+                        "limit": "0",
+                        "transform_dash": 0,
+                        "break_phrase": 0
+                    }
+                },
+                "filters": {
+                    "created": {
+                        "id": "created",
+                        "table": "entityform",
+                        "field": "created",
+                        "operator": ">",
+                        "exposed": true,
+                        "expose": {
+                            "operator_id": "created_op",
+                            "label": "Date submitted",
+                            "use_operator": 1,
+                            "operator": "created_op",
+                            "identifier": "created",
+                            "multiple": false
+                        }
+                    },
+                    "draft": {
+                        "id": "draft",
+                        "table": "entityform",
+                        "field": "draft",
+                        "operator": "!=",
+                        "value": {
+                            "value": "1"
+                        }
+                    }
+                }
+            }
+        },
+        "entityforms_admin_page": {
+            "display_title": "Page",
+            "display_plugin": "page",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": []
+                },
+                "path": "entityform-submissions/submissions/%/list",
+                "menu": {
+                    "type": "default tab",
+                    "title": "List",
+                    "description": "View Submissions for all Entityforms",
+                    "weight": "0",
+                    "name": "management",
+                    "context": 0
+                },
+                "tab_options": {
+                    "type": "normal",
+                    "title": "Submissions",
+                    "weight": "0",
+                    "name": "management"
+                }
+            }
+        },
+        "autofields_table": {
+            "display_title": "Table",
+            "display_plugin": "page",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": []
+                },
+                "defaults": {
+                    "fields": false
+                },
+                "fields": {
+                    "name": {
+                        "id": "name",
+                        "table": "users",
+                        "field": "name",
+                        "relationship": "uid",
+                        "label": "Submitter",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "link_to_user": 1,
+                        "overwrite_anonymous": 0
+                    },
+                    "link_entityform": {
+                        "id": "link_entityform",
+                        "table": "entityform",
+                        "field": "link_entityform",
+                        "label": "View",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0
+                    },
+                    "label_1": {
+                        "id": "label_1",
+                        "table": "entityform_type",
+                        "field": "label",
+                        "label": "Form Type",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0
+                    },
+                    "created": {
+                        "id": "created",
+                        "table": "entityform",
+                        "field": "created",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 1,
+                        "date_format": "medium"
+                    },
+                    "changed": {
+                        "id": "changed",
+                        "table": "entityform",
+                        "field": "changed",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 0
+                    }
+                },
+                "path": "entityform-submissions/submissions/%/table",
+                "menu": {
+                    "type": "tab",
+                    "title": "Table",
+                    "description": "View Submissions for all Entityforms",
+                    "weight": "0",
+                    "name": "management",
+                    "context": 0
+                },
+                "tab_options": {
+                    "weight": "0"
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,7 @@
 name = entityform_test
 description = Feature for Entityform simpletest
-core = 7.x
+backdrop = 1.x
+type = module
 package = Features
 dependencies[] = entity
 dependencies[] = entityform

@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_token_info().
+ * Implements hook_token_info().().
  */
 function entityform_anonymous_token_info() {
 
@@ -44,7 +44,7 @@ function _entityform_anonymous_get_provided_tokens() {
 }
 
 /**
- * Implements hook_tokens().
+ * Implements hook_tokens().().
  */
 function entityform_anonymous_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $return = array();
@@ -100,11 +100,11 @@ function entityform_anonymous_tokens($type, $tokens, array $data = array(), arra
  * @return string
  */
 function _entityform_anonymous_get_token($entityform_id) {
-  return md5(drupal_get_private_key() . $entityform_id);
+  return md5(backdrop_get_private_key() . $entityform_id);
 }
 
 /**
- * Implements hook_entityform_access_alter().
+ * Implements hook_entityform_access_alter().().
  *
  * If user is anonymous determine if they should have access to submission.
  */
@@ -149,7 +149,7 @@ function _entityform_anonymous_user_submitted_form($entityform) {
 }
 
 /**
- * Implements hook_entityform_previous_submission_alter().
+ * Implements hook_entityform_previous_submission_alter().().
  *
  * Replace with anonymous submission if any matching.
  */
@@ -178,7 +178,7 @@ function entityform_anonymous_entityform_previous_submission_alter(&$submission,
 }
 
 /**
- * Implements hook_form_FORM_ID_alter(): entityform_type_form.
+ * Implements hook_form_FORM_ID_alter(): entityform_type_form.().
  *
  * Add Anonymous Tracking field set.
  */
@@ -219,13 +219,13 @@ function entityform_anonymous_form_entityform_type_form_alter(&$form, &$form_sta
 function entityform_anonymous_entityform_type_form_validate($form, &$form_state) {
   $data = $form_state['values']['data'];
   $roles = array_filter($data['roles']);
-  if (!in_array(DRUPAL_ANONYMOUS_RID, $roles) && ($data['anonymous_links'] || $data['session_save'])) {
+  if (!in_array(BACKDROP_ANONYMOUS_RID, $roles) && ($data['anonymous_links'] || $data['session_save'])) {
     form_error($form['data']['access_set']['roles'], t('You have set anonymous tracking but anonymous users don\'t have access to the form'));
   }
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
+ * Implements hook_form_BASE_FORM_ID_alter().().
  *
  * Form id entityform_edit_form
  * Allow access to draft button if form allows anonymous submissions.
@@ -245,7 +245,7 @@ function entityform_anonymous_form_entityform_edit_form_alter(&$form, &$form_sta
 }
 
 /**
- * Implements hook_entity_presave().
+ * Implements hook_entity_presave().().
  */
 function entityform_anonymous_entityform_presave($entityform) {
   if (user_is_anonymous() && $entityform->uid == 0) {

@@ -1,0 +1,154 @@
+{
+    "_config_name": "views.view.entityform_type_list",
+    "name": "entityform_type_list",
+    "description": "Provide an index of entityform types that link to submission View",
+    "tag": "default",
+    "disabled": false,
+    "base_table": "entityform_type",
+    "human_name": "Entityform Type List",
+    "core": 7,
+    "display": {
+        "default": {
+            "display_title": "Master",
+            "display_plugin": "default",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": {
+                        "query_comment": false
+                    }
+                },
+                "title": "Entityform Submissions",
+                "access": {
+                    "type": "perm",
+                    "perm": "view any entityform"
+                },
+                "cache": {
+                    "type": "none"
+                },
+                "exposed_form": {
+                    "type": "basic"
+                },
+                "pager": {
+                    "type": "full",
+                    "options": {
+                        "items_per_page": "30"
+                    }
+                },
+                "style_plugin": "table",
+                "style_options": {
+                    "columns": {
+                        "type": "type",
+                        "label": "label"
+                    },
+                    "default": "type",
+                    "info": {
+                        "type": {
+                            "sortable": 0,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        },
+                        "label": {
+                            "sortable": 1,
+                            "default_sort_order": "asc",
+                            "align": "",
+                            "separator": "",
+                            "empty_column": 0
+                        }
+                    },
+                    "override": 1,
+                    "sticky": 0,
+                    "empty_table": 0
+                },
+                "header": {
+                    "area": {
+                        "id": "area",
+                        "table": "views",
+                        "field": "area",
+                        "empty": false,
+                        "content": "Click a form label below to view the forms submissions",
+                        "format": "filtered_html",
+                        "tokenize": 0
+                    }
+                },
+                "fields": {
+                    "type": {
+                        "id": "type",
+                        "table": "entityform_type",
+                        "field": "type",
+                        "label": "",
+                        "exclude": true,
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 0,
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "more_link": 0,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": false,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 1
+                    },
+                    "label": {
+                        "id": "label",
+                        "table": "entityform_type",
+                        "field": "label",
+                        "label": "Entityform Type",
+                        "alter": {
+                            "alter_text": 0,
+                            "make_link": 1,
+                            "path": "admin/reports/entityforms/submissions/[type]",
+                            "absolute": 0,
+                            "external": 0,
+                            "replace_spaces": 0,
+                            "trim_whitespace": 0,
+                            "nl2br": 0,
+                            "word_boundary": 1,
+                            "ellipsis": 1,
+                            "more_link": 0,
+                            "strip_tags": 0,
+                            "trim": 0,
+                            "html": 0
+                        },
+                        "element_label_colon": 1,
+                        "element_default_classes": 1,
+                        "hide_empty": 0,
+                        "empty_zero": 0,
+                        "hide_alter_empty": 1
+                    }
+                }
+            }
+        },
+        "page": {
+            "display_title": "Page",
+            "display_plugin": "page",
+            "display_options": {
+                "query": {
+                    "type": "views_query",
+                    "options": []
+                },
+                "path": "admin/reports/entityforms",
+                "menu": {
+                    "type": "normal",
+                    "title": "Entityform Submissions",
+                    "description": "View Submissions for all Entityforms",
+                    "weight": "0",
+                    "name": "management",
+                    "context": 0
+                }
+            }
+        }
+    }
+}

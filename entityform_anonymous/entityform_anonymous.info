@@ -1,6 +1,7 @@
 name = Entityform Anonymous
 description = Allows tracking of anonymous Entityform submissions
-core = 7.x
+backdrop = 1.x
+type = module
 package = Entityforms
 dependencies[] = session_api
 dependencies[] = entityform
