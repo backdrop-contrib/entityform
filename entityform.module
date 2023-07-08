@@ -442,7 +442,6 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0, $limi
   if (isset($result['entityform'])) {
     $submissions = $result['entityform'];
   }
-  }
   return $submissions;
 }
 
