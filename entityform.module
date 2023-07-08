@@ -438,8 +438,10 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0, $limi
     $query->range(0, $limit);
   }
   $result = $query->execute();
+
   if (isset($result['entityform'])) {
     $submissions = $result['entityform'];
+  }
   }
   return $submissions;
 }
@@ -476,7 +478,7 @@ function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
     $submissions = entityform_get_submissions($type, $uid, $draft, 1);
     $submission = array_shift($submissions);
     if ($submission) {
-      $submission = entityform_load($submission->entityform_id);
+      $submission = entityform_load($submission->entity_id);
     }
   }
   $context = array(
@@ -810,12 +812,12 @@ function entityform_entity_presave($entity, $type) {
   if ($type == 'entityform_type') {
     if (module_exists('path')) {
       if (isset($entity->paths)) {
-        $original_entity = $entity->original;
+        $original_entity = isset($entity->original) ? $entity->original : NULL;
         foreach ($entity->paths as $key => $path) {
           $path = $entity->paths[$key];
           $path['alias'] = trim($path['alias']);
           // Delete old alias if user erased or changed it.
-          if (isset($original_entity->paths[$key])) {
+          if ($original_entity && isset($original_entity->paths[$key])) {
             $original_path = $original_entity->paths[$key];
             if (!empty($original_path['alias']) && empty($path['alias']) || ($path['alias'] != $original_path['alias'])) {
               path_delete($original_path);

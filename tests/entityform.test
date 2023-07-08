@@ -150,7 +150,7 @@ class EntityformCRUDTestCase extends EntityformTestCase {
     }
 
     $data = array(
-      'roles' => array(BACKDROP_ANONYMOUS_RID => BACKDROP_ANONYMOUS_RID),
+      'roles' => array(BACKDROP_ANONYMOUS_ROLE => BACKDROP_ANONYMOUS_ROLE),
       'redirect_path' => '',
     );
     $this->updateEntityformType('test_form', NULL, $data);

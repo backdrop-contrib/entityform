@@ -1,7 +1,7 @@
 [EntityformTestCase]
 name = EntityformTestCase
 description = EntityformTestCase
-group = entityform
+group = Entityform
 file = entityform.test
 
 [EntityformCRUDTestCase]
