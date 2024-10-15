@@ -40,7 +40,8 @@ License
 Maintainers
 -----------
 
-  Seeking Maintainers
+- [indigoxela](https://github.com/indigoxela)
+- Seeking additional Maintainers
 
 Credits
 -------
