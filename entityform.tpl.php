@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
  * A basic template for entityform entities.
  *
  * Available variables:
- * - $content: An array of field items. Use render($content) to print them all, or
- *   print a subset such as render($content['field_example']). Use
+ * - $content: An array of field items. Use render($content) to print them all,
+ *   or print a subset such as render($content['field_example']). Use
  *   hide($content['field_example']) to temporarily suppress the printing of a
  *   given element.
  * - $title: The name of the entityform
@@ -29,19 +28,17 @@
  */
 ?>
 <div class="<?php print $classes; ?> clearfix"<?php print $attributes; ?>>
-  <?php if (!$page): ?>
+  <?php if (!$page) : ?>
     <h2<?php print $title_attributes; ?>>
-      <?php if (!empty($url)): ?>
+      <?php if (!empty($url)) : ?>
         <a href="<?php print $url; ?>"><?php print $title; ?></a>
-      <?php else: ?>
+      <?php else : ?>
         <?php print $title; ?>
       <?php endif; ?>
     </h2>
   <?php endif; ?>
 
   <div class="content"<?php print $content_attributes; ?>>
-    <?php
-      print render($content);
-    ?>
+    <?php print render($content); ?>
   </div>
 </div>

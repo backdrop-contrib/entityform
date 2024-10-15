@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * A basic template for entityform submitted data.
@@ -19,15 +18,15 @@
  */
 ?>
 
-<p><?php print t('Submitted on @date', array('@date' => $date)) ?><br/>
+<p><?php print t('Submitted on @date', array('@date' => $date)); ?><br/>
 <?php print t('Submitted by user: @name', array('@name' => $name)); ?><br/>
 <?php print t('Submitted values are:'); ?></p>
 
-<?php foreach ($fields as $field): ?>
+<?php foreach ($fields as $field) : ?>
 <h2><?php print $field['#title']; ?>:</h2>
 <p><?php print render($field); ?></p>
 <?php endforeach; ?>
 
-<?php if ($url): ?>
+<?php if ($url) : ?>
   <?php print t('The results of this submission may be viewed at: @url', array('@url' => $url)); ?>
 <?php endif; ?>

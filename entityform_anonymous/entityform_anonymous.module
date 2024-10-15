@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Main functions and hook implementations.
@@ -18,8 +17,6 @@ function entityform_anonymous_token_info() {
 
 /**
  * Utility function to get array of tokens provide by this module.
- *
- * @param $tokens
  *
  * @return array
  */
@@ -95,7 +92,7 @@ function entityform_anonymous_tokens($type, $tokens, array $data = array(), arra
 /**
  * Return hashed secure token for an entityform_id.
  *
- * @param $entityform_id
+ * @param string|int $entityform_id
  *
  * @return string
  */
@@ -132,9 +129,9 @@ function entityform_anonymous_entityform_access_alter(&$access, $op, $context) {
  *
  * Currently only supports query string token.
  *
- * @param $entityform
+ * @param Entityform $entityform
  *
- * @return bool
+ * @return bool|void
  */
 function _entityform_anonymous_user_submitted_form($entityform) {
   if (user_is_anonymous()) {
@@ -178,7 +175,7 @@ function entityform_anonymous_entityform_previous_submission_alter(&$submission,
 }
 
 /**
- * Implements hook_form_FORM_ID_alter(): entityform_type_form.().
+ * Implements hook_form_FORM_ID_alter().
  *
  * Add Anonymous Tracking field set.
  */
@@ -211,10 +208,11 @@ function entityform_anonymous_form_entityform_type_form_alter(&$form, &$form_sta
 /**
  * Validation callback for entityform_type_form.
  *
- * Ensures that anonymous users have access to entityform types with anonymous tracking.
+ * Ensures that anonymous users have access to entityform types with anonymous
+ * tracking.
  *
- * @param $form
- * @param $form_state
+ * @param array $form
+ * @param array $form_state
  */
 function entityform_anonymous_entityform_type_form_validate($form, &$form_state) {
   $data = $form_state['values']['data'];

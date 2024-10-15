@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * entityform_test.features.field.inc

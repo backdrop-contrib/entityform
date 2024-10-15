@@ -1,18 +1,27 @@
 <?php
-
 /**
  * @file
  * Contains a Views field handler to take care of displaying submit links
  * as fields
  */
 
-
+/**
+ * @todo
+ */
 class entityform_type_handler_submit_link_field extends views_handler_field {
-  function construct() {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function construct() {
     parent::construct();
     $this->additional_fields['type'] = 'type';
   }
-  function option_definition() {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function option_definition() {
     $options = parent::option_definition();
 
     $options['text'] = array(
@@ -22,7 +31,11 @@ class entityform_type_handler_submit_link_field extends views_handler_field {
 
     return $options;
   }
-  function options_form(&$form, &$form_state) {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
 
     $form['text'] = array(
@@ -31,13 +44,19 @@ class entityform_type_handler_submit_link_field extends views_handler_field {
       '#default_value' => $this->options['text'],
     );
   }
-  function query() {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function query() {
     $this->ensure_my_table();
     $this->add_additional_fields();
   }
 
-
-  function render($values) {
+  /**
+   * {@inheritdoc}
+   */
+  public function render($values) {
     $type = $values->{$this->aliases['type']};
     if (!entityform_access('submit', $type)) {
       return;

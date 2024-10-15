@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Providing extra functionality for the Entityform UI via views.
