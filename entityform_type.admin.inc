@@ -79,7 +79,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#collapsed' => !$link['link_title'],
       '#group' => 'additional_settings',
       '#attached' => array(
-        'js' => array(backdrop_get_path('module', 'menu') . '/menu.js'),
+        'js' => array(backdrop_get_path('module', 'menu') . '/js/menu.js'),
       ),
       '#tree' => TRUE,
       '#weight' => 80,
