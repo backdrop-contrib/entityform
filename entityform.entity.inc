@@ -24,7 +24,7 @@ class Entityform extends Entity {
    * {@inheritdoc}
    */
   public function __construct($values = array()) {
-    parent::__construct($values, 'entityform');
+    parent::__construct($values);
   }
 
   /**
@@ -130,7 +130,7 @@ class EntityformType extends Entity {
    *
    */
   public function __construct($values = array()) {
-    parent::__construct($values, 'entityform_type');
+    parent::__construct($values);
   }
 
   /**
