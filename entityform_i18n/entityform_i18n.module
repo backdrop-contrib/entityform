@@ -8,7 +8,7 @@
  */
 
 /**
- * Implements hook_entity_info_alter().().
+ * Implements hook_entity_info_alter().
  */
 function entityform_i18n_entity_info_alter(&$info) {
   // Enable i18n support via the entity API.
@@ -16,7 +16,7 @@ function entityform_i18n_entity_info_alter(&$info) {
 }
 
 /**
- * Implements hook_i18n_object_info_alter().().
+ * Implements hook_i18n_object_info_alter().
  */
 function entityform_i18n_i18n_object_info_alter(&$info) {
   if (empty($info['entityform_type']['string translation']['properties'])) {
@@ -31,7 +31,7 @@ function entityform_i18n_i18n_object_info_alter(&$info) {
 }
 
 /**
- * Implements hook_i18n_string_list_TEXTGROUP_alter().().
+ * Implements hook_i18n_string_list_TEXTGROUP_alter().
  */
 function entityform_i18n_i18n_string_list_entityform_alter(&$strings, $type = NULL, $object = NULL) {
   if ($type == 'entityform_type' && $object && !empty($strings['entityform'][$type])) {
@@ -54,14 +54,14 @@ function entityform_i18n_i18n_string_list_entityform_alter(&$strings, $type = NU
 }
 
 /**
- * Implements hook_entityform_type_insert().().
+ * Implements hook_entityform_type_insert().
  */
 function entityform_i18n_entityform_type_insert($entityform_type) {
   i18n_string_object_update('entityform_type', $entityform_type);
 }
 
 /**
- * Implements hook_entityform_type_update().().
+ * Implements hook_entityform_type_update().
  */
 function entityform_i18n_entityform_type_update($entityform_type) {
   // Account for name changes.
@@ -72,7 +72,7 @@ function entityform_i18n_entityform_type_update($entityform_type) {
 }
 
 /**
- * Implements hook_entityform_type_delete().().
+ * Implements hook_entityform_type_delete().
  */
 function entityform_i18n_entityform_type_delete($entityform_type) {
   i18n_string_object_remove('entityform_type', $entityform_type);

@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_field_default_fields().().
+ * Implements hook_field_default_fields().
  */
 function entityform_test_field_default_fields() {
   $fields = array();

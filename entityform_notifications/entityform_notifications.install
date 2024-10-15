@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_enable().().
+ * Implements hook_enable().
  *
  * Make sure Entityform is enabled from for entity_rules.
  */
