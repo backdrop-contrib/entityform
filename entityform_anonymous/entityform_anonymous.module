@@ -217,7 +217,7 @@ function entityform_anonymous_form_entityform_type_form_alter(&$form, &$form_sta
 function entityform_anonymous_entityform_type_form_validate($form, &$form_state) {
   $data = $form_state['values']['data'];
   $roles = array_filter($data['roles']);
-  if (!in_array(BACKDROP_ANONYMOUS_RID, $roles) && ($data['anonymous_links'] || $data['session_save'])) {
+  if (!in_array(BACKDROP_ANONYMOUS_ROLE, $roles) && ($data['anonymous_links'] || $data['session_save'])) {
     form_error($form['data']['access_set']['roles'], t('You have set anonymous tracking but anonymous users don\'t have access to the form'));
   }
 }
