@@ -241,6 +241,7 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
   if ($account->uid == 1) {
     return TRUE;
   }
+  $type_name = FALSE;
   if (!empty($entityform)) {
     if (is_object($entityform)) {
       $type_name = $entityform->type;
@@ -1214,6 +1215,7 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name, $vie
  */
 function entityform_help($path, $arg) {
   $output = '';
+  $display_id = FALSE;
   $view_mode_text = 'This View Mode is used to controls how fields will displayed ';
   switch ($path) {
     case 'admin/structure/entityform_types/manage/%/display/download':
