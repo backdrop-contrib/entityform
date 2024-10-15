@@ -1320,24 +1320,6 @@ function entityform_mollom_form_list() {
 }
 
 /**
- * Implements hook_mollom_form_info().
- */
-function entityform_mollom_form_info($form_id) {
-  // Retrieve internal type from $form_id.
-  $entityform_type = backdrop_substr($form_id, 0, -21);
-
-  $type = entityform_type_load($entityform_type);
-  $form_info = array(
-    // @todo This is incompatible with entityform access.
-    'bypass access' => array('bypass entityform access'),
-    'bundle' => $type->type,
-    'bypass access' => array('edit any entityform', 'delete any entityform'),
-  );
-  mollom_form_info_add_fields($form_info, 'entityform', $type->type);
-  return $form_info;
-}
-
-/**
  * Replace tokens and convert text to markup filter.
  *
  * @param string $text_value
@@ -1347,6 +1329,7 @@ function entityform_mollom_form_info($form_id) {
  */
 function _entityform_format_text($text_value, $token_types = array()) {
   $is_filtered = FALSE;
+  $format = NULL;
   if (is_array($text_value)) {
     // We are dealing for a filtered text value.
     $text = $text_value['value'];
