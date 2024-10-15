@@ -196,24 +196,17 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#weight' => 99,
     );
   }
-  if (module_exists('token')) {
-    $form['tokens'] = array(
-      '#title' => t('Available Tokens'),
-      '#type' => 'fieldset',
-      '#collapsible' => TRUE,
-      '#weight' => '39',
-    );
-    $form['tokens']['token_tree'] = array(
-      '#theme' => 'token_tree',
-      '#token_types' => array('global_types', 'entityform_type', 'entityform'),
-      '#dialog' => TRUE,
-    );
-  }
-  else {
-    $form['tokens'] = array(
-      '#markup' => '<p>' . t('Enable the <a href="@backdrop-token">Token module</a> to view the available token browser.', array('@backdrop-token' => 'https://drupal.org/project/token')) . '</p>',
-    );
-  }
+  $form['tokens'] = array(
+    '#title' => t('Available Tokens'),
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#weight' => '39',
+  );
+  $form['tokens']['token_tree'] = array(
+    '#theme' => 'token_tree',
+    '#token_types' => array('global_types', 'entityform_type', 'entityform'),
+    '#dialog' => TRUE,
+  );
 
   return $form;
 }
