@@ -1,4 +1,37 @@
 {
     "_config_name": "entityform.settings",
-    "entityform_type_defaults": []
+    "entityform_type_defaults": {
+        "data": {
+            "draftable": 0,
+            "draft_redirect_path": "",
+            "draft_button_text": "Save Draft",
+            "draft_save_text": {
+                "value": "",
+                "format": "filtered_html"
+            },
+            "submit_button_text": "Submit",
+            "submit_confirm_msg": "Your submission has been saved.",
+            "your_submissions": "Your Submissions: [entityform_type:label]",
+            "disallow_resubmit_msg": "You already submitted this form",
+            "delete_confirm_msg": "Are you sure you want to delete this Submission for [entityform_type:label]?",
+            "page_title_view": "Form Submission: [entityform_type:label]",
+            "preview_page": 0,
+            "submission_page_title": "Thank You.",
+            "submission_text": {
+                "value": "",
+                "format": "filtered_html"
+            },
+            "submission_show_submitted": 0,
+            "submissions_view": "entityforms",
+            "user_submissions_view": "user_entityforms",
+            "form_status": "ENTITYFORM_OPEN",
+            "roles": {
+                "authenticated": "authenticated",
+                "anonymous": 0,
+                "editor": 0,
+                "administrator": 0
+            },
+            "resubmit_action": "new"
+        }
+    }
 }
