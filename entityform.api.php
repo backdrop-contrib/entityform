@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Hooks provided by the Entityform module.
@@ -31,7 +30,7 @@
  *
  * @param array $render_array
  * @param string $entityform_type
- * @param $entityform_id
+ * @param string|null $entityform_id
  */
 function hook_entityform_confirm_page_alter(array &$render_array, $entityform_type, $entityform_id) {
   $render_array['new_markup'] = array(
@@ -45,7 +44,7 @@ function hook_entityform_confirm_page_alter(array &$render_array, $entityform_ty
  *
  * @param array $render_array
  * @param string $entityform_type
- * @param $entityform_id
+ * @param string|null $entityform_id
  */
 function hook_entityform_ENTITYFORM_TYPE_confirm_page_alter(array &$render_array, $entityform_type, $entityform_id) {
   $render_array['new_markup'] = array(
@@ -91,7 +90,7 @@ function hook_entityform_draft_page_alter(array &$render_array, $entityform_type
 /**
  * Alter render array for Draft page for a specific Entityform Type.
  *
- * @param $render_array
+ * @param array $render_array
  * @param EntityformType $entityform_type
  * @param array $args
  *   Extra arguments to the function entityform_draft_page() function.
@@ -127,8 +126,8 @@ function hook_entityform_previous_submission_alter(&$entityform_submission, $ent
  * @see _entityform_view_add_all_fields()
  * @param array $autofields
  *   Array of fields that will be added.
- * @param $view
- * @param $display_id
+ * @param view $view
+ * @param string $display_id
  */
 function hook_entityform_views_autofields_alter(array &$autofields, $view, $display_id) {
   $view_entityform_settings = $view->display[$display_id]->entityform_settings;

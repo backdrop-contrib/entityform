@@ -1,14 +1,12 @@
 <?php
-
 /**
  * @file
  * Entityform editing UI.
  *
- * We make very little use of the EntityAPI interface for this - preferring instead to use
- * views. That offers more flexibility to change a UI that will, more often than not,
- * be end-user facing.
+ * We make very little use of the EntityAPI interface for this - preferring
+ * instead to use views. That offers more flexibility to change a UI that will,
+ * more often than not, be end-user facing.
  */
-
 
 /**
  * Page callback: Displays the entityform submission page.
@@ -18,11 +16,12 @@
  * now closed' message. Users with 'administer entityform types'
  * permission can still view the form as it would be inaccessible otherwise.
  *
- * @param $entityform_type
+ * @param EntityformType $entityform_type
  *   The entityform type to output.
  *
- * @return
+ * @return mixed
  *   A render array from entity_view or a string message.
+ *   @todo above comment seems wrong.
  */
 function entityform_type_submit_page($entityform_type) {
   $view = entity_view($entityform_type, 'full', NULL);
@@ -50,17 +49,17 @@ function entityform_type_submit_page($entityform_type) {
 /**
  * Form callback wrapper: create or edit a entityform.
  *
- * @param $entityform
+ * @param Entityform $entityform
  *   The entityform object being edited by this form.
- * @param $mode
+ * @param string $mode
  *   Current mode for this form
  *     Submit - user is submitting the form
- *     Edit - user with permission is editingform
- * @param $form_context
+ *     Edit - user with permission is editingform.
+ * @param string $form_context
  *   How is form being used shown?
  *     'page' - on submit page
  *     'embedded' - called form EntityformTypeController->view()
- *     'preview' - Preview on Entityform type management
+ *     'preview' - Preview on Entityform type management.
  *
  * @see entityform_edit_form()
  */
@@ -105,7 +104,8 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
   }
   $output = array();
   if ($mode == 'submit' && (user_access('view own entityform') || user_access('view any entityform'))) {
-    // Only show link if this user has a submission that will show up in the selected View.
+    // Only show link if this user has a submission that will show up in the
+    // selected View.
     if (!empty($entityform_type->data['user_submissions_view'])) {
       $results = views_get_view_result($entityform_type->data['user_submissions_view'], NULL, $entityform_type->type);
       if (!empty($results)) {
@@ -152,7 +152,7 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
 /**
  * Form callback wrapper: preview an entityform.
  *
- * @param $entityform_type
+ * @param EntityformType $entityform_type
  *   The entityform type object being edited by this form.
  *
  * @see entityform_edit_form()
@@ -165,7 +165,7 @@ function entityform_form_wrapper_preview(EntityformType $entityform_type) {
 /**
  * Form callback wrapper: delete a entityform.
  *
- * @param $entityform
+ * @param Entityform $entityform
  *   The entityform object being edited by this form.
  *
  * @see entityform_edit_form()
@@ -177,7 +177,7 @@ function entityform_delete_form_wrapper($entityform) {
 /**
  * Form callback: create or edit a entityform.
  *
- * @param $entityform
+ * @param Entityform $entityform
  *   The entityform object to edit or for a create form an empty entityform
  *   object with only a entityform type defined.
  */
@@ -225,12 +225,13 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
   if ($mode == 'submit') {
     // Determine if we are on Preview Form page.
     $entity_info = entity_get_info('entityform_type');
-    // Create Draft button so that other modules can activate but don't give access by default.
+    // Create Draft button so that other modules can activate but don't give
+    // access by default.
     $form['actions']['save'] = array(
       '#type' => 'submit',
       '#value' => $entityform_type->get_prop('draft_button_text'),
       // Causes errors.
-      //'#limit_validation_errors' => array(),
+      // '#limit_validation_errors' => array(),
       '#entityform_draft' => '1',
       '#submit' => $submit + array('entityform_edit_form_submit'),
       '#access' => FALSE,
@@ -301,7 +302,7 @@ function entityform_edit_form($form, &$form_state, $entityform, $mode = 'submit'
 /**
  * Modify an Entityform add/edit form to use as a preview.
  *
- * @param $form
+ * @param array $form
  */
 function _entityform_type_modify_preview_form(&$form) {
   foreach (element_children($form['actions']) as $child_key) {
@@ -333,7 +334,7 @@ function entityform_clear_required($form, &$form_state) {
 /**
  * @param array $form
  * @param array $props
- *   properties to set.
+ *   Properties to set.
  * @param bool $must_match
  */
 function _entityform_set_all_nested_props(&$form, $props, $must_match = FALSE) {
@@ -387,7 +388,8 @@ function entityform_edit_form_validate(&$form, &$form_state) {
 function entityform_edit_form_submit(&$form, &$form_state) {
 
   $entityform = entity_ui_controller('entityform')->entityFormSubmitBuildEntity($form, $form_state);
-  // Add in created and changed times. This must be added before preview to get time.
+  // Add in created and changed times. This must be added before preview to get
+  // time.
   if ($entityform->is_new = isset($entityform->is_new) ? $entityform->is_new : 0) {
     global $user;
     $entityform->created = time();
@@ -406,7 +408,8 @@ function entityform_edit_form_submit(&$form, &$form_state) {
     return;
   }
   else {
-    // If this entityform type has preview mode and we are in submit store preview.
+    // If this entityform type has preview mode and we are in submit store
+    // preview.
     if (empty($form_state['clicked_button']['#entityform_after_review'])
        && !$entityform->draft
        && !empty($entityform_type->data['preview_page'])
@@ -427,7 +430,8 @@ function entityform_edit_form_submit(&$form, &$form_state) {
       else {
         global $user;
         if (empty($user->uid)) {
-          // For anonymous users we must store the id of their submission in the session.
+          // For anonymous users we must store the id of their submission in the
+          // session.
           $_SESSION['entityform_submission'] = $entityform->entityform_id;
         }
         $confirm_path = entity_ui_controller('entityform')->confirm_path($entityform->type, $entityform->entityform_id);
@@ -469,8 +473,8 @@ function entityform_form_submit_delete(&$form, &$form_state) {
 /**
  * Form callback: confirmation form for deleting a entityform.
  *
- * @param $entityform
- *   The entityform to delete
+ * @param Entityform $entityform
+ *   The entityform to delete.
  *
  * @see confirm_form()
  */
@@ -480,12 +484,12 @@ function entityform_delete_form($form, &$form_state, $entityform) {
   $form['#submit'][] = 'entityform_delete_form_submit';
   $entityform_type = entityform_type_load($entityform->type);
   // @todo Where should a non-admin go when canceling?
-  $form = confirm_form($form, 
-    $entityform_type->get_prop('delete_confirm_msg', $entityform), 
-    "admin/structure/entityform_types/manage/{$entityform->type}/submissions", 
-    '<p>' . t('This action cannot be undone.') . '</p>', 
-    t('Delete'), 
-    t('Cancel'), 
+  $form = confirm_form($form,
+    $entityform_type->get_prop('delete_confirm_msg', $entityform),
+    "admin/structure/entityform_types/manage/{$entityform->type}/submissions",
+    '<p>' . t('This action cannot be undone.') . '</p>',
+    t('Delete'),
+    t('Cancel'),
     'confirm'
   );
 

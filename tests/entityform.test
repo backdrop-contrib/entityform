@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * SimpleTest classes for Entityforms.
@@ -7,6 +6,10 @@
 
 define('ENTITYFORM_TEST_SUBMIT_TEXT', 'Submit');
 define('ENTITYFORM_TEST_SUBMISSION_TITLE', 'Thank You');
+
+/**
+ * Test entity forms.
+ */
 class EntityformTestCase extends BackdropWebTestCase {
   /**
    * User who can administer entityform types.
@@ -28,18 +31,34 @@ class EntityformTestCase extends BackdropWebTestCase {
    * Keep count of entityform submissions.  Should match entityform_id.
    */
   protected $entityform_submission_count;
+
+  /**
+   *
+   */
   protected function createUsers() {
     $this->user_admin = $this->backdropCreateUser(array('administer entityform types'));
     $this->user_view = $this->backdropCreateUser(array('view own entityform'));
-    $this->user_edit = $this->backdropCreateUser(array('view own entityform', 'edit own entityform', 'delete own entityform'));
+    $this->user_edit = $this->backdropCreateUser(array(
+      'view own entityform',
+      'edit own entityform',
+      'delete own entityform',
+    ));
     $this->user_low = $this->backdropCreateUser();
   }
-  function setUp() {
+
+  /**
+   *
+   */
+  public function setUp() {
     parent::setUp(array('entityform', 'locale', 'entity_plus', 'entity_ui'));
     $this->createUsers();
     $this->entityform_submission_count = 0;
 
   }
+
+  /**
+   *
+   */
   protected function entityformSubmit($machine_name, $user, $submit_text = NULL) {
     $this->backdropLogin($user);
     if (empty($submit_text)) {
@@ -64,10 +83,15 @@ class EntityformTestCase extends BackdropWebTestCase {
   }
 
 }
+
 /**
  * Test basic CRUD functionality.
  */
 class EntityformCRUDTestCase extends EntityformTestCase {
+
+  /**
+   *
+   */
   public static function getInfo() {
     return array(
       'name' => 'Entityform Test',
@@ -75,10 +99,18 @@ class EntityformCRUDTestCase extends EntityformTestCase {
       'group' => 'Entityform',
     );
   }
-  function setUp() {
+
+  /**
+   *
+   */
+  public function setUp() {
     parent::setUp(array('entityform', 'locale', 'entity_plus', 'entity_ui'));
   }
-  function testCreateEntityformType() {
+
+  /**
+   *
+   */
+  public function testCreateEntityformType() {
 
     $this->backdropLogin($this->user_admin);
     // Create Entityform Type test_form.
@@ -168,6 +200,10 @@ class EntityformCRUDTestCase extends EntityformTestCase {
     $this->assertText(t(ENTITYFORM_TEST_SUBMISSION_TITLE), 'Anynomous user  can submit.');
 
   }
+
+  /**
+   *
+   */
   private function updateEntityformType($machine_name, $properties, $data) {
     // Force a clear of the entitytype cache.
     entityform_type_cache_reset();

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  */
@@ -42,7 +41,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#type' => 'machine_name',
     '#default_value' => isset($entityform_type->type) ? $entityform_type->type : '',
     '#maxlength' => 32,
-    //    '#disabled' => $entityform_type->isLocked() && $op != 'clone',
+    // '#disabled' => $entityform_type->isLocked() && $op != 'clone',
     '#machine_name' => array(
       'exists' => 'entityform_type_load',
       'source' => array('label'),
@@ -65,7 +64,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
     '#type' => 'text_format',
     '#title' => $labels['instruction_pre'],
     '#default_value' => empty($entityform_type->data['instruction_pre']['value']) ? '' : $entityform_type->data['instruction_pre']['value'],
-    '#format' => empty($entityform_type->data['instruction_pre']['format'])?NULL : $entityform_type->data['instruction_pre']['format'],
+    '#format' => empty($entityform_type->data['instruction_pre']['format']) ? NULL : $entityform_type->data['instruction_pre']['format'],
     '#description' => t('These user instructions will appear at the top of every page within this form.'),
   );
   if (module_exists('menu')) {
@@ -80,7 +79,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#collapsed' => !$link['link_title'],
       '#group' => 'additional_settings',
       '#attached' => array(
-        'js' => array(backdrop_get_path('module', 'menu') . '/menu.js'),
+        'js' => array(backdrop_get_path('module', 'menu') . '/js/menu.js'),
       ),
       '#tree' => TRUE,
       '#weight' => 80,
@@ -172,7 +171,7 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#type' => 'fieldset',
       '#title' => t('URL path settings'),
       '#collapsible' => TRUE,
-      '#collapsed' => empty($path['alias']),
+      '#collapsed' => empty($path['alias']),// @todo $path is never defined.
       '#group' => 'additional_settings',
       '#attributes' => array(
         'class' => array('path-form'),
@@ -197,24 +196,17 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
       '#weight' => 99,
     );
   }
-  if (module_exists('token')) {
-    $form['tokens'] = array(
-      '#title' => t('Available Tokens'),
-      '#type' => 'fieldset',
-      '#collapsible' => TRUE,
-      '#weight' => '39',
-    );
-    $form['tokens']['token_tree'] = array(
-      '#theme' => 'token_tree',
-      '#token_types' => array('global_types', 'entityform_type', 'entityform'),
-      '#dialog' => TRUE,
-    );
-  }
-  else {
-    $form['tokens'] = array(
-      '#markup' => '<p>' . t('Enable the <a href="@backdrop-token">Token module</a> to view the available token browser.', array('@backdrop-token' => 'https://drupal.org/project/token')) . '</p>',
-    );
-  }
+  $form['tokens'] = array(
+    '#title' => t('Available Tokens'),
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#weight' => '39',
+  );
+  $form['tokens']['token_tree'] = array(
+    '#theme' => 'token_tree',
+    '#token_types' => array('global_types', 'entityform_type', 'entityform'),
+    '#dialog' => TRUE,
+  );
 
   return $form;
 }
@@ -268,7 +260,7 @@ function entityform_settings($form, &$form_state) {
   // Call Backdrop.menu_update_parent_list() to filter the list of
   // available default parent menu items based on the selected menus.
   backdrop_add_js(
-    '(function ($) { Backdrop.menu_update_parent_list(); })(jQuery);', 
+    '(function ($) { Backdrop.menu_update_parent_list(); })(jQuery);',
     array('scope' => 'footer', 'type' => 'inline')
   );
   $form['entityform_type_defaults']['data'] = $form['data'];
@@ -292,11 +284,14 @@ function entityform_settings($form, &$form_state) {
 }
 
 /**
- * Create Form elements that are shared between EntityformType add/edit form and EntityformType default settings form
+ * Create Form elements that are shared between EntityformType add/edit form and
+ * EntityformType default settings form
  * This allows default settings to set for most form settings.
  *
- * @param $entityform_type
- * @param $op
+ * @param EntityformType $entityform_type
+ *   Entity form type instance.
+ * @param string $op
+ *   @todo
  *
  * @return array
  *   Form elements
@@ -305,7 +300,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
   $default_value_message = $op != 'defaults' ? ' ' . ENTITYFORM_TYPE_DEFAULT_PROP_TEXT : '';
   $labels = $entityform_type->getLabelsForTranslation();
 
-  //****************DRAFT FIELDSET SETTINGS *********************//
+  // ****************DRAFT FIELDSET SETTINGS ********************* //
   $form['data']['draft_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Draft settings'),
@@ -335,12 +330,13 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'text_format',
     '#title' => $labels['draft_save_text'],
     '#default_value' => empty($entityform_type->data['draft_save_text']['value']) ? '' : $entityform_type->data['draft_save_text']['value'],
-    '#format' => empty($entityform_type->data['draft_save_text']['format'])?NULL : $entityform_type->data['draft_save_text']['format'],
+    '#format' => empty($entityform_type->data['draft_save_text']['format']) ? NULL : $entityform_type->data['draft_save_text']['format'],
     '#description' => t('This text will be displayed to the user when the form is saved as a draft.') . $default_value_message,
   );
   // @todo Any need for this sit now Rules removed??
-  //****************FORM OVERRIDE FIELDSET SETTINGS *********************//
-  // New elements must also be added to EntityformTypeController->get_default_text_values().
+  // ****************FORM OVERRIDE FIELDSET SETTINGS ********************* //
+  // New elements must also be added to
+  // EntityformTypeController->get_default_text_values().
   $form['data']['formoverride_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Form overrides'),
@@ -385,7 +381,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#description' => t('Text to use for page title of submission view.') . $default_value_message,
   );
 
-  //****************SUBMISSION PAGE FIELDSET SETTINGS *********************//
+  // ****************SUBMISSION PAGE FIELDSET SETTINGS ********************* //
   $form['data']['submission_page_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Submission page settings'),
@@ -410,7 +406,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'text_format',
     '#title' => $labels['submission_text'],
     '#default_value' => empty($entityform_type->data['submission_text']['value']) ? '' : $entityform_type->data['submission_text']['value'],
-    '#format' => empty($entityform_type->data['submission_text']['format'])?NULL : $entityform_type->data['submission_text']['format'],
+    '#format' => empty($entityform_type->data['submission_text']['format']) ? NULL : $entityform_type->data['submission_text']['format'],
     '#description' => t('This text will be displayed to the user when a correct form is submitted.') . $default_value_message,
   );
   $form['data']['submission_page_set']['submission_show_submitted'] = array(
@@ -419,7 +415,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#default_value' => !empty($entityform_type->data['submission_show_submitted']),
     '#description' => t('Show submitted data on submission page?'),
   );
-  //****************SUBMISSION VIEWS FIELDSET SETTINGS *********************//
+  // ****************SUBMISSION VIEWS FIELDSET SETTINGS ********************* //
   // Let Each entityform use a different View for viewing Submission
   $form['data']['submissions_set'] = array(
     '#type' => 'fieldset',
@@ -464,7 +460,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#options' => $user_view_options,
   );
   $form['entityform_default_submission_view']['#options'] = _entityform_get_entityform_views_options();
-  //****************ACCESS FIELDSET SETTINGS *********************//
+  // ****************ACCESS FIELDSET SETTINGS ********************* //
   $form['data']['access_set'] = array(
     '#type' => 'fieldset',
     '#title' => t('Access settings'),
@@ -486,7 +482,7 @@ function _entityform_type_settings_elements($entityform_type, $op) {
     '#type' => 'checkboxes',
     '#title' => t('Roles'),
     '#options' => user_roles(),
-    '#default_value' => empty($entityform_type->data['roles'])?array() : $entityform_type->data['roles'],
+    '#default_value' => empty($entityform_type->data['roles']) ? array() : $entityform_type->data['roles'],
     '#description' => t('Please select the Role(s) that can submit this form.'),
     '#required' => TRUE,
     '#multiple' => TRUE,

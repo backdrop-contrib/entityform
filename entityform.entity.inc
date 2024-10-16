@@ -1,14 +1,12 @@
 <?php
-
 /**
  * @file
  * Entityform editing UI.
  *
- * We make very little use of the EntityAPI interface for this - preferring instead to use
- * views. That offers more flexibility to change a UI that will, more often than not,
- * be end-user facing.
+ * We make very little use of the EntityAPI interface for this - preferring
+ * instead to use views. That offers more flexibility to change a UI that will,
+ * more often than not, be end-user facing.
  */
-
 
 /**
  * The class used for entityform entities.
@@ -22,8 +20,11 @@ class Entityform extends Entity {
    */
   public $uid;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct($values = array()) {
-    parent::__construct($values, 'entityform');
+    parent::__construct($values);
   }
 
   /**
@@ -48,6 +49,9 @@ class Entityform extends Entity {
     return array('path' => 'entityform/' . $this->entityform_id);
   }
 
+  /**
+   *
+   */
   public function getTypeName() {
     $entityform_type = entityform_type_load($this->type);
     return $entityform_type->label;
@@ -63,13 +67,16 @@ class Entityform extends Entity {
   /**
    * Sets a new user who submitted this form.
    *
-   * @param $account
+   * @param User|AnonymousUser|int $account
    *   The user account object or the user account id (uid).
    */
   public function setUser($account) {
     $this->uid = is_object($account) ? $account->uid : $account;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function uri() {
     return array(
       'path' => 'entityform/' . $this->entityform_id,
@@ -119,8 +126,11 @@ class EntityformType extends Entity {
   public $label;
   public $data;
 
+  /**
+   *
+   */
   public function __construct($values = array()) {
-    parent::__construct($values, 'entityform_type');
+    parent::__construct($values);
   }
 
   /**
@@ -134,11 +144,17 @@ class EntityformType extends Entity {
     if ($path == '<front>') {
       return $path;
     }
-    $path = _entityform_format_text($path, array('entityform_type' => $this, 'entityform' => $entityform));
+    $path = _entityform_format_text($path, array(
+      'entityform_type' => $this,
+      'entityform' => $entityform,
+    ));
     $options = backdrop_parse_url(decode_entities($path));
     return array($options['path'], array('query' => $options['query']));
   }
 
+  /**
+   *
+   */
   public function get_prop($key, $entityform = NULL) {
     if (isset($this->data[$key])) {
       if (is_array($this->data[$key]) && !empty($this->data[$key]['value'])) {
@@ -184,11 +200,8 @@ class EntityformType extends Entity {
     $all_info = entity_plus_get_all_property_info($this->entityType());
     // Assign by reference to avoid triggering notices if metadata is missing.
     $property_info = &$all_info[$property];
-    $property_value = isset($this->$property)
-      ? $this->$property
-        : (isset($this->data[$property])
-        ? $this->data[$property]
-        : NULL);
+    // @todo make this code readable:
+    $property_value = isset($this->$property) ? $this->$property : (isset($this->data[$property]) ? $this->data[$property] : NULL);
 
     if (is_array($property_value) && isset($property_value['value'])) {
       $property_value = $property_value['value'];
@@ -198,7 +211,7 @@ class EntityformType extends Entity {
         return field_get_items($this->entityType, $this, $property, $langcode);
       }
       elseif (module_exists('i18n_string') && !empty($property_info['i18n string'])) {
-        $name = $this->entityInfo['module'] . ':' . $this->entityType . ':' . $this->identifier() . ':' . $property;
+        $name = $this->entityInfo['module'] . ':' . $this->entityType . ':' . $this->id() . ':' . $property;
 
         $options = array(
           'langcode' => $langcode,
@@ -227,6 +240,9 @@ class EntityformType extends Entity {
     return entity_get_controller('entityform_type')->get_text_labels();
   }
 
+  /**
+   *
+   */
   public function uri() {
     return array(
       'path' => 'eform/submit/' . $this->type,
@@ -263,6 +279,9 @@ class EntityformType extends Entity {
  */
 class EntityformController extends EntityPlusController {
 
+  /**
+   *
+   */
   public function __construct($entityType) {
     parent::__construct($entityType);
   }
@@ -272,10 +291,9 @@ class EntityformController extends EntityPlusController {
    * to our entityform schema but then also go through the EntityAPIController
    * function.
    *
-   * @param $type
-   *   The machine-readable type of the entityform.
+   * @param array $values
    *
-   * @return
+   * @return Entityform
    *   A entityform object with all default fields initialized.
    */
   public function create(array $values = array()) {
@@ -332,30 +350,24 @@ class EntityformController extends EntityPlusController {
  * The Controller for Entityform entities.
  */
 class EntityformTypeController extends EntityPlusController {
+
+  /**
+   *
+   */
   public function __construct($entityType) {
     parent::__construct($entityType);
   }
 
   /**
-   * Implements hook_config_info().
-   */
-  function entityform_config_info() {
-    $prefixes['entityform.settings'] = array(
-      'label' => t('Entityforms settings'),
-      'group' => t('Configuration'),
-    );
-    return $prefixes;
-  }
-
-  /**
-   * Create a entityform type - we first set up the values that are specific
-   * to our entityform type schema but then also go through the EntityAPIController
-   * function.
+   * Create a entityform type.
    *
-   * @param $type
-   *   The machine-readable type of the entityform.
+   * We first set up the values that are specific to our entityform type schema
+   * but then also go through the EntityAPIController function.
    *
-   * @return
+   * @param array $values
+   * @param bool $load_defaults
+   *
+   * @return EntityformType
    *   A entityform type object with all default fields initialized.
    */
   public function create(array $values = array(), $load_defaults = FALSE) {
@@ -382,7 +394,8 @@ class EntityformTypeController extends EntityPlusController {
     }
     else {
       if ($values['is_new']) {
-        // Don't override values even if is_new. Features will send values in for checking status.
+        // Don't override values even if is_new. Features will send values in
+        // for checking status.
         $values['data'] += array(
           'submissions_view' => 'default',
           'user_submissions_view' => 'default',
@@ -452,7 +465,7 @@ class EntityformTypeController extends EntityPlusController {
   public function load($ids = array(), $conditions = array()) {
     $entityform_types = parent::load($ids, $conditions);
     foreach ($entityform_types as $entityform_type) {
-      // if (module_exists('path')) {
+      if (module_exists('path')) {
         $entityform_type->paths = array();
         $path_types = _entityform_type_get_path_types($entityform_type->type);
         foreach ($path_types as $key => $path_type) {
@@ -463,7 +476,7 @@ class EntityformTypeController extends EntityPlusController {
             $entityform_type->paths[$key] = $path;
           }
         }
-      // }
+      }
     }
     return $entityform_types;
   }

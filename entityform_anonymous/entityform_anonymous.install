@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
  * Install Functions.
  */
 
 /**
- * Implements hook_install().().
+ * Implements hook_install().
  */
 function entityform_anonymous_install() {
   // Add the column.
@@ -19,14 +18,14 @@ function entityform_anonymous_install() {
 }
 
 /**
- * Implements hook_uninstall().().
+ * Implements hook_uninstall().
  */
 function entityform_anonymous_uninstall() {
   db_drop_field('entityform', 'sid');
 }
 
 /**
- * Implements hook_schema_alter().().
+ * Implements hook_schema_alter().
  */
 function entityform_anonymous_schema_alter(&$schema) {
   // Add field to existing schema.

@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
  * Token related hooks.
  */
 
 /**
- * Implements hook_token_info().().
+ * Implements hook_token_info().
  */
 function entityform_token_info() {
   $type = array(
@@ -26,7 +25,7 @@ function entityform_token_info() {
 }
 
 /**
- * Implements hook_tokens().().
+ * Implements hook_tokens().
  */
 function entityform_tokens($type, $tokens, array $data = array(), array $options = array()) {
   $return = array();

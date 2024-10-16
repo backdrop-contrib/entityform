@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
  * Update functions for Entityform Notifications.
  */
 
 /**
- * Implements hook_enable().().
+ * Implements hook_enable().
  *
  * Make sure Entityform is enabled from for entity_rules.
  */
@@ -20,8 +19,9 @@ function entityform_notifications_enable() {
   }
 }
 
-// TODO The old hook_update_N functions cannot be applied to Backdrop.
-function entityform_notifications_update_7001(&$sandbox) { }
-
-// TODO The old hook_update_N functions cannot be applied to Backdrop.
-function entityform_notifications_update_7002(&$sandbox) { }
+/**
+ * Implements hook_update_last_removed().
+ */
+function entityform_notifications_update_last_removed() {
+  return 7002;
+}

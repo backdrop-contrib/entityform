@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
  * Default Rules.
  */
 
 /**
- * Implements hook_default_rules_configuration().().
+ * Implements hook_default_rules_configuration().
  */
 function entityform_notifications_default_rules_configuration() {
   $exported_rules = array();

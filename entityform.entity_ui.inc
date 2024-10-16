@@ -1,14 +1,12 @@
 <?php
-
 /**
  * @file
  * Entityform editing UI.
  *
- * We make very little use of the EntityAPI interface for this - preferring instead to use
- * views. That offers more flexibility to change a UI that will, more often than not,
- * be end-user facing.
+ * We make very little use of the EntityAPI interface for this - preferring
+ * instead to use views. That offers more flexibility to change a UI that will,
+ * more often than not, be end-user facing.
  */
-
 
 /**
  * UI controller.
@@ -146,6 +144,9 @@ class EntityformUIController extends EntityDefaultUIController {
     return theme('entityform_add_list', array('content' => $content));
   }
 
+  /**
+   *
+   */
   public function confirm_path($bundle, $entityform_id = NULL) {
     module_load_include('inc', 'entityform', 'entityform_type.admin');
     $entityform_type = entityform_type_load($bundle);
@@ -173,11 +174,17 @@ class EntityformUIController extends EntityDefaultUIController {
     return array($path);
   }
 
+  /**
+   *
+   */
   public function draft_path($bundle) {
     $bundle = str_replace('_', '-', $bundle);
     return "eform/$bundle/draft";
   }
 
+  /**
+   *
+   */
   public function submit_path($bundle) {
     module_load_include('inc', 'entityform', 'entityform_type.admin');
     $path = _entityform_type_get_submit_url($bundle);
@@ -203,6 +210,9 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     return $items;
   }
 
+  /**
+   *
+   */
   protected function overviewTableRow($conditions, $id, $entity, $additional_cols = array()) {
     $row = parent::overviewTableRow($conditions, $id, $entity, $additional_cols);
     $row[] = l(t('Submissions'), $this->path . '/manage/' . $id . '/submissions');
@@ -210,6 +220,9 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     return $row;
   }
 
+  /**
+   *
+   */
   public function overviewTable($conditions = array()) {
     $render = parent::overviewTable($conditions);
     $render['#header'][] = t('Submissions');

@@ -1,12 +1,11 @@
 <?php
-
 /**
  * @file
  * entityform_test.features.inc
  */
 
 /**
- * Implements hook_default_entityform_type().().
+ * Implements hook_default_entityform_type().
  */
 function entityform_test_default_entityform_type() {
   $items = array();

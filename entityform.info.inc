@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Provides Entity metadata integration.
