@@ -185,7 +185,7 @@ class EntityformType extends Entity {
       $token_types['entityform'] = $entityform;
     }
     if (empty($text_value)) {
-      $default_entityform_type = entity_get_controller('entityform_type')->create(array(), TRUE);
+      $default_entityform_type = entity_get_controller('entityform_type')->create(array());
       if (isset($default_entityform_type->data[$key])) {
         $value = $default_entityform_type->data[$key];
       }
@@ -293,7 +293,7 @@ class EntityformController extends EntityPlusController {
    *
    * @param array $values
    *
-   * @return Entityform
+   * @return Entityform|null
    *   A entityform object with all default fields initialized.
    */
   public function create(array $values = array()) {

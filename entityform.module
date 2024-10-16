@@ -441,7 +441,7 @@ function entityform_get_submissions($type = NULL, $uid = NULL, $draft = 0, $limi
  *   Entityform Type.
  * @param int $uid
  *
- * @return Ambigous <NULL, A, mixed>
+ * @return Entityform
  */
 function entityform_user_draft($type, $uid = NULL) {
   return entityform_user_previous_submission($type, $uid, 1);
@@ -454,7 +454,7 @@ function entityform_user_draft($type, $uid = NULL) {
  * @param int $uid
  * @param int $draft
  *
- * @return NULL|Ambigous <A, mixed>
+ * @return Entityform
  */
 function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
   $submission = NULL;
@@ -481,7 +481,7 @@ function entityform_user_previous_submission($type, $uid = NULL, $draft = 0) {
  * Has the user submitted a form.
  *
  * @param string $type
- * @param unknown_type $uid
+ * @param int|string $uid
  *
  * @return bool
  */
@@ -539,7 +539,7 @@ function entityform_load($entityform_id, $reset = FALSE) {
  * @param bool $reset
  *   A boolean indicating that the internal cache should be reset.
  *
- * @return array
+ * @return Entityform[]
  *   An array of entityform objects, indexed by entityform_id.
  *   @todo verify return type.
  *
@@ -790,6 +790,9 @@ function entityform_type_page_title($entityform_type, $op) {
  * Implements hook_entity_presave().
  *
  * Manage path aliases for Entityform Types.
+ *
+ * @param Entity|EntityformType $entity
+ * @param string $type
  */
 function entityform_entity_presave($entity, $type) {
   if ($type == 'entityform_type') {
@@ -890,10 +893,11 @@ function _entityform_alias_is_used($path) {
 /**
  * Page for view submission.
  *
- * @param object $entityform_type
+ * @param EntityformType $entityform_type
+ * @param string $mode
  *
- * @return string
- *   Rendered view
+ * @return array
+ *   Rendereable array.
  */
 function entityform_submission_page($entityform_type, $show_display_id, $mode) {
   $output = array();
@@ -1020,7 +1024,7 @@ function _entityform_get_type_data_setting($entityform_type, $setting, $default_
     }
     if (empty($empty_type)) {
       // Load empty type which will have defaults filled in.
-      $empty_type = entity_get_controller('entityform_type')->create(array(), TRUE);
+      $empty_type = entity_get_controller('entityform_type')->create(array());
     }
     if (isset($empty_type->data[$setting])) {
       return $empty_type->data[$setting];
@@ -1340,6 +1344,9 @@ function _entityform_format_text($text_value, $token_types = array()) {
  *
  * Control access to Entityforms in Views.
  * This will only work if entityform is the base table of the View.
+ *
+ * @param view $view
+ * @param object $query
  */
 function entityform_views_query_alter(&$view, &$query) {
   global $user;

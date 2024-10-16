@@ -252,7 +252,7 @@ function entityform_type_prepare_edit(&$entityform_type) {
  */
 function entityform_settings($form, &$form_state) {
   // Choose the default View for viewing for submissions.
-  $defaults = entity_get_controller('entityform_type')->create(array(), TRUE);
+  $defaults = entity_get_controller('entityform_type')->create(array());
   $form['#config'] = 'entityform.settings';
   $form = _entityform_type_settings_elements($defaults, 'defaults');
   $form['#entityform_type'] = $defaults;
