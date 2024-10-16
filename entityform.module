@@ -1385,15 +1385,29 @@ function entityform_views_query_alter(&$view, &$query) {
 
 /**
  * Utility function to get Submit URL.
+ *
+ * @param string|null $type
+ *   Machine name of the entityform type, null when creating one.
+ *   @todo this seems odd.
  */
 function _entityform_type_get_submit_url($type) {
+  if (empty($type)) {
+    return NULL;
+  }
   return 'eform/submit/' . str_replace('_', '-', $type);
 }
 
 /**
  * Utility function to get Confirm URL.
+ *
+ * @param string|null $type
+ *   Machine name of the entityform type, null when creating one.
+ *   @todo this seems odd.
  */
 function _entityform_type_get_confirm_url($type) {
+  if (empty($type)) {
+    return NULL;
+  }
   return 'eform/' . str_replace('_', '-', $type) . '/confirm';
 }
 
