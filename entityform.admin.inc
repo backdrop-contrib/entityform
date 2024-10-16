@@ -67,10 +67,6 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
   $make_form = TRUE;
 
   $entityform_type = entityform_type_load($entityform->type);
-
-  if ($form_context == 'page') {
-    backdrop_set_title($entityform_type->getTranslation('label'));
-  }
   if (!empty($entityform->is_new)) {
     $draft = FALSE;
     if ($entityform_type->data['draftable']) {

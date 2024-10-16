@@ -368,14 +368,11 @@ function _entityform_get_entityform_views_options() {
  * @param string|null $type_name
  *   If set, the type with the given name is returned.
  *
- * @return EntityformType[]
+ * @return EntityformType[]|EntityformType|false
  *   Depending whether $type isset, an array of entityform types or a single
- *   one.
+ *   one, or FALSE if the type does not exists.
  */
 function entityform_get_types($type_name = NULL) {
-  // Function entity_load will get the Entity controller for our entityform
-  // entity and call the load function of that object - we are loading entities
-  // by name here.
   // Use the advanced backdrop_static() pattern since this is called very often.
   static $backdrop_static_fast;
   $cache_key = 'entityform_types';
@@ -389,31 +386,15 @@ function entityform_get_types($type_name = NULL) {
     if ($cache = cache_get($cache_key)) {
       $entityform_types = $cache->data;
     }
-  }
-  // $entityform_types may be set but might not have our $type_name if called
-  // first for other $type_name.
-  // @todo What if it is called first with $type_name set and then called
-  // without $type_name set? Wouldn't it return a single element array even if
-  // there were more entityform types?
-  if (empty($entityform_types) || (isset($type_name) && empty($entityform_types[$type_name]))) {
-    if (!isset($type_name)) {
-      $entityform_types = entity_load_multiple_by_name('entityform_type', FALSE);
-    }
     else {
-      $types = entity_load_multiple_by_name('entityform_type', array($type_name));
-      if (empty($types)) {
-        return FALSE;
-      }
-      $entityform_types[$type_name] = array_shift($types);
-    }
-    if (!isset($type_name)) {
-      // Only set the cache if retrieved all entityform types.
+      // Populate the static and permanent cache with all types.
+      $entityform_types = entity_load_multiple_by_name('entityform_type', FALSE);
       cache_set($cache_key, $entityform_types);
     }
   }
   if (isset($type_name)) {
     // Even though $type_name was set it might not be valid.
-    return isset($entityform_types[$type_name]) ? $entityform_types[$type_name] : NULL;
+    return isset($entityform_types[$type_name]) ? $entityform_types[$type_name] : FALSE;
   }
   return $entityform_types;
 }
@@ -668,7 +649,7 @@ function entityform_page_title($entityform, $op = 'view') {
         return $entityform_type->label;
 
       default:
-        return t('Form Submission') . ': ' . $entityform_type->label;
+        return $entityform->label();
     }
   }
 }
@@ -1201,7 +1182,7 @@ function _entityform_view_add_all_fields(&$view, $display_id, $bundle_name, $vie
       'entityform_type' => $bundle_name,
     );
     // Reorder fields to match view mode.
-    uasort($autofields, 'backdrop_sort_weight');
+    uasort($autofields, 'backdrop_sort');
     backdrop_alter('entityform_views_autofields', $autofields, $view, $display_id);
     foreach ($autofields as $field) {
       $view->add_item($display_id, 'field', "field_data_{$field['field_name']}", $field['field_name'], $field['options']);

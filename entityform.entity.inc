@@ -53,8 +53,8 @@ class Entityform extends Entity {
    *
    */
   public function getTypeName() {
-    $entityform_type = entityform_type_load($this->type);
-    return $entityform_type->label;
+    $entity_info = entity_get_info('entityform');
+    return $entity_info['bundles'][$this->type]['label'];
   }
 
   /**
@@ -102,7 +102,7 @@ class Entityform extends Entity {
    * Implements EntityInterface::label().
    */
   public function label() {
-    return $this->label;
+    return t('Form Submission') . ': ' . $this->getTypeName();
   }
 
 }
