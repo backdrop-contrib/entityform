@@ -253,7 +253,6 @@ function entityform_type_prepare_edit(&$entityform_type) {
 function entityform_settings($form, &$form_state) {
   // Choose the default View for viewing for submissions.
   $defaults = entity_get_controller('entityform_type')->create(array());
-  $form['#config'] = 'entityform.settings';
   $form = _entityform_type_settings_elements($defaults, 'defaults');
   $form['#entityform_type'] = $defaults;
 
@@ -267,6 +266,7 @@ function entityform_settings($form, &$form_state) {
   $form['entityform_type_defaults']['#tree'] = TRUE;
   $form['entityform_type_defaults']['#type'] = 'value';
   unset($form['data']);
+  $form['#config'] = 'entityform.settings';
 
   // Register #process function so the fieldsets aren't save in form values.
   $form['entityform_type_defaults']['data']['#process'][] = '_entityform_remove_fieldsets_from_tree';
