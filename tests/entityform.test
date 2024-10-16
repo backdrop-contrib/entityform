@@ -14,7 +14,7 @@ class EntityformTestCase extends BackdropWebTestCase {
   /**
    * User who can administer entityform types.
    */
-  protected $admin_user;
+  protected $user_admin;
   /**
    * User who can View, Edit, Delete own submissions.
    */
