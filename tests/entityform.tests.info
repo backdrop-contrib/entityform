@@ -1,12 +1,5 @@
-[EntityformTestCase]
-name = EntityformTestCase
-description = EntityformTestCase
-group = Entityform
-file = entityform.test
-
 [EntityformCRUDTestCase]
 name = Entityform Test
 description = Tests basic CRUD and editing of Entityform Types and Entityforms submissions.
 group = Entityform
 file = entityform.test
-
