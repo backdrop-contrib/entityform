@@ -264,7 +264,9 @@ function entityform_access($op, $entityform = NULL, $account = NULL) {
   }
 
   if ($op == 'submit' || $op == 'confirm') {
-    if (isset($entityform_type) && is_object($entityform_type) && is_array($entityform_type->data) && array_intersect($entityform_type->data['roles'], array_keys($account->roles))) {
+    $permitted_roles = array_filter($entityform_type->data['roles']);
+    $account_roles = array_values($account->roles);
+    if (isset($entityform_type) && is_object($entityform_type) && is_array($entityform_type->data) && array_intersect($permitted_roles, $account_roles)) {
       $can_submit = TRUE;
     }
     else {
@@ -563,6 +565,7 @@ function entityform_delete(Entityform $entityform) {
 function entityform_type_cache_reset() {
   cache_clear_all('entityform_types', 'cache');
   backdrop_static_reset('entityform_get_types');
+  cache('page')->flush();
 }
 
 /**

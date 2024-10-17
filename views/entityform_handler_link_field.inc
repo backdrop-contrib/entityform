@@ -82,7 +82,7 @@ class entityform_handler_link_field extends views_handler_field_entity {
    * Data should be made XSS safe prior to calling this function.
    */
   public function render_link($entity, $op, $uri, $text) {
-    if (entity_access($op, $this->entity_type, $entity)) {
+    if (entity_plus_access($op, $this->entity_type, $entity)) {
       $this->options['alter']['make_link'] = TRUE;
       $this->options['alter']['path'] = $uri['path'];
       $this->options['alter']['options'] = $uri['options'];

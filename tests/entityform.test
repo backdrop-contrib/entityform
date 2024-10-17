@@ -157,14 +157,14 @@ class EntityformCRUDTestCase extends EntityformTestCase {
 
     // Check that form is redirected on submit.
     $data = array(
-      'redirect_path' => 'node?uid=[current-user:uid]',
+      'redirect_path' => 'home?uid=[current-user:uid]',
     );
     $this->updateEntityformType('test_form', NULL, $data);
     $this->entityformSubmit('test_form', $this->user_edit);
     $url_options = backdrop_parse_url($this->url);
     $path_parts = explode('/', $url_options['path']);
     $system_path = array_pop($path_parts);
-    $this->assertEqual($system_path, 'node', t('Submit is redirected'));
+    $this->assertEqual($system_path, 'home', t('Submit is redirected'));
     // Check that query string in redirect_path works and tokens replaced.
     if ($this->assertTrue(array_key_exists('uid', $url_options['query']), t('Query String redirect exists.'))) {
       $this->assertEqual($url_options['query']['uid'], $this->loggedInUser->uid, t('Tokens replaced in Redirect Path'));
@@ -237,16 +237,16 @@ class EntityformCRUDTestCase extends EntityformTestCase {
       $this->assertText(t('Your Submissions'), 'Access can view own submissions.');
       $this->assertUniqueText($user->name, 'User only sees 1 submission.');
       if ($can_delete) {
-        $this->assertUniqueText(t('delete'), 'User sees delete link');
+        $this->assertLink(t('delete'), 0, 'User sees delete link');
       }
       else {
-        $this->assertNotext(t('delete'), 'User cannot see delete link');
+        $this->assertNoLink(t('delete'), 'User cannot see delete link');
       }
       if ($can_edit) {
-        $this->assertUniqueText(t('edit'), 'User sees edit link');
+        $this->assertLink(t('edit'), 0, 'User sees edit link');
       }
       else {
-        $this->assertNotext(t('edit'), 'User cannot see edit link');
+        $this->assertNoLink(t('edit'), 'User cannot see edit link');
       }
     }
     else {
