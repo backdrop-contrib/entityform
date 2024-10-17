@@ -824,7 +824,7 @@ function entityform_entity_presave($entity, $type) {
                 break;
             }
             // Entityform Types aren't translateable.
-            $path['language'] = LANGUAGE_NONE;
+            $path['langcode'] = LANGUAGE_NONE;
             // Check to see if alias is exact same as original.
             if (!empty($original_path['alias'])
                 && $original_path['alias'] == $path['alias'] && $path['source'] == $original_path['source']) {
@@ -881,7 +881,7 @@ function _entityform_alias_is_used($path) {
   // Ensure that the submitted alias does not exist yet.
   $query = db_select('url_alias')
     ->condition('alias', $path['alias'])
-    ->condition('language', $path['language']);
+    ->condition('langcode', $path['langcode']);
   if (!empty($path['source'])) {
     $query->condition('source', $path['source'], '<>');
   }

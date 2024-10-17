@@ -524,7 +524,7 @@ function _entityform_paths_form_element_validate($element, &$form_state, $comple
       // Ensure that the submitted alias does not exist yet.
       $query = db_select('url_alias')
         ->condition('alias', $path['alias'])
-        ->condition('language', LANGUAGE_NONE);
+        ->condition('langcode', LANGUAGE_NONE);
       if (!empty($original_entityform_type->paths[$path_type])) {
         $query->condition('source', $original_entityform_type->paths[$path_type]['source'], '<>');
       }
