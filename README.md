@@ -31,8 +31,8 @@ https://github.com/backdrop-contrib/entityform/issues.
 ## Known Issues
 
 Submodules have not been tested, yet, and especially
-entityform_notifications, which depends on unavailable modules, will
-probably not work anytime soon.
+entityform_notifications, which depends on unavailable modules, probably won't
+work anytime soon.
 
 ## Maintainers
 
