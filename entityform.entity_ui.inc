@@ -206,7 +206,6 @@ class EntityformTypeUIController extends EntityDefaultUIController {
     $items = parent::hook_menu();
     $items[$this->path]['description'] = 'Manage entityform entity types, including adding and removing fields and the display of fields.';
     $items[$this->path]['type'] = MENU_NORMAL_ITEM;
-    $items[$this->path . '/manage/%entity_ui_object/edit']['context'] = MENU_CONTEXT_PAGE | MENU_CONTEXT_INLINE;
     return $items;
   }
 
