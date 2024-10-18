@@ -254,7 +254,7 @@ class EntityformType extends Entity {
    * Implements EntityInterface::id().
    */
   public function id() {
-    return $this->id;
+    return $this->type;
   }
 
   /**
