@@ -158,7 +158,7 @@ function entityform_entity_info() {
     'exportable' => TRUE,
     'metatags' => TRUE,
     'entity keys' => array(
-      'id' => 'type',
+      'id' => 'id',
       'name' => 'type',
       'label' => 'label',
     ),

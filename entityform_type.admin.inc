@@ -17,7 +17,6 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   if ($op == 'clone') {
     $entityform_type->label .= ' (cloned)';
     $entityform_type->type = '';
-    $entityform_type->id = NULL;
   }
   if ($op == 'add') {
     // Clear so most defaults.  Allows entityform type to use defaults.
