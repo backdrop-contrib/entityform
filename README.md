@@ -24,7 +24,6 @@ standard Backdrop node field.
 
 ## Issues
 
-Report issues...
 Bugs and feature requests should be reported in the issue queue:
 https://github.com/backdrop-contrib/entityform/issues.
 
