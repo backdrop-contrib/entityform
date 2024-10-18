@@ -1,60 +1,60 @@
-Entityform
----------------------
+# Entityform
 
-
-The Entityform module enables the user to create front-end forms (fieldable
+The Entityform module enables you to create front-end forms (fieldable
 entities), which contain fields that can be defined. These forms use the
 standard Backdrop fields. This means that out of the box, the user can use any
 standard Backdrop node field.
 
+## Dependencies
 
-Installation
-------------
+- Entity UI
+- Entity Plus
 
-Install the Entityform module as you would normally install a contributed
-Backdrop module.
+## Installation
 
+- Install this module using the
+  [official Backdrop CMS instructions](https://docs.backdropcms.org/documentation/extend-with-modules)
 
-Configuration
---------------
+## Configuration
 
-    1. Navigate to Administration > Modules and enable the Entityform module and
-       its dependencies.
-    2. Navigate to entity the administration interface under Administration >
-       Content > Entityform Types and "Add an Entityform Type".
-    3. Fill out basic form information. Under Access Settings make sure at least
-       one role can submit the form. Select "Save Entityform Type".
-    4. Select manage fields and add fields the same fashion as a node content
-       type.
-    5. Once the user has added fields the user can view the form by selecting
-       the Submit Link on Administration > Structure > Entity Form Types.
+1. Go to Structure > Entityform Types (admin/structure/entityform_types) and "Add an Entityform Type".
+2. Select manage fields tab and add the desired fields
+3. Select manage displays tab and adapt as needed
+4. You can now preview the form and permitted roles can submit values
 
+## Issues
 
-License
--------
+Report issues...
+Bugs and feature requests should be reported in the issue queue:
+https://github.com/backdrop-contrib/entityform/issues.
 
-  This project is GPL v2 software. See the LICENSE.txt file in this directory for
-  complete text.
+## Known Issues
 
+Submodules have not been tested, yet, and especially
+entityform_notifications, which depends on unavailable modules, will
+probably not work anytime soon.
 
-Maintainers
------------
+## Maintainers
 
 - [indigoxela](https://github.com/indigoxela)
-- Seeking additional Maintainers
+- Seeking additional maintainers
 
-Credits
--------
+## Credits
 
-  Ported to Backdrop by Andy Shillingford (https://github.com/docwilmot/)
-  
-  Original Drupal development by
+Ported to Backdrop by [Andy Shillingford](https://github.com/docwilmot/)
 
- * Joël Pittet (joelpittet) - https://www.drupal.org/u/joelpittet
- * Ted Bowman (tedbow) - https://www.drupal.org/u/tedbow
+Original Drupal development by
 
-Supporting Organizations:
+* Joël Pittet (joelpittet) - https://www.drupal.org/u/joelpittet
+* Ted Bowman (tedbow) - https://www.drupal.org/u/tedbow
 
- * Six Mile Tech - https://www.drupal.org/six-mile-tech
- * The University of British Columbia -
-   https://www.drupal.org/the-university-of-british-columbia
+Supporting Organizations for Drupal version:
+
+* Six Mile Tech - https://www.drupal.org/six-mile-tech
+* The University of British Columbia -
+  https://www.drupal.org/the-university-of-british-columbia
+
+## License
+
+This project is GPL v2 software.
+See the LICENSE.txt file in this directory for complete text.
