@@ -44,7 +44,7 @@ function entityform_tokens($type, $tokens, array $data = array(), array $options
           break;
 
         case 'label':
-          $return[$original] = $entityform_type->label;
+          $return[$original] = check_plain($entityform_type->label);
           break;
 
       }
