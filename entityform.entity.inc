@@ -349,7 +349,7 @@ class EntityformController extends EntityPlusController {
 /**
  * The Controller for Entityform entities.
  */
-class EntityformTypeController extends EntityPlusController {
+class EntityformTypeController extends EntityPlusControllerExportable {
 
   /**
    *
