@@ -1519,7 +1519,7 @@ function entityform_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
  * exist. The form is provided by entity_ui.
  */
 function entityform_form_entityform_type_operation_form_alter(&$form, &$form_state, $form_id) {
-  if (!$form_state['op'] == 'delete') {
+  if ($form_state['op'] != 'delete') {
     return;
   }
   $entityform_type = $form_state['entityform_type'];
@@ -1527,7 +1527,7 @@ function entityform_form_entityform_type_operation_form_alter(&$form, &$form_sta
     ':type' => $entityform_type->type,
   ))->fetchField();
   if ($count) {
-    $message = t('%type is used by @count existing submission(s). If you remove this form type, you will not be able to view or edit any %type form submission(s).', array(
+    $message = t('%type is used by @count existing submission(s). If you remove this form type, you will not be able to view or edit existing %type submissions.', array(
       '@count' => $count,
       '%type' => $entityform_type->label,
     ));
