@@ -50,11 +50,18 @@ class Entityform extends Entity {
   }
 
   /**
+   * Get human readable entityform_type label.
    *
+   * @return string
    */
   public function getTypeName() {
     $entity_info = entity_get_info('entityform');
-    return $entity_info['bundles'][$this->type]['label'];
+    if (!empty($entity_info['bundles'][$this->type])) {
+      return $entity_info['bundles'][$this->type]['label'];
+    }
+    else {
+      return t('Broken or missing form type');
+    }
   }
 
   /**

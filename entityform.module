@@ -1513,6 +1513,29 @@ function entityform_form_field_ui_field_edit_form_alter(&$form, &$form_state) {
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add a warning to the entityform_type delete form, if submissions of that type
+ * exist. The form is provided by entity_ui.
+ */
+function entityform_form_entityform_type_operation_form_alter(&$form, &$form_state, $form_id) {
+  if (!$form_state['op'] == 'delete') {
+    return;
+  }
+  $entityform_type = $form_state['entityform_type'];
+  $count = db_query('SELECT COUNT(entityform_id) FROM {entityform} WHERE type = :type', array(
+    ':type' => $entityform_type->type,
+  ))->fetchField();
+  if ($count) {
+    $message = t('%type is used by @count existing submission(s). If you remove this form type, you will not be able to view or edit any %type form submission(s).', array(
+      '@count' => $count,
+      '%type' => $entityform_type->label,
+    ));
+    backdrop_set_message($message, 'warning', FALSE);
+  }
+}
+
+/**
  * Implements hook_autoload_info().
  */
 function entityform_autoload_info() {
