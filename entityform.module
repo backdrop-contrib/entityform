@@ -1288,28 +1288,6 @@ function entityform_forms() {
 }
 
 /**
- * Implements hook_mollom_form_list().
- */
-function entityform_mollom_form_list() {
-  $forms = array();
-  $types = entityform_get_types();
-  $forms = array();
-  foreach ($types as $machine_name => $type) {
-    $forms[$machine_name . '_entityform_edit_form'] = array(
-      'title' => t('Entityform: @name form', array('@name' => $type->label)),
-      'entity' => 'entityform',
-      'bundle' => $type->type,
-      'delete form' => 'entityform_delete_form',
-      'delete form file' => array(
-        'name' => 'entityform.admin.inc',
-      ),
-      'report access' => array('administer entityform types'),
-    );
-  }
-  return $forms;
-}
-
-/**
  * Replace tokens and convert text to markup filter.
  *
  * @param string $text_value
