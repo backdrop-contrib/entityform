@@ -57,7 +57,8 @@ class Entityform extends Entity {
   public function getTypeName() {
     $entity_info = entity_get_info('entityform');
     if (!empty($entity_info['bundles'][$this->type])) {
-      return $entity_info['bundles'][$this->type]['label'];
+      $entityform_type = entityform_type_load($this->type);
+      return $entityform_type->getTranslation('label');
     }
     else {
       return t('Broken or missing form type');
@@ -109,7 +110,9 @@ class Entityform extends Entity {
    * Implements EntityInterface::label().
    */
   public function label() {
-    return t('Form Submission') . ': ' . $this->getTypeName();
+    return t('Form Submission: @label', array(
+      '@label' => $this->getTypeName(),
+    ));
   }
 
 }
