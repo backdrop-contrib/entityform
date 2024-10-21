@@ -17,6 +17,10 @@ function entityform_token_info() {
     'name' => t('Submission URL'),
     'description' => t('Submit URL for Entityform type.'),
   );
+  $tokens['label'] = array(
+    'name' => t('Label'),
+    'description' => t('Human readable label for this Entityform type.'),
+  );
 
   return array(
     'types' => array('entityform_type' => $type),
@@ -37,6 +41,10 @@ function entityform_tokens($type, $tokens, array $data = array(), array $options
           $return[$original] = url(_entityform_type_get_submit_url($entityform_type->type), array(
             'absolute' => TRUE,
           ));
+          break;
+
+        case 'label':
+          $return[$original] = check_plain($entityform_type->label);
           break;
 
       }
