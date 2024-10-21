@@ -2,6 +2,8 @@ name = Entityform translation
 description = Translate entityform types.
 dependencies[] = entityform
 dependencies[] = i18n_string
+dependencies[] = entity_plus_i18n
+
 package = Multilingual - Internationalization
 backdrop = 1.x
 type = module
