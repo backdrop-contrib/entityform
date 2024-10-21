@@ -110,7 +110,6 @@ function entityform_entity_info() {
         'custom settings' => FALSE,
       ),
     ),
-    'label callback' => 'entity_class_label',
     'uri callback' => 'entityform_uri',
     'creation callback' => 'entityform_create',
     'access callback' => 'entityform_access',
