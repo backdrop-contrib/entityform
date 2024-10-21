@@ -11,7 +11,7 @@ standard Backdrop node field.
 - Entity Plus
 
 No dependency, but recommended, especially if you're using this module in
-combincation with Rules: [Entity Tokens](https://backdropcms.org/project/entity_token)
+combination with Rules: [Entity Tokens](https://backdropcms.org/project/entity_token)
 
 ## Installation
 
