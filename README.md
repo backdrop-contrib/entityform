@@ -10,6 +10,9 @@ standard Backdrop node field.
 - Entity UI
 - Entity Plus
 
+No dependency, but recommended, especially if you're using this module in
+combincation with Rules: [Entity Tokens](https://backdropcms.org/project/entity_token)
+
 ## Installation
 
 - Install this module using the
@@ -24,14 +27,16 @@ standard Backdrop node field.
 
 ## Issues
 
-Bugs and feature requests should be reported in the issue queue:
-https://github.com/backdrop-contrib/entityform/issues.
+Bugs and feature requests should be reported in the
+[issue queue](https://github.com/backdrop-contrib/entityform/issues).
 
 ## Known Issues
 
-Submodules have not been tested, yet, and especially
-entityform_notifications, which depends on unavailable modules, probably won't
-work anytime soon.
+Submodules only *partly* work.
+
+- entityform_anonymous seems fully functional
+- entityform_i18n partly, see [this issue](https://github.com/backdrop-contrib/entityform/issues/21)
+- entityform_notifications can not work, see [this issue](https://github.com/backdrop-contrib/entityform/issues/23)
 
 ## Maintainers
 
