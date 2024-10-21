@@ -67,6 +67,11 @@ function entityform_form_wrapper(Entityform $entityform, $mode = 'submit', $form
   $make_form = TRUE;
 
   $entityform_type = entityform_type_load($entityform->type);
+  if (!$entityform_type) {
+    backdrop_set_message(t('Broken or missing form type'), 'error');
+    return '';
+  }
+
   if (!empty($entityform->is_new)) {
     $draft = FALSE;
     if ($entityform_type->data['draftable']) {
@@ -479,6 +484,15 @@ function entityform_delete_form($form, &$form_state, $entityform) {
 
   $form['#submit'][] = 'entityform_delete_form_submit';
   $entityform_type = entityform_type_load($entityform->type);
+  if (!$entityform_type) {
+    // @todo It won't be possible to clean up field data and instances on cron
+    // runs without the type, but at least we can delete this item.
+    // We can not prevent EntityMalformedExceptions on every cron run, though.
+    backdrop_set_message(t('Broken or missing form type'), 'error', FALSE);
+    $form = confirm_form($form, t('Delete this broken submission'), '');
+    return $form;
+  }
+
   // @todo Where should a non-admin go when canceling?
   $form = confirm_form($form,
     $entityform_type->get_prop('delete_confirm_msg', $entityform),
