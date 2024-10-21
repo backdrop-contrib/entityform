@@ -200,11 +200,11 @@ function entityform_type_form($form, &$form_state, $entityform_type, $op = 'edit
   $form['tokens'] = array(
     '#title' => t('Available Tokens'),
     '#type' => 'fieldset',
-    '#collapsible' => TRUE,
+    '#collapsible' => FALSE,
     '#weight' => '39',
   );
   $form['tokens']['token_tree'] = array(
-    '#theme' => 'token_tree',
+    '#theme' => 'token_tree_link',
     '#token_types' => array('global_types', 'entityform_type', 'entityform'),
     '#dialog' => TRUE,
   );
