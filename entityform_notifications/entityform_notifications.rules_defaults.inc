@@ -55,6 +55,7 @@ function entityform_notifications_default_rules_configuration() {
       "PROVIDES VARIABLES" : [ "continue" ]
     }
   }';
+  // @todo: this user_has_role condition won't work in B. Should probably be authenticated...?
   $exported_rules['rules_entityform_notification_email_submitter'] = '{ "rules_entityform_notification_email_submitter" : {
       "LABEL" : "Entityform Notification Email Submitter",
       "PLUGIN" : "rule",
