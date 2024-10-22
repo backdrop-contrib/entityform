@@ -13,6 +13,9 @@ standard Backdrop node field.
 No dependency, but recommended, especially if you're using this module in
 combination with Rules: [Entity Tokens](https://backdropcms.org/project/entity_token)
 
+Note that submodule entityform_notifications requires Rules and hence also
+entity_token.
+
 ## Installation
 
 - Install this module using the
@@ -29,14 +32,6 @@ combination with Rules: [Entity Tokens](https://backdropcms.org/project/entity_t
 
 Bugs and feature requests should be reported in the
 [issue queue](https://github.com/backdrop-contrib/entityform/issues).
-
-## Known Issues
-
-Submodules only *partly* work.
-
-- entityform_anonymous seems fully functional
-- entityform_i18n partly, see [this issue](https://github.com/backdrop-contrib/entityform/issues/21)
-- entityform_notifications can not work, see [this issue](https://github.com/backdrop-contrib/entityform/issues/23)
 
 ## Maintainers
 
