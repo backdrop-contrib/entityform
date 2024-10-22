@@ -5,21 +5,6 @@
  */
 
 /**
- * Implements hook_enable().
- *
- * Make sure Entityform is enabled from for entity_rules.
- */
-function entityform_notifications_enable() {
-  // TODO This variable was probably removed in Backdrop without replacement.
-  $enabled_types = variable_get('entity_rules_types', explode(',', ENTITY_RULES_DEFAULT_TYPES));
-  if (!in_array('entityform', $enabled_types, TRUE)) {
-    $enabled_types[] = 'entityform';
-    // TODO This variable was probably removed in Backdrop without replacement.
-    variable_set('entity_rules_types', $enabled_types);
-  }
-}
-
-/**
  * Implements hook_update_last_removed().
  */
 function entityform_notifications_update_last_removed() {
