@@ -261,7 +261,7 @@ class EntityformType extends Entity {
    */
   public function uri() {
     return array(
-      'path' => 'eform/submit/' . $this->type,
+      'path' => 'eform/submit/' . str_replace('_', '-', $this->type),
       'options' => array(),
     );
   }

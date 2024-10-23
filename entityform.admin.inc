@@ -24,7 +24,8 @@
  *   @todo above comment seems wrong.
  */
 function entityform_type_submit_page($entityform_type) {
-  $view = entity_view($entityform_type, 'full', NULL);
+  // We need the $page param, missing in entity_view().
+  $view = entity_plus_view('entityform_type', array($entityform_type), 'full', NULL, TRUE);
 
   // The form is not closed for new submissions.
   if (!isset($entityform_type->data['form_status']) || $entityform_type->data['form_status'] != ENTITYFORM_STATUS_CLOSED) {
