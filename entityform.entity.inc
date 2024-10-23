@@ -115,8 +115,14 @@ class Entityform extends Entity {
     ));
   }
 
-}
+  /**
+   * Implements EntityInterface::bundle().
+   */
+  public function bundle() {
+    return $this->type;
+  }
 
+}
 
 /**
  * The class used for entityform type entities.
