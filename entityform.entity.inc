@@ -327,7 +327,7 @@ class EntityformController extends EntityPlusController {
       }
       $type = entityform_get_types($values['type']);
       if (empty($type)) {
-        unset($values['type']);
+        $values['type'] = '';
       }
     }
 
