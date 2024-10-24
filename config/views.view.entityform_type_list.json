@@ -2,11 +2,11 @@
     "_config_name": "views.view.entityform_type_list",
     "name": "entityform_type_list",
     "description": "Provide an index of entityform types that link to submission View",
-    "tag": "default",
+    "module": "entityforms",
+    "tag": "",
     "disabled": false,
     "base_table": "entityform_type",
     "human_name": "Entityform Type List",
-    "core": 7,
     "display": {
         "default": {
             "display_title": "Master",

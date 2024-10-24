@@ -2,11 +2,11 @@
     "_config_name": "views.view.entityforms",
     "name": "entityforms",
     "description": "A list of all entityforms submissions to be as an admin report",
-    "tag": "entityforms",
+    "module": "entityforms",
+    "tag": "",
     "disabled": false,
     "base_table": "entityform",
     "human_name": "Entityforms",
-    "core": 7,
     "display": {
         "default": {
             "display_title": "Master",

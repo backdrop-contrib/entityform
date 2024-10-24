@@ -2,11 +2,11 @@
     "_config_name": "views.view.user_entityforms",
     "name": "user_entityforms",
     "description": "A list of all entityforms submissions to be displayed to the submitter.",
-    "tag": "entityforms",
+    "module": "entityforms",
+    "tag": "",
     "disabled": false,
     "base_table": "entityform",
     "human_name": "User Entityforms",
-    "core": 7,
     "display": {
         "default": {
             "display_title": "Master",
