@@ -326,10 +326,11 @@ class EntityformController extends EntityPlusController {
         }
       }
       $type = entityform_get_types($values['type']);
+      if (empty($type)) {
+        unset($values['type']);
+      }
     }
-    if (empty($type)) {
-      return NULL;
-    }
+
     // Add values that are specific to our Entityform.
     $values += array(
       'is_new' => TRUE,
