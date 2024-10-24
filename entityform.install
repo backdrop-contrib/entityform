@@ -165,6 +165,32 @@ function entityform_update_1000() {
 }
 
 /**
+ * Get default views if they have not been overridden.
+ */
+function entityform_update_1001() {
+  // D7 upgrade: if the default views have never been touched, they're not in
+  // the database, so views_update_1001() could not convert them. In this case
+  // we copy the default.
+  $default_views = array(
+    'views.view.entityforms',
+    'views.view.entityform_type_list',
+    'views.view.user_entityforms',
+  );
+  $path = backdrop_get_path('module', 'entityform') . '/config/';
+  foreach ($default_views as $name) {
+    $config = config($name);
+    if (!$config->isNew()) {
+      // The view config exists, nothing to do.
+      continue;
+    }
+    $contents = file_get_contents($path . $name . '.json');
+    $data = json_decode($contents, TRUE);
+    $config->setData($data);
+    $config->save();
+  }
+}
+
+/**
  * Implements hook_install().
  */
 function entityform_install() {
