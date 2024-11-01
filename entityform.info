@@ -3,6 +3,7 @@ description = Provides fieldable entity forms
 backdrop = 1.x
 type = module
 package = Entityforms
+maintainers[indigoxela] = indigoxela
 
 configure = admin/structure/entityform_types
 
