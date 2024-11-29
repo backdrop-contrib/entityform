@@ -20,8 +20,8 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'label' => t("User"),
       'type' => 'user',
       'description' => t("The user who submitted the form."),
-      'getter callback' => 'entity_property_getter_method',
-      'setter callback' => 'entity_property_setter_method',
+      'getter callback' => 'entity_plus_property_getter_method',
+      'setter callback' => 'entity_plus_property_setter_method',
       'setter permission' => 'administer entityform types',
       'required' => TRUE,
       'schema field' => 'uid',
@@ -31,7 +31,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
       'label' => t("Date submitted"),
       'type' => 'date',
       'description' => t("The date form was submitted."),
-      'setter callback' => 'entity_property_verbatim_set',
+      'setter callback' => 'entity_plus_property_verbatim_set',
       'setter permission' => 'administer entityform types',
       'required' => TRUE,
       'schema field' => 'created',
@@ -50,7 +50,7 @@ class EntityformMetadataController extends EntityDefaultMetadataController {
     // @todo This line could be removed depending on this https://drupal.org/node/1931376
     $properties['type']['required'] = TRUE;
 
-    $properties['draft']['setter callback'] = 'entity_property_verbatim_set';
+    $properties['draft']['setter callback'] = 'entity_plus_property_verbatim_set';
 
     return $info;
   }
