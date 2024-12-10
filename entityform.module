@@ -925,6 +925,14 @@ function entityform_submission_page($entityform_type, $show_display_id, $mode) {
   $view_name = $parts[0];
   $view = views_get_view($view_name);
 
+  if (!$view) {
+    $message = t('Failed to load view %view_name, unable to display submissions.', array(
+      '%view_name' => $view_name,
+    ));
+    backdrop_set_message($message, 'error');
+    return $output;
+  }
+
   $display_ids = array_keys($view->display);
 
   // Remove master display.
