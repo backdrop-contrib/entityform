@@ -501,7 +501,7 @@ class EntityformTypeController extends EntityPlusController {
   /**
    * Overridden to clear cache.
    */
-  public function save($entity, DatabaseTransaction $transaction = NULL) {
+  public function save($entity, ?DatabaseTransaction $transaction = NULL) {
     $return = parent::save($entity, $transaction);
 
     // Reset the entityform type cache. We need to do this first so
@@ -517,7 +517,7 @@ class EntityformTypeController extends EntityPlusController {
   /**
    * Overridden to delete aliases and clear cache.
    */
-  public function delete($ids, DatabaseTransaction $transaction = NULL) {
+  public function delete($ids, ?DatabaseTransaction $transaction = NULL) {
     $entities = $ids ? $this->load($ids) : FALSE;
     if ($entities) {
       if (module_exists('path')) {
