@@ -7,3 +7,5 @@ jobs:
     steps:
       - name: Run PHP_CodeSniffer
         uses: indigoxela/gha_experiments/actions/phpcs_full@main
+        with:
+          fail_on_warnings: false

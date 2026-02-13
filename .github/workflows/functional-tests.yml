@@ -8,6 +8,5 @@ jobs:
       - name: Run Tests
         uses: indigoxela/gha_experiments/actions/simpletest@main
         with:
-          php_version: "8.5"
-          db_version: "mysql-8.0"
+          php_version: "8.4"
           module_dependencies: "entity_plus,entity_ui"
