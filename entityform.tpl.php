@@ -25,7 +25,7 @@
 ?>
 <div class="<?php print implode(' ', $classes); ?> clearfix"<?php (empty($attributes)) ? '' : print backdrop_attributes($attributes); ?>>
   <?php if (!$page) : ?>
-    <h2<?php print $title_attributes; ?>>
+    <h2>
       <?php if (!empty($url)) : ?>
         <a href="<?php print $url; ?>"><?php print $title; ?></a>
       <?php else : ?>
